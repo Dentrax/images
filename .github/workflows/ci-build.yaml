@@ -1,0 +1,66 @@
+name: CI build action
+
+on:
+  pull_request_target:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build changed OS packages (CI)
+    runs-on: ubuntu-16-core
+
+    permissions:
+      packages: write
+      contents: read
+
+    env:
+      PROJECT: prod-images-c6e5
+      FQ_SERVICE_ACCOUNT: prod-images-ci@prod-images-c6e5.iam.gserviceaccount.com
+
+    steps:
+      - name: Generate snapshot date
+        id: snapshot-date
+        run: |
+          echo "date=$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
+          echo "epoch=$(date -u +%s)" >> "$GITHUB_OUTPUT"
+        shell: bash
+
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+
+      - uses: chainguard-dev/actions/setup-melange@main
+
+      - uses: google-github-actions/auth@ef5d53e30bbcd8d0836f4288f5e50ff3e086997d # v1.0.0
+        with:
+          workload_identity_provider: "projects/618116202522/locations/global/workloadIdentityPools/prod-shared-e350/providers/prod-shared-gha"
+          service_account: ${{env.FQ_SERVICE_ACCOUNT}}
+
+      - uses: google-github-actions/setup-gcloud@d51b5346f85640ec2aa2fa057354d2b82c2fcbce # v1.0.1
+        with:
+          project_id: ${{env.PROJECT}}
+
+      - name: 'Generate local signing key'
+        run: |
+          make MELANGE="melange" local-melange.rsa
+
+      - name: 'Sync public package repository'
+        run: |
+          mkdir "${{ github.workspace }}/packages"
+          gsutil -m rsync -r gs://wolfi-enterprise-registry-destination/os/ "${{ github.workspace }}/packages/"
+          find "${{ github.workspace }}/packages" -print -exec touch \{} \;
+
+      - name: 'Build Wolfi'
+        run: |
+          make --debug MELANGE="sudo melange" MELANGE_DIR=/usr/share/melange MELANGE_EXTRA_OPTS="--keyring-append ${{ github.workspace }}/wolfi-signing.rsa.pub" REPO="${{ github.workspace }}/packages" -j1
+
+      - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
+
+      - name: 'Generate dependency svg'
+        run: |
+          git clone https://github.com/wolfi-dev/dag && cd dag && go install && cd -
+          dag svg
+
+      - uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
+        with:
+          name: dag.svg
+          path: dag.svg
