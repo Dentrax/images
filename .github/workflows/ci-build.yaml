@@ -30,18 +30,18 @@ jobs:
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
         with:
           submodules: 'recursive'
-          token: ${{ secrets.FINE_GRAINED_ENTERPRISE_GRAFANA_REPO }}
+          token: ${{ secrets.ENTERPRISE_GRAFANA_REPO_ACCESS }}
 
       - uses: chainguard-dev/actions/setup-melange@main
 
       - uses: google-github-actions/auth@ef5d53e30bbcd8d0836f4288f5e50ff3e086997d # v1.0.0
         with:
           workload_identity_provider: "projects/618116202522/locations/global/workloadIdentityPools/prod-shared-e350/providers/prod-shared-gha"
-          service_account: ${{env.FQ_SERVICE_ACCOUNT}}
+          service_account: ${{ env.FQ_SERVICE_ACCOUNT }}
 
       - uses: google-github-actions/setup-gcloud@62d4898025f6041e16b1068643bfc5a696863587 # v1.1.0
         with:
-          project_id: ${{env.PROJECT}}
+          project_id: ${{ env.PROJECT }}
 
       - name: 'Generate local signing key'
         run: |
