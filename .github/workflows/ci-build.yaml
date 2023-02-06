@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Build changed OS packages (CI)
+    name: Build changed Chainguard packages (CI)
     runs-on: ubuntu-8-core
 
     permissions:
@@ -28,6 +28,9 @@ jobs:
         shell: bash
 
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+        with:
+          submodules: 'recursive'
+          token: ${{ secrets.FINE_GRAINED_ENTERPRISE_GRAFANA_REPO }}
 
       - uses: chainguard-dev/actions/setup-melange@main
 
@@ -47,10 +50,10 @@ jobs:
       - name: 'Sync public package repository'
         run: |
           mkdir "${{ github.workspace }}/packages"
-          gsutil -m rsync -r gs://wolfi-enterprise-registry-destination/os/ "${{ github.workspace }}/packages/"
+          gsutil -m rsync -r gs://chainguard-enterprise-registry-destination/os/ "${{ github.workspace }}/packages/"
           find "${{ github.workspace }}/packages" -print -exec touch \{} \;
 
-      - name: 'Build Wolfi'
+      - name: 'Build Enterprise packages'
         run: |
           make --debug MELANGE="sudo melange" MELANGE_DIR=/usr/share/melange MELANGE_EXTRA_OPTS="--keyring-append ${{ github.workspace }}/wolfi-signing.rsa.pub" REPO="${{ github.workspace }}/packages" -j1
 
