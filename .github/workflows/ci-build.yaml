@@ -8,11 +8,12 @@ on:
 jobs:
   build:
     name: Build changed OS packages (CI)
-    runs-on: ubuntu-16-core
+    runs-on: ubuntu-8-core
 
     permissions:
       packages: write
       contents: read
+      id-token: write
 
     env:
       PROJECT: prod-images-c6e5
