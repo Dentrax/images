@@ -84,7 +84,62 @@ jobs:
   #       dag, or if we have staging builds reuse the prod source cache, then
   #       we only need to update it before prod builds.
 
-  # TODO: Add build-amd64
+  
+  build-amd64:
+    name: Build (amd64)
+    runs-on: ubuntu-latest
+    needs: setup-cluster
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      # Checkout and build dag from main
+      # Can't `go install` because its go.mod has `replace`s.
+      - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
+        with:
+          go-version: '1.19'
+          check-latest: true
+
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+        with:
+          repository: wolfi-dev/dag
+          path: ${{github.workspace}}/dag
+
+      - working-directory: ${{github.workspace}}/dag
+        run: go install
+
+      - uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: "projects/618116202522/locations/global/workloadIdentityPools/prod-shared-e350/providers/prod-shared-gha"
+          service_account: ${{ env.FQ_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: ${{ env.PROJECT }}
+
+      - uses: 'google-github-actions/get-gke-credentials@v0'
+        with:
+          cluster_name: ${{ env.CLUSTER_NAME }}
+          location: ${{ env.CLUSTER_ZONE }}
+
+      - run: gcloud auth configure-docker --quiet
+
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+        with:
+          submodules: 'recursive'
+          token: ${{ secrets.ENTERPRISE_GRAFANA_REPO_ACCESS }}
+          path: ${{github.workspace}}/os
+
+      - working-directory: ${{github.workspace}}/os
+        run: |
+          dag pod \
+            --cpu=30 --ram=100Gi \
+            --bucket=${BUCKET} \
+            --src-bucket=${SRC_BUCKET} \
+            --secret-key \
+            --arch=amd64
 
   build-arm64:
     name: Build (arm64)
