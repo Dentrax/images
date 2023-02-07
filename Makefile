@@ -39,5 +39,6 @@ clean:
 # arg 3 = override source directory, defaults to package name, useful if you want to reuse the same subfolder for multiple packages
 # example: $(eval $(call build-package,gmp,6.2.1-r4))
 
+$(eval $(call build-package,hello-world,0.0.1-r0))
 
 .build-packages: ${PACKAGES}
