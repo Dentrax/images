@@ -119,7 +119,7 @@ jobs:
         with:
           project_id: ${{ env.PROJECT }}
 
-      - uses: 'google-github-actions/get-gke-credentials@v0'
+      - uses: 'google-github-actions/get-gke-credentials@v1'
         with:
           cluster_name: ${{ env.CLUSTER_NAME }}
           location: ${{ env.CLUSTER_ZONE }}
@@ -175,7 +175,7 @@ jobs:
         with:
           project_id: ${{ env.PROJECT }}
 
-      - uses: 'google-github-actions/get-gke-credentials@v0'
+      - uses: 'google-github-actions/get-gke-credentials@v1'
         with:
           cluster_name: ${{ env.CLUSTER_NAME }}
           location: ${{ env.CLUSTER_ZONE }}
@@ -217,7 +217,7 @@ jobs:
         with:
           project_id: ${{ env.PROJECT }}
 
-      - uses: google-github-actions/get-gke-credentials@894c221960ab1bc16a69902f29f090638cca753f # v1.0.1
+      - uses: google-github-actions/get-gke-credentials@v1 # v1.0.1
         with:
           cluster_name: ${{ env.CLUSTER_NAME }}
           location: ${{ env.CLUSTER_ZONE }}
