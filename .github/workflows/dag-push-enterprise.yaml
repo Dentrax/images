@@ -139,7 +139,8 @@ jobs:
             --bucket=${BUCKET} \
             --src-bucket=${SRC_BUCKET} \
             --secret-key \
-            --arch=amd64
+            --arch=amd64 \
+            --signing-key-name=chainguard-enterprise
 
   build-arm64:
     name: Build (arm64)
@@ -195,7 +196,8 @@ jobs:
             --bucket=${BUCKET} \
             --src-bucket=${SRC_BUCKET} \
             --secret-key \
-            --arch=arm64
+            --arch=arm64 \
+            --signing-key-name=chainguard-enterprise
 
   teardown-cluster:
     name: Teardown build cluster
