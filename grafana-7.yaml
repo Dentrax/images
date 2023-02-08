@@ -1,0 +1,82 @@
+package:
+  name: grafana7
+  version: 7.5.17
+  epoch: 0
+  description: Open source, feature rich metrics dashboard and graph ed
+  target-architecture:
+    - all
+  copyright:
+    - paths:
+        - "*"
+      attestation: TODO
+      license: Apache-2.0
+  dependencies:
+    runtime:
+      - bash
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - build-base
+      - git
+      - go
+      - yarn
+      - posix-libc-utils
+      - nodejs-14
+
+pipeline:
+  - name: frontend
+    runs: |
+      mv .git .git-bak # START workaround for using yarn with submodules
+
+      yarn config set cache-folder $PWD/.cache
+      yarn install --pure-lockfile --network-concurrency 1
+      yarn run build
+      yarn run plugins:build-bundled
+
+      mv .git-bak .git # END workaround for using yarn with submodules
+  - name: backaend
+    runs: |
+      make build-go
+      mkdir -p ${{targets.destdir}}/usr/share/grafana/bin
+      mv ./bin/linux-*/* ${{targets.destdir}}/usr/share/grafana/bin/
+  - name: package
+    runs: |
+      mkdir -p ${{targets.destdir}}/usr/share/grafana/plugins-bundled
+      mkdir -p ${{targets.destdir}}/usr/share/grafana/scripts
+      mkdir -p ${{targets.destdir}}/usr/share/grafana/bin
+
+      mv ./conf ${{targets.destdir}}/usr/share/grafana/
+      mv ./plugins-bundled/internal ${{targets.destdir}}/usr/share/grafana/plugins-bundled/
+      mv ./public ${{targets.destdir}}/usr/share/grafana/
+
+      # move back the default homepage so we can put into a subpackage later
+      mv ${{targets.destdir}}/usr/share/grafana/public/dashboards/home.json ./home.json
+      mv ${{targets.destdir}}/usr/share/grafana/public/dashboards ./dashboards
+      mv ./scripts/*.sh ${{targets.destdir}}/usr/share/grafana/scripts/
+      mv ./scripts/*.star ${{targets.destdir}}/usr/share/grafana/scripts/
+
+      mkdir -p ${{targets.destdir}}/var/lib/grafana
+      mv ./packaging/docker/run.sh ${{targets.destdir}}/var/lib/grafana/
+
+      mkdir -p ${{targets.destdir}}/etc/grafana/
+      cp ${{targets.destdir}}/usr/share/grafana/conf/sample.ini ${{targets.destdir}}/etc/grafana/grafana.ini
+subpackages:
+  - name: grafana-homepage
+    pipeline:
+      - runs: |
+          mkdir -p ${{targets.subpkgdir}}/usr/share/grafana/public/dashboards
+          mv home.json ${{targets.subpkgdir}}/usr/share/grafana/public/dashboards/
+    description: Default Grafana Homepage
+  - name: grafana-dashboards
+    pipeline:
+      - runs: |
+          mkdir -p ${{targets.subpkgdir}}/usr/share/grafana/public
+          mv dashboards ${{targets.subpkgdir}}/usr/share/grafana/public/
+    description: Default Grafana Dashboards

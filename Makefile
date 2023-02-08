@@ -40,5 +40,7 @@ clean:
 # example: $(eval $(call build-package,gmp,6.2.1-r4))
 
 $(eval $(call build-package,hello-world,0.0.1-r0))
+$(eval $(call build-package,nodejs-14,14.21.2-r0))
+$(eval $(call build-package,grafana-7,7.5.17-r0))
 
 .build-packages: ${PACKAGES}
