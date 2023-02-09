@@ -1,5 +1,5 @@
 package:
-  name: grafana7
+  name: grafana-7
   version: 7.5.17
   epoch: 0
   description: Open source, feature rich metrics dashboard and graph ed
@@ -68,13 +68,13 @@ pipeline:
       mkdir -p ${{targets.destdir}}/etc/grafana/
       cp ${{targets.destdir}}/usr/share/grafana/conf/sample.ini ${{targets.destdir}}/etc/grafana/grafana.ini
 subpackages:
-  - name: grafana-homepage
+  - name: grafana-7-homepage
     pipeline:
       - runs: |
           mkdir -p ${{targets.subpkgdir}}/usr/share/grafana/public/dashboards
           mv home.json ${{targets.subpkgdir}}/usr/share/grafana/public/dashboards/
     description: Default Grafana Homepage
-  - name: grafana-dashboards
+  - name: grafana-7-dashboards
     pipeline:
       - runs: |
           mkdir -p ${{targets.subpkgdir}}/usr/share/grafana/public
