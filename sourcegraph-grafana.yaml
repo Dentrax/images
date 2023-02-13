@@ -1,0 +1,63 @@
+package:
+  name: sourcegraph-grafana
+  version: 4.4.2
+  epoch: 0
+  description: Sourcegraph packaged Grafana
+  target-architecture:
+    - all
+  copyright:
+    - paths:
+        - "*"
+      attestation: TODO
+      license: Apache-2.0
+  dependencies:
+    runtime:
+      - grafana-7
+      - grafana-7-dashboards
+      - krb5
+      - apk-tools
+      - libssl3
+      - openssl
+      - ncurses
+      - ncurses-terminfo
+      - libtirpc
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - ca-certificates-bundle
+      - busybox
+      - go
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/sourcegraph/sourcegraph
+      destination: sourcegraph
+      branch: v${{package.version}}
+
+  - runs: |
+      cd sourcegraph/monitoring
+      go build \
+        -trimpath \
+        -o monitoring-generator .
+
+      mkdir -p generated
+
+      GRAFANA_DIR=generated PROMETHEUS_DIR='' DOCS_DIR='' NO_PRUNE=true ./monitoring-generator
+
+      mkdir -p ${{targets.destdir}}/usr/share/grafana/public/dashboards
+      mv generated/home.json ${{targets.destdir}}/usr/share/grafana/public/dashboards/
+
+      mkdir -p ${{targets.destdir}}/sg_config_grafana/provisioning/dashboards/sourcegraph
+      mv generated/* ${{targets.destdir}}/sg_config_grafana/provisioning/dashboards/sourcegraph/
+  - runs: |
+      mkdir -p ${{targets.destdir}}/var/lib/grafana
+      chmod +x entry.sh
+      mv entry.sh ${{targets.destdir}}/var/lib/grafana/
+
+      cp -R config/* ${{targets.destdir}}/sg_config_grafana/
