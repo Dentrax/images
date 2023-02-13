@@ -12,8 +12,8 @@ package:
       license: Apache-2.0
   dependencies:
     runtime:
-      - grafana-7
-      - grafana-7-dashboards
+      - grafana
+      - grafana-dashboards
       - krb5
       - apk-tools
       - libssl3
