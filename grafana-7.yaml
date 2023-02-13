@@ -13,6 +13,7 @@ package:
   dependencies:
     runtime:
       - bash
+
 environment:
   contents:
     repositories:
@@ -28,6 +29,7 @@ environment:
       - yarn
       - posix-libc-utils
       - nodejs-14
+
 pipeline:
   - name: frontend
     runs: |
@@ -65,6 +67,7 @@ pipeline:
 
       mkdir -p ${{targets.destdir}}/etc/grafana/
       cp ${{targets.destdir}}/usr/share/grafana/conf/sample.ini ${{targets.destdir}}/etc/grafana/grafana.ini
+
 subpackages:
   - name: grafana-7-homepage
     pipeline:
@@ -78,11 +81,29 @@ subpackages:
           mkdir -p ${{targets.subpkgdir}}/usr/share/grafana/public
           mv dashboards ${{targets.subpkgdir}}/usr/share/grafana/public/
     description: Default Grafana Dashboards
+
 advisories:
   CVE-2021-36156:
     - timestamp: 2023-02-13T11:55:53.592337Z
       status: fixed
       fixed-version: 7.5.18cg2-r0
+  CVE-2022-31107:
+    - timestamp: 2023-02-13T12:51:42.420585Z
+      status: fixed
+      fixed-version: 7.5.18cg3-r0
+  CVE-2022-31130:
+    - timestamp: 2023-02-13T12:51:23.714336Z
+      status: fixed
+      fixed-version: 7.5.18cg3-r0
+  CVE-2022-39201:
+    - timestamp: 2023-02-13T12:51:51.192337Z
+      status: fixed
+      fixed-version: 7.5.18cg3-r0
+
 secfixes:
   7.5.18cg2-r0:
     - CVE-2021-36156
+  7.5.18cg3-r0:
+    - CVE-2022-31130
+    - CVE-2022-31107
+    - CVE-2022-39201
