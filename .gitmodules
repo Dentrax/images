@@ -1,4 +1,4 @@
 [submodule "grafana-7"]
 	path = grafana-7
 	url = https://github.com/chainguard-images/grafana.git
-	branch = v7.5.18cg2
+	branch = v7.5.18cg3
