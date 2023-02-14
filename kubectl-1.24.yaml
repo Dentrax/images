@@ -1,0 +1,47 @@
+package:
+  name: kubectl-1.24
+  version: 1.24.9
+  epoch: 0
+  description: Command-line interface for Kubernetes
+  target-architecture:
+    - all
+  copyright:
+    - license: Apache-2.0
+      paths:
+        - "*"
+environment:
+  contents:
+    packages:
+      - bash
+      - build-base
+      - busybox
+      - ca-certificates-bundle
+      - findutils
+      - go
+      - go-bindata
+      - grep
+      - linux-headers
+      - rsync
+pipeline:
+  # Fetch from releases page
+  # https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.24.md#downloads-for-v1249
+  - uses: fetch
+    with:
+      uri: https://dl.k8s.io/v${{package.version}}/kubernetes-src.tar.gz
+      expected-sha512: 1cef5a2992f0902b688373191f54cc4336c0da1a2bb5f880752017e2076a829b1e005a82532edd0a767833ef9d2750c44ec5d739a1ba9726eddfc8462971c08a
+      strip-components: 0 # Required due to structure of tarball
+  # Build the kubectl binary as stated in the community docs
+  #  https://github.com/kubernetes/community/blob/master/contributors/devel/development.md#building-kubernetes
+  #
+  # NOTE: TARGETDIR(/usr/local/bin) corresponds to KOTS_KUBECTL_BIN_DIR in final image
+  - runs: |
+      # Set up some common variables for where the binary will go
+      export TARGETDIR="${{targets.destdir}}/usr/local/bin"
+      export TARGETBIN="kubectl-v$(echo ${{package.version}} | cut -d'.' -f -2)"
+
+      # Build the kubectl binary
+      make all WHAT=cmd/kubectl/
+
+      # Drop kubectl binary in correct spot
+      mkdir -p "${TARGETDIR}"
+      cp _output/bin/kubectl "${TARGETDIR}/${TARGETBIN}"

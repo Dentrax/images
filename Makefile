@@ -46,5 +46,12 @@ $(eval $(call build-package,nodejs-14,14.21.2-r0))
 $(eval $(call build-package,grafana,7.5.19-r0))
 $(eval $(call build-package,python-3.9,3.9.16-r0))
 $(eval $(call build-package,sourcegraph-grafana,4.4.2-r1))
+$(eval $(call build-package,kubectl-1.19,1.19.16-r0))
+$(eval $(call build-package,kubectl-1.20,1.20.15-r0))
+$(eval $(call build-package,kubectl-1.21,1.21.14-r0))
+$(eval $(call build-package,kubectl-1.22,1.22.17-r0))
+$(eval $(call build-package,kubectl-1.23,1.23.15-r0))
+$(eval $(call build-package,kubectl-1.24,1.24.9-r0))
+$(eval $(call build-package,kubectl-1.25,1.25.5-r0))
 
 .build-packages: ${PACKAGES}
