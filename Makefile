@@ -9,6 +9,8 @@ MELANGE_OPTS += --keyring-append ${KEY}.pub
 MELANGE_OPTS += --signing-key ${KEY}
 MELANGE_OPTS += --pipeline-dir ${MELANGE_DIR}/pipelines
 MELANGE_OPTS += --arch ${ARCH}
+MELANGE_OPTS += --env-file build-${ARCH}.env
+MELANGE_OPTS += --cache-dir ${CACHE_DIR}
 MELANGE_OPTS += ${MELANGE_EXTRA_OPTS}
 
 define build-package
