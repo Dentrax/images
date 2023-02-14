@@ -1,0 +1,99 @@
+package:
+  name: python-3.8
+  version: 3.8.10
+  epoch: 0
+  description: "the Python programming language"
+  target-architecture:
+    - all
+  copyright:
+    - paths:
+        - "*"
+      attestation: TODO
+      license: PSF-2.0
+  dependencies:
+    runtime:
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - build-base
+      - bzip2-dev
+      - expat-dev
+      - gdbm-dev
+      - libffi-dev
+      - linux-headers
+      - mpdecimal-dev
+      - ncurses-dev
+      - openssl-dev
+      - readline-dev
+      - sqlite-dev
+      - xz-dev
+      - zlib-dev
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://www.python.org/ftp/python/${{package.version}}/Python-${{package.version}}.tar.xz
+      expected-sha256: 6af24a66093dd840bcccf371d4044a3027e655cf24591ce26e48022bc79219d9
+  - name: Force use of system libraries
+    runs: |
+      rm -rf Modules/expat \
+        Modules/_ctypes/darwin* \
+        Modules/_ctypes/libffi*
+  - name: Configure
+    runs: |
+      ./configure \
+         --host=${{host.triplet.gnu}} \
+         --build=${{host.triplet.gnu}} \
+         --target=${{host.triplet.gnu}} \
+         --prefix=/usr \
+         --enable-ipv6 \
+         --enable-loadable-sqlite-extensions \
+         --enable-optimizations \
+         --enable-shared \
+         --without-lto \
+         --with-computed-gotos \
+         --with-dbmliborder=gdbm:ndbm \
+         --with-system-expat \
+         --with-system-ffi \
+         --with-system-libmpdec \
+         --without-ensurepip \
+         --with-lto
+  - uses: autoconf/make
+  - uses: autoconf/make
+    with:
+      opts: altinstall DESTDIR="${{targets.destdir}}"
+  - runs: |
+      find ${{targets.destdir}}/usr/lib -type f -name '*.pyc' -exec rm -rf '{}' +
+      find ${{targets.destdir}}/usr/lib -type f -name '*.pyo' -exec rm -rf '{}' +
+      find ${{targets.destdir}}/usr/lib -type f -name 'libpython*.a' -exec rm -rf '{}' +
+      find ${{targets.destdir}}/usr/lib -type d -name 'test' -exec rm -rf '{}' +
+      find ${{targets.destdir}}/usr/lib -type d -name 'tests' -exec rm -rf '{}' +
+      find ${{targets.destdir}}/usr/lib -type d -name 'idle_test' -exec rm -rf '{}' +
+  - name: Install python symlink
+    runs: |
+      ln -s python3.8 "${{targets.destdir}}"/usr/bin/python
+  - uses: strip
+
+subpackages:
+  - name: "python-3.8-doc"
+    description: "python3.8 documentation"
+    pipeline:
+      - uses: split/manpages
+  - name: "python-3.8-dev"
+    description: "python3.8 development headers"
+    pipeline:
+      - uses: split/dev
+      - runs: |
+          mkdir -p "${{targets.destdir}}"/usr/include/python3.8
+          mv "${{targets.subpkgdir}}"/usr/include/python3.8/pyconfig.h "${{targets.destdir}}"/usr/include/python3.9
+    dependencies:
+      runtime:
+        - python-3.8
+
