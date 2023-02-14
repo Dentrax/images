@@ -1,0 +1,22 @@
+name: Wolfictl Lint
+
+on:
+  pull_request:
+    branches: ['main']
+jobs:
+  lint:
+    name: Wolfictl Lint
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Lint
+        id: lint
+        uses: docker://ghcr.io/wolfi-dev/wolfictl:latest
+        with:
+          entrypoint: wolfictl
+          args: lint --skip-rule forbidden-repository-used --skip-rule forbidden-keyring-used
