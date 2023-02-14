@@ -1,0 +1,96 @@
+package:
+  name: python-3.7
+  version: 3.7.16
+  epoch: 0
+  description: "the Python programming language"
+  target-architecture:
+    - all
+  copyright:
+    - paths:
+        - "*"
+      attestation: TODO
+      license: PSF-2.0
+  dependencies:
+    runtime:
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - build-base
+      - bzip2-dev
+      - expat-dev
+      - gdbm-dev
+      - libffi-dev
+      - linux-headers
+      - mpdecimal-dev
+      - ncurses-dev
+      - openssl-dev
+      - readline-dev
+      - sqlite-dev
+      - xz-dev
+      - zlib-dev
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://www.python.org/ftp/python/${{package.version}}/Python-${{package.version}}.tar.xz
+      expected-sha256: 8338f0c2222d847e904c955369155dc1beeeed806e8d5ef04b00ef4787238bfd
+  - name: Force use of system libraries
+    runs: |
+      rm -rf Modules/expat \
+        Modules/_ctypes/darwin* \
+        Modules/_ctypes/libffi*
+  - name: Configure
+    runs: |
+      ./configure \
+         --host=${{host.triplet.gnu}} \
+         --build=${{host.triplet.gnu}} \
+         --target=${{host.triplet.gnu}} \
+         --prefix=/usr \
+         --enable-ipv6 \
+         --enable-loadable-sqlite-extensions \
+         --enable-optimizations \
+         --enable-shared \
+         --without-lto \
+         --with-computed-gotos \
+         --with-dbmliborder=gdbm:ndbm \
+         --with-system-expat \
+         --with-system-ffi \
+         --with-system-libmpdec \
+         --without-ensurepip \
+         --with-lto
+  - uses: autoconf/make
+  - uses: autoconf/make
+    with:
+      opts: altinstall DESTDIR="${{targets.destdir}}"
+  - runs: |
+      find ${{targets.destdir}}/usr/lib -type f -name '*.pyc' -exec rm -rf '{}' +
+      find ${{targets.destdir}}/usr/lib -type f -name '*.pyo' -exec rm -rf '{}' +
+      find ${{targets.destdir}}/usr/lib -type f -name 'libpython*.a' -exec rm -rf '{}' +
+      find ${{targets.destdir}}/usr/lib -type d -name 'test' -exec rm -rf '{}' +
+      find ${{targets.destdir}}/usr/lib -type d -name 'tests' -exec rm -rf '{}' +
+      find ${{targets.destdir}}/usr/lib -type d -name 'idle_test' -exec rm -rf '{}' +
+  - name: Install python symlink
+    runs: |
+      ln -s python3.7 "${{targets.destdir}}"/usr/bin/python
+  - uses: strip
+
+subpackages:
+  - name: "python-3.7-doc"
+    description: "python3.7 documentation"
+    pipeline:
+      - uses: split/manpages
+  - name: "python-3.7-dev"
+    description: "python3.7 development headers"
+    pipeline:
+      - uses: split/dev
+    dependencies:
+      runtime:
+        - python-3.7
+
