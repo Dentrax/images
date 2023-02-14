@@ -54,5 +54,6 @@ $(eval $(call build-package,kubectl-1.22,1.22.17-r0))
 $(eval $(call build-package,kubectl-1.23,1.23.15-r0))
 $(eval $(call build-package,kubectl-1.24,1.24.9-r0))
 $(eval $(call build-package,kubectl-1.25,1.25.5-r0))
+$(eval $(call build-package,kots,1.92.1-r0))
 
 .build-packages: ${PACKAGES}
