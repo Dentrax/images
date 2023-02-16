@@ -1,4 +1,4 @@
-name: Build Packages Enterprise using wolfictl
+name: Build Packages OpenSSL 1 Enterprise using dag
 
 on:
   workflow_dispatch:
@@ -6,9 +6,9 @@ on:
     branches:
       - main
     paths:
-      - "*.yaml"
-      - "*.env"
-      - "Makefile"
+      - "${{ env.SUB_REPO_NAME }}/*.yaml"
+      - "${{ env.SUB_REPO_NAME }}/*.env"
+      - "${{ env.SUB_REPO_NAME }}/Makefile"
 
 env:
   PROJECT: prod-images-c6e5
@@ -16,9 +16,9 @@ env:
   CLUSTER_ZONE: us-central1-b
   SERVICE_ACCOUNT: prod-images-ci
   FQ_SERVICE_ACCOUNT: prod-images-ci@prod-images-c6e5.iam.gserviceaccount.com
-  BUCKET: chainguard-enterprise-registry-source/os/
-  SRC_BUCKET: gs://chainguard-enterprise-registry-destination/os/
-
+  BUCKET: chainguard-enterprise-registry-source/os/${{ env.SUB_REPO_NAME }}/
+  SRC_BUCKET: gs://chainguard-enterprise-registry-destination/os/${{ env.SUB_REPO_NAME }}/
+  SUB_REPO_NAME: sub-os-openssl1
 jobs:
   setup-cluster:
     name: Setup build cluster
@@ -40,11 +40,11 @@ jobs:
 
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
         with:
-          repository: wolfi-dev/wolfictl
-          path: ${{github.workspace}}/wolfictl
+          repository: wolfi-dev/dag
+          path: ${{github.workspace}}/dag
 
       - name: Setup Build Cluster
-        working-directory: ${{github.workspace}}/wolfictl
+        working-directory: ${{github.workspace}}/dag
         run: |
           gcloud container clusters create "${CLUSTER_NAME}" \
             --enable-ip-alias \
@@ -80,12 +80,12 @@ jobs:
           location: "${CLUSTER_ZONE}"
           cluster: "${CLUSTER_NAME}"
 
-      - working-directory: ${{github.workspace}}/wolfictl
+      - working-directory: ${{github.workspace}}/dag
         run: ./scripts/setup-cluster.sh "${SERVICE_ACCOUNT}"
 
   # TODO: Update source cache here, instead of in a separate workflow.
   #       This likely depends on making the source cache bucket configurable by
-  #       wolfictl, or if we have staging builds reuse the prod source cache, then
+  #       dag, or if we have staging builds reuse the prod source cache, then
   #       we only need to update it before prod builds.
 
   
@@ -99,7 +99,7 @@ jobs:
       contents: read
 
     steps:
-      # Checkout and build wolfictl from main
+      # Checkout and build dag from main
       # Can't `go install` because its go.mod has `replace`s.
       - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
         with:
@@ -108,10 +108,10 @@ jobs:
 
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
         with:
-          repository: wolfi-dev/wolfictl
-          path: ${{github.workspace}}/wolfictl
+          repository: wolfi-dev/dag
+          path: ${{github.workspace}}/dag
 
-      - working-directory: ${{github.workspace}}/wolfictl
+      - working-directory: ${{github.workspace}}/dag
         run: go install
 
       - uses: google-github-actions/auth@v0
@@ -136,15 +136,31 @@ jobs:
           token: ${{ secrets.ENTERPRISE_GRAFANA_REPO_ACCESS }}
           path: ${{github.workspace}}/os
 
-      - working-directory: ${{github.workspace}}/os
+      # TODO Let's not combine two experiments at the sametime, switch to using the wolfictl image as a followup
+
+      # - uses: docker://ghcr.io/wolfi-dev/wolfictl:latest
+      #   with:
+      #     entrypoint: wolfictl
+      #     args: pod \
+      #       --cpu=30 --ram=100Gi \
+      #       --bucket=${BUCKET} \
+      #       --src-bucket=${SRC_BUCKET} \
+      #       --secret-key \
+      #       --arch=arm64 \
+      #       --signing-key-name=chainguard-enterprise \
+      #       --public-key-bucket=gs://chainguard-enterprise-registry-destination/os/ \
+      #       --dir=${{github.workspace}}/os/${{ env.SUB_REPO_NAME }}
+
+      - working-directory: ${{github.workspace}}/os/${{ env.SUB_REPO_NAME }}
         run: |
-          wolfictl pod \
+          dag pod \
             --cpu=30 --ram=100Gi \
             --bucket=${BUCKET} \
             --src-bucket=${SRC_BUCKET} \
             --secret-key \
             --arch=amd64 \
-            --signing-key-name=chainguard-enterprise
+            --signing-key-name=../chainguard-enterprise
+            --public-key-bucket=gs://chainguard-enterprise-registry-destination/os/
 
   build-arm64:
     name: Build (arm64)
@@ -156,7 +172,7 @@ jobs:
       contents: read
 
     steps:
-      # Checkout and build wolfictl from main
+      # Checkout and build dag from main
       # Can't `go install` because its go.mod has `replace`s.
       - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
         with:
@@ -165,10 +181,10 @@ jobs:
 
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
         with:
-          repository: wolfi-dev/wolfictl
-          path: ${{github.workspace}}/wolfictl
+          repository: wolfi-dev/dag
+          path: ${{github.workspace}}/dag
 
-      - working-directory: ${{github.workspace}}/wolfictl
+      - working-directory: ${{github.workspace}}/dag
         run: go install
 
       - uses: google-github-actions/auth@v0
@@ -193,15 +209,31 @@ jobs:
           token: ${{ secrets.ENTERPRISE_GRAFANA_REPO_ACCESS }}
           path: ${{github.workspace}}/os
 
-      - working-directory: ${{github.workspace}}/os
+      # TODO Let's not combine two experiments at the sametime, switch to using the wolfictl image as a followup
+
+      # - uses: docker://ghcr.io/wolfi-dev/wolfictl:latest
+      #   with:
+      #     entrypoint: wolfictl
+      #     args: pod \
+      #       --cpu=30 --ram=100Gi \
+      #       --bucket=${BUCKET} \
+      #       --src-bucket=${SRC_BUCKET} \
+      #       --secret-key \
+      #       --arch=arm64 \
+      #       --signing-key-name=chainguard-enterprise \
+      #       --public-key-bucket=gs://chainguard-enterprise-registry-destination/os/ \
+      #       --dir=./os/${{ env.SUB_REPO_NAME }}
+
+      - working-directory: ${{github.workspace}}/os/${{ env.SUB_REPO_NAME }}
         run: |
-          wolfictl pod \
+          dag pod \
             --cpu=30 --ram=100Gi \
             --bucket=${BUCKET} \
             --src-bucket=${SRC_BUCKET} \
             --secret-key \
             --arch=arm64 \
             --signing-key-name=chainguard-enterprise
+            --public-key-bucket=gs://chainguard-enterprise-registry-destination/os/
 
   teardown-cluster:
     name: Teardown build cluster
@@ -261,7 +293,7 @@ jobs:
       - uses: slackapi/slack-github-action@007b2c3c751a190b6f0f040e47ed024deaa72844 # v1.23.0
         id: slack
         with:
-          payload: '{"text": "[wolfictl-push-enterprise] failure: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}'
+          payload: '{"text": "[dag-push-enterprise] failure: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
