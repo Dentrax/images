@@ -41,6 +41,7 @@ clean:
 # arg 3 = override source directory, defaults to package name, useful if you want to reuse the same subfolder for multiple packages
 # example: $(eval $(call build-package,gmp,6.2.1-r4))
 
+$(eval $(call build-package,go-1.17,1.17.13-r0))
 $(eval $(call build-package,hello-world,0.0.1-r0))
 $(eval $(call build-package,nodejs-14,14.21.2-r0))
 $(eval $(call build-package,grafana,7.5.19-r0))
@@ -56,5 +57,6 @@ $(eval $(call build-package,kubectl-1.23,1.23.15-r0))
 $(eval $(call build-package,kubectl-1.24,1.24.9-r0))
 $(eval $(call build-package,kubectl-1.25,1.25.5-r0))
 $(eval $(call build-package,kots,1.92.1-r0))
+
 
 .build-packages: ${PACKAGES}
