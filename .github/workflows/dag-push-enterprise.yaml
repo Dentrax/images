@@ -1,4 +1,4 @@
-name: Build Packages Enterprise using dag
+name: Build Packages Enterprise using wolfictl
 
 on:
   workflow_dispatch:
@@ -36,11 +36,11 @@ jobs:
 
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
         with:
-          repository: wolfi-dev/dag
-          path: ${{github.workspace}}/dag
+          repository: wolfi-dev/wolfictl
+          path: ${{github.workspace}}/wolfictl
 
       - name: Setup Build Cluster
-        working-directory: ${{github.workspace}}/dag
+        working-directory: ${{github.workspace}}/wolfictl
         run: |
           gcloud container clusters create "${CLUSTER_NAME}" \
             --enable-ip-alias \
@@ -76,12 +76,12 @@ jobs:
           location: "${CLUSTER_ZONE}"
           cluster: "${CLUSTER_NAME}"
 
-      - working-directory: ${{github.workspace}}/dag
+      - working-directory: ${{github.workspace}}/wolfictl
         run: ./scripts/setup-cluster.sh "${SERVICE_ACCOUNT}"
 
   # TODO: Update source cache here, instead of in a separate workflow.
   #       This likely depends on making the source cache bucket configurable by
-  #       dag, or if we have staging builds reuse the prod source cache, then
+  #       wolfictl, or if we have staging builds reuse the prod source cache, then
   #       we only need to update it before prod builds.
 
   
@@ -95,7 +95,7 @@ jobs:
       contents: read
 
     steps:
-      # Checkout and build dag from main
+      # Checkout and build wolfictl from main
       # Can't `go install` because its go.mod has `replace`s.
       - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
         with:
@@ -104,10 +104,10 @@ jobs:
 
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
         with:
-          repository: wolfi-dev/dag
-          path: ${{github.workspace}}/dag
+          repository: wolfi-dev/wolfictl
+          path: ${{github.workspace}}/wolfictl
 
-      - working-directory: ${{github.workspace}}/dag
+      - working-directory: ${{github.workspace}}/wolfictl
         run: go install
 
       - uses: google-github-actions/auth@v0
@@ -134,7 +134,7 @@ jobs:
 
       - working-directory: ${{github.workspace}}/os
         run: |
-          dag pod \
+          wolfictl pod \
             --cpu=30 --ram=100Gi \
             --bucket=${BUCKET} \
             --src-bucket=${SRC_BUCKET} \
@@ -152,7 +152,7 @@ jobs:
       contents: read
 
     steps:
-      # Checkout and build dag from main
+      # Checkout and build wolfictl from main
       # Can't `go install` because its go.mod has `replace`s.
       - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
         with:
@@ -161,10 +161,10 @@ jobs:
 
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
         with:
-          repository: wolfi-dev/dag
-          path: ${{github.workspace}}/dag
+          repository: wolfi-dev/wolfictl
+          path: ${{github.workspace}}/wolfictl
 
-      - working-directory: ${{github.workspace}}/dag
+      - working-directory: ${{github.workspace}}/wolfictl
         run: go install
 
       - uses: google-github-actions/auth@v0
@@ -191,7 +191,7 @@ jobs:
 
       - working-directory: ${{github.workspace}}/os
         run: |
-          dag pod \
+          wolfictl pod \
             --cpu=30 --ram=100Gi \
             --bucket=${BUCKET} \
             --src-bucket=${SRC_BUCKET} \
@@ -257,7 +257,7 @@ jobs:
       - uses: slackapi/slack-github-action@007b2c3c751a190b6f0f040e47ed024deaa72844 # v1.23.0
         id: slack
         with:
-          payload: '{"text": "[dag-push-enterprise] failure: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}'
+          payload: '{"text": "[wolfictl-push-enterprise] failure: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
