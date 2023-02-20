@@ -17,8 +17,8 @@ env:
   CLUSTER_ZONE: us-central1-b
   SERVICE_ACCOUNT: prod-images-ci
   FQ_SERVICE_ACCOUNT: prod-images-ci@prod-images-c6e5.iam.gserviceaccount.com
-  BUCKET: chainguard-enterprise-registry-source/os/${{ env.SUB_REPO_NAME }}/
-  SRC_BUCKET: gs://chainguard-enterprise-registry-destination/os/${{ env.SUB_REPO_NAME }}/
+  BUCKET: chainguard-enterprise-registry-source/os/sub-os-openssl1/
+  SRC_BUCKET: gs://chainguard-enterprise-registry-destination/os/sub-os-openssl1/
   SUB_REPO_NAME: sub-os-openssl1
 jobs:
   setup-cluster:
