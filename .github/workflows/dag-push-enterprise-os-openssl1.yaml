@@ -160,7 +160,7 @@ jobs:
             --src-bucket=${SRC_BUCKET} \
             --secret-key \
             --arch=amd64 \
-            --signing-key-name=../chainguard-enterprise
+            --signing-key-name=../chainguard-enterprise \
             --public-key-bucket=gs://chainguard-enterprise-registry-destination/os/
 
   build-arm64:
@@ -233,7 +233,7 @@ jobs:
             --src-bucket=${SRC_BUCKET} \
             --secret-key \
             --arch=arm64 \
-            --signing-key-name=chainguard-enterprise
+            --signing-key-name=chainguard-enterprise \
             --public-key-bucket=gs://chainguard-enterprise-registry-destination/os/
 
   teardown-cluster:
