@@ -4,8 +4,8 @@ on:
   pull_request:
     branches: ['main']
     paths:
-      - "*.yaml"
-      - "Makefile"
+      - "sub-os-openssl1/*.yaml"
+      - "sub-os-openssl1/Makefile"
 jobs:
   lint:
     name: Wolfictl Lint
@@ -22,4 +22,4 @@ jobs:
         uses: docker://ghcr.io/wolfi-dev/wolfictl:latest
         with:
           entrypoint: wolfictl
-          args: lint --skip-rule forbidden-repository-used --skip-rule forbidden-keyring-used
+          args: lint sub-os-openssl1 --skip-rule forbidden-repository-used --skip-rule forbidden-keyring-used

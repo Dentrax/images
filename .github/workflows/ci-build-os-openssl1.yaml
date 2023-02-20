@@ -5,10 +5,9 @@ on:
     branches:
       - main
     paths:
-      - "*.yaml"
-      - "*.env"
-      - "Makefile"
-
+      - "sub-os-openssl1/*.yaml"
+      - "sub-os-openssl1/*.env"
+      - "sub-os-openssl1/Makefile"
 jobs:
   build:
     name: Chainguard packages (CI)
@@ -49,16 +48,23 @@ jobs:
           project_id: ${{ env.PROJECT }}
 
       - name: 'Generate local signing key'
+        working-directory: ./sub-os-openssl1
         run: |
           make MELANGE="melange" local-melange.rsa
 
       - name: 'Sync public package repository'
+        working-directory: ./sub-os-openssl1
         run: |
           mkdir "${{ github.workspace }}/packages"
-          gsutil -m rsync -r gs://chainguard-enterprise-registry-destination/os/ "${{ github.workspace }}/packages/"
+
+          # enable when subfolder exists
+          gsutil -m rsync -r gs://chainguard-enterprise-registry-destination/os/sub-os-openssl1 "${{ github.workspace }}/packages/" || true
           find "${{ github.workspace }}/packages" -print -exec touch \{} \;
 
+          gsutil cp gs://chainguard-enterprise-registry-destination/os/chainguard-enterprise.rsa.pub "${{ github.workspace }}/packages/"
+
       - name: 'Build Enterprise packages'
+        working-directory: ./sub-os-openssl1
         run: |
           make --debug MELANGE="sudo melange" MELANGE_DIR=/usr/share/melange MELANGE_EXTRA_OPTS="--keyring-append ${{ github.workspace }}/packages/chainguard-enterprise.rsa.pub" REPO="${{ github.workspace }}/packages" -j1
 
@@ -66,9 +72,9 @@ jobs:
         uses: docker://ghcr.io/wolfi-dev/wolfictl:latest
         with:
           entrypoint: wolfictl
-          args: svg
+          args: svg --dir=./sub-os-openssl1
 
       - uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
           name: dag.svg
-          path: dag.svg
+          path: ./sub-os-openssl1/dag.svg
