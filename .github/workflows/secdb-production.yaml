@@ -53,7 +53,7 @@ jobs:
         
       - name: 'Generate security database'
         run: |
-          ./secdb/wolfi-secdb generate ent wolfi-os ent/sub-repo-openssl1 --repo-name chainguard --base-url https://packages.cgr.dev --archs aarch64 --archs x86_64
+          ./secdb/wolfi-secdb generate ent wolfi-os ent/sub-os-openssl1 --repo-name chainguard --base-url https://packages.cgr.dev --archs aarch64 --archs x86_64
 
       - name: 'Upload the security database to a bucket'
         run: |

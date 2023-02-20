@@ -6,6 +6,7 @@ on:
     paths:
       - "*.yaml"
       - "Makefile"
+      - ".github/workflows/dag-push-enterprise.yaml"
 jobs:
   lint:
     name: Wolfictl Lint

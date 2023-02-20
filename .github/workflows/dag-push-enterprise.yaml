@@ -9,6 +9,7 @@ on:
       - "*.yaml"
       - "*.env"
       - "Makefile"
+      - ".github/workflows/dag-push-enterprise.yaml"
 
 env:
   PROJECT: prod-images-c6e5

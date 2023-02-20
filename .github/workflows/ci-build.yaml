@@ -8,6 +8,7 @@ on:
       - "*.yaml"
       - "*.env"
       - "Makefile"
+      - ".github/workflows/dag-push-enterprise.yaml"
 
 jobs:
   build:

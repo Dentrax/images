@@ -6,6 +6,7 @@ on:
     paths:
       - "sub-os-openssl1/*.yaml"
       - "sub-os-openssl1/Makefile"
+      - ".github/workflows/dag-push-enterprise-os-openssl1.yaml"
 jobs:
   lint:
     name: Wolfictl Lint

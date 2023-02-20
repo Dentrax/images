@@ -6,9 +6,10 @@ on:
     branches:
       - main
     paths:
-      - "${{ env.SUB_REPO_NAME }}/*.yaml"
-      - "${{ env.SUB_REPO_NAME }}/*.env"
-      - "${{ env.SUB_REPO_NAME }}/Makefile"
+      - "sub-os-openssl1/*.yaml"
+      - "sub-os-openssl1/*.env"
+      - "sub-os-openssl1/Makefile"
+      - ".github/workflows/dag-push-enterprise-os-openssl1.yaml"
 
 env:
   PROJECT: prod-images-c6e5
