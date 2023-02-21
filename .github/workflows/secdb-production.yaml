@@ -57,4 +57,4 @@ jobs:
 
       - name: 'Upload the security database to a bucket'
         run: |
-          gcloud --quiet alpha storage cp --recursive ${{ github.workspace }}/security.json gs://chainguard-enterprise-registry-destination/chainguard/
+          gcloud --quiet alpha storage cp --canned-acl=publicRead ${{ github.workspace }}/security.json gs://chainguard-enterprise-registry-destination/chainguard/
