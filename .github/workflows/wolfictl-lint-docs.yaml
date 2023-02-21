@@ -1,0 +1,15 @@
+name: Wolfictl Lint
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "*.md"
+
+jobs:
+  lint:
+    name: Wolfictl Lint
+    runs-on: ubuntu-latest
+    steps:
+      - run: 'echo "No lint required"'
