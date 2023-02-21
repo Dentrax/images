@@ -4,8 +4,16 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - "*.md"
+    paths_ignore:
+      - "*.yaml"
+      - "*.env"
+      - "Makefile"
+      - ".github/workflows/dag-push-enterprise.yaml"
+
+      - "sub-os-openssl1/*.yaml"
+      - "sub-os-openssl1/*.env"
+      - "sub-os-openssl1/Makefile"
+      - ".github/workflows/dag-push-enterprise-os-openssl1.yaml"
 
 jobs:
   build:
