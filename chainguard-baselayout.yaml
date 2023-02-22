@@ -1,0 +1,43 @@
+package:
+  name: chainguard-baselayout
+  version: 20230214
+  epoch: 0
+  description: "baselayout data for Chainguard"
+  target-architecture:
+    - all
+  copyright:
+    - paths:
+      - "*"
+      attestation: TODO
+      license: UNLICENSED
+  dependencies:
+    replaces:
+      - wolfi-baselayout
+    runtime:
+      - glibc-locale-posix
+      - wolfi-baselayout
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+
+pipeline:
+  - name: Generate /etc/os-release
+    runs: |
+      mkdir -p ${{targets.destdir}}/etc
+      cat >${{targets.destdir}}/etc/os-release <<EOF
+      ID=chainguard
+      NAME="Chainguard"
+      PRETTY_NAME="Chainguard"
+      VERSION_ID="${{package.version}}"
+      HOME_URL="https://chainguard.dev/"
+      EOF
+  - name: Add secfixes.d
+    runs: |
+      mkdir -p ${{targets.destdir}}/etc/secfixes.d
+      install -m644 chainguard ${{targets.destdir}}/etc/secfixes.d/chainguard
