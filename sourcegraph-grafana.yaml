@@ -1,7 +1,7 @@
 package:
   name: sourcegraph-grafana
   version: 4.4.2
-  epoch: 1
+  epoch: 2
   description: Sourcegraph packaged Grafana
   target-architecture:
     - all
@@ -56,8 +56,8 @@ pipeline:
       mkdir -p ${{targets.destdir}}/sg_config_grafana/provisioning/dashboards/sourcegraph
       mv generated/* ${{targets.destdir}}/sg_config_grafana/provisioning/dashboards/sourcegraph/
   - runs: |
-      mkdir -p ${{targets.destdir}}/var/lib/grafana
+      mkdir -p ${{targets.destdir}}/opt/grafana
       chmod +x entry.sh
-      mv entry.sh ${{targets.destdir}}/var/lib/grafana/
+      mv entry.sh ${{targets.destdir}}/opt/grafana/
 
       cp -R config/* ${{targets.destdir}}/sg_config_grafana/
