@@ -1,4 +1,4 @@
-name: CI build action
+name: OpenSSL CI build action
 
 on:
   pull_request:
@@ -67,7 +67,7 @@ jobs:
       - name: 'Build Enterprise packages'
         working-directory: ./sub-os-openssl1
         run: |
-          make --debug MELANGE="sudo melange" MELANGE_DIR=/usr/share/melange MELANGE_EXTRA_OPTS="--keyring-append ${{ github.workspace }}/packages/chainguard-enterprise.rsa.pub" REPO="${{ github.workspace }}/packages" -j1
+          make --debug MELANGE="sudo melange" MELANGE_DIR=/usr/share/melange MELANGE_EXTRA_OPTS="--keyring-append ${{ github.workspace }}/packages/chainguard-enterprise.rsa.pub --repository-append https://packages.wolfi.dev/os --keyring-append https://packages.wolfi.dev/os/wolfi-signing.rsa.pub"  REPO="${{ github.workspace }}/packages" -j1
 
       - name: 'Generate dependency svg'
         uses: docker://ghcr.io/wolfi-dev/wolfictl:latest
