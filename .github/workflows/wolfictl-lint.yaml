@@ -23,4 +23,4 @@ jobs:
         uses: docker://ghcr.io/wolfi-dev/wolfictl:latest
         with:
           entrypoint: wolfictl
-          args: lint --skip-rule forbidden-repository-used --skip-rule forbidden-keyring-used
+          args: lint
