@@ -69,3 +69,6 @@ $(eval $(call build-package,kots,1.92.1-r0))
 
 
 .build-packages: ${PACKAGES}
+
+lint:
+	wolfictl lint
