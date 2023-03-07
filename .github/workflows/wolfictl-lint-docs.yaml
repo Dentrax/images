@@ -1,4 +1,4 @@
-name: Wolfictl Lint Docs
+name: Wolfictl Lint
 
 on:
   pull_request:
