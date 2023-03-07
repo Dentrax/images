@@ -16,6 +16,10 @@ package:
       - python-3.9
 environment:
   contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
     packages:
       - ca-certificates-bundle
       - wolfi-base
