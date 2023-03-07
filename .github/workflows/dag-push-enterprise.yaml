@@ -145,8 +145,7 @@ jobs:
             --src-bucket=${SRC_BUCKET} \
             --secret-key \
             --arch=amd64 \
-            --signing-key-name=chainguard-enterprise \
-            --melange-build-options="--keyring-append=/workspace/packages/chainguard-enterprise.rsa.pub --repository-append=/workspace/packages"
+            --signing-key-name=chainguard-enterprise
 
   build-arm64:
     name: Build (arm64)
@@ -203,8 +202,7 @@ jobs:
             --src-bucket=${SRC_BUCKET} \
             --secret-key \
             --arch=arm64 \
-            --signing-key-name=chainguard-enterprise \
-            --melange-build-options="--keyring-append=/workspace/packages/chainguard-enterprise.rsa.pub --repository-append=/workspace/packages"
+            --signing-key-name=chainguard-enterprise
 
   teardown-cluster:
     name: Teardown build cluster
