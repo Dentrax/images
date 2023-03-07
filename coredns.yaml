@@ -1,0 +1,51 @@
+package:
+  name: coredns
+  version: 1.10.1
+  epoch: 1
+  description: Extensible DNS server with plugin support
+  target-architecture:
+    - all
+  copyright:
+    - license: Apache 2.0
+      paths:
+        - "*"
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - wolfi-baselayout
+      - build-base
+      - go
+      - git
+      - ca-certificates-bundle
+      - busybox
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://github.com/coredns/coredns/archive/refs/tags/v${{package.version}}.tar.gz
+      expected-sha256: f47186452e5f2925e2c71135669afd9e03b9b55831417d33d612ef2fa69924a7
+
+# We're already calculating sha, which makes explicating git commit ID redundant
+# Manually apply the git commit number (055b2c3 for v1.10.1)
+  - runs: |
+      # Mitigate GHSA-vvpx-j8f3-3w6h
+      go get golang.org/x/net@v0.7.0
+      
+      # Manually apply the git commit number (055b2c3 for v1.10.1)
+      GIT_COMMIT="055b2c3"
+
+      CGO_ENABLED=0 go build -ldflags="-s -w -X github.com/coredns/coredns/coremain.GitCommit=${GIT_COMMIT}" -o "${{targets.destdir}}/${{package.name}}/"
+
+      mkdir -p "${{targets.destdir}}/etc/ssl/certs"
+      mv /etc/ssl/certs/ca-certificates.crt ${{targets.destdir}}/etc/ssl/certs/
+
+
+  - uses: strip
