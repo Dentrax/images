@@ -1,4 +1,4 @@
-name: Wolfictl Lint Openssl
+name: Wolfictl Lint
 
 on:
   pull_request:
@@ -23,4 +23,5 @@ jobs:
         uses: docker://ghcr.io/wolfi-dev/wolfictl:latest
         with:
           entrypoint: wolfictl
-          args: lint sub-os-openssl1  --skip-rule forbidden-repository-used --skip-rule forbidden-keyring-used
+          args: lint sub-os-openssl1 --skip-rule forbidden-repository-used --skip-rule forbidden-keyring-used
+          
