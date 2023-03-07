@@ -1,0 +1,63 @@
+package:
+  name: dex-k8s-authenticator
+  version: 1.4.0
+  epoch: 1
+  description: Pluggable web app using Dex Identity services
+  target-architecture:
+    - all
+  copyright:
+    - license: MIT
+      paths:
+        - "*"
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - wolfi-baselayout
+      - busybox
+      - build-base
+      - go
+      - git
+      - ca-certificates-bundle
+      - openssl
+      - curl
+      - tini
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://github.com/mintel/dex-k8s-authenticator/archive/refs/tags/v${{package.version}}.tar.gz
+      expected-sha256: c384f37f8ca1d998ed78ec2374f6a96b05a3dba3914cfe2ff6aaeb79ff11560a
+
+# Certs, if provided, will be mounted into a volume off root
+  - runs: |
+      # Mitigate CVE-2021-38561
+      go get golang.org/x/text
+
+      # Mitigate CVE-2022-27191
+      go get golang.org/x/crypto/ssh
+
+      # Mitigate GHSA-vvpx-j8f3-3w6h
+      go get golang.org/x/net@v0.7.0
+      
+      # Mitigate GHSA-6q6q-88xp-6f2r
+      go get gopkg.in/yaml.v2@v2.4.0
+
+  - runs: |
+      mkdir -p "${{targets.destdir}}"/certs 
+            
+      mkdir -p "${{targets.destdir}}"/app/bin/
+      go build -o dex-k8s-authenticator
+      mv dex-k8s-authenticator ${{targets.destdir}}/app/bin/
+
+      mv html ${{targets.destdir}}/app/
+      mv templates ${{targets.destdir}}/app/
+      
+  - runs: |
+      mv entrypoint.sh ${{targets.destdir}}/app/
+      chmod +x ${{targets.destdir}}/app/entrypoint.sh
+
+  - uses: strip
