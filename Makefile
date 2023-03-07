@@ -43,6 +43,7 @@ clean:
 $(eval $(call build-package,go-1.17,1.17.13-r0))
 $(eval $(call build-package,chainguard-baselayout,20230214-r0))
 $(eval $(call build-package,hello-world,0.0.1-r0))
+$(eval $(call build-package,coredns,1.10.1-r0))
 $(eval $(call build-package,nodejs-14,14.21.2-r0))
 $(eval $(call build-package,grafana,7.5.19-r1))
 $(eval $(call build-package,python-3.7,3.7.16-r0))
