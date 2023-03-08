@@ -19,6 +19,7 @@ env:
   FQ_SERVICE_ACCOUNT: prod-images-ci@prod-images-c6e5.iam.gserviceaccount.com
   BUCKET: chainguard-enterprise-registry-source/os/
   SRC_BUCKET: gs://chainguard-enterprise-registry-destination/os/
+  SIGNING_SECRET_NAME: melange-signing-key-enterprise
 
 jobs:
   setup-cluster:
