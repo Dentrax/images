@@ -20,6 +20,7 @@ env:
   BUCKET: chainguard-enterprise-registry-source/os/sub-os-openssl1/
   SRC_BUCKET: gs://chainguard-enterprise-registry-destination/os/sub-os-openssl1/
   SUB_REPO_NAME: sub-os-openssl1
+  SIGNING_SECRET_NAME: melange-signing-key-enterprise
 jobs:
   setup-cluster:
     name: Setup build cluster
