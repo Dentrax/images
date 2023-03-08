@@ -2,7 +2,7 @@
 package:
   name: sourcegraph-grafana
   version: 4.4.2
-  epoch: 3
+  epoch: 4
   description: Sourcegraph packaged Grafana
   target-architecture:
     - all
