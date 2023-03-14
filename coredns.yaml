@@ -1,7 +1,7 @@
 package:
   name: coredns
   version: 1.10.1
-  epoch: 2
+  epoch: 3
   description: Extensible DNS server with plugin support
   target-architecture:
     - all
@@ -42,7 +42,7 @@ pipeline:
       # Manually apply the git commit number (055b2c3 for v1.10.1)
       GIT_COMMIT="055b2c3"
 
-      CGO_ENABLED=0 go build -ldflags="-s -w -X github.com/coredns/coredns/coremain.GitCommit=${GIT_COMMIT}" -o "${{targets.destdir}}/${{package.name}}/"
+      CGO_ENABLED=0 go build -ldflags="-s -w -X github.com/coredns/coredns/coremain.GitCommit=${GIT_COMMIT}" -o "${{targets.destdir}}/bin/"
 
       mkdir -p "${{targets.destdir}}/etc/ssl/certs"
       mv /etc/ssl/certs/ca-certificates.crt ${{targets.destdir}}/etc/ssl/certs/
