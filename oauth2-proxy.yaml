@@ -22,6 +22,7 @@ environment:
       - go
       - openssl
       - ca-certificates-bundle
+
 pipeline:
   - uses: fetch
     with:
