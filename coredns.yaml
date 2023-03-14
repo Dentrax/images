@@ -47,4 +47,5 @@ pipeline:
       mkdir -p "${{targets.destdir}}/etc/ssl/certs"
       mv /etc/ssl/certs/ca-certificates.crt ${{targets.destdir}}/etc/ssl/certs/
 
+
   - uses: strip
