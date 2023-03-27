@@ -13,6 +13,7 @@ package:
   dependencies:
     runtime:
       - ca-certificates-bundle
+      - gops
 environment:
   contents:
     keyring:
@@ -58,24 +59,6 @@ pipeline:
       cd hubble-ui/backend
       # Override explicit patch version of cilium (1.13.0) in vendor/modules.txt
       CGO_ENABLED=0 go build -mod=mod -ldflags "-s -w" -o "${{targets.destdir}}"/usr/bin/backend .
-
-  - runs: |
-      mkdir -p "${{targets.destdir}}"/usr/bin
-      
-      gops_version="v0.3.22"
-      mkdir -p /go/src/github.com/google
-      cd /go/src/github.com/google
-      
-      git clone https://github.com/google/gops.git
-      cd gops
-      
-      git checkout -b "${gops_version}" "${gops_version}"
-
-      CGO_ENABLED=0 GOARCH="${arch}" go build -ldflags "-s -w" -o "${{targets.destdir}}"/usr/bin/gops github.com/google/gops
-      mkdir -p "${{targets.destdir}}"/home/gops
-      chown 1001:1001 "${{targets.destdir}}"/home/gops
-
-      export GOPS_CONFIG_DIR="${{targets.destdir}}"/home/gops
 
   - uses: strip
 

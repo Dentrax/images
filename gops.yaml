@@ -1,0 +1,44 @@
+package:
+  name: gops
+  version: 0.3.27
+  epoch: 0
+  description: Command to list and diagnose Go processes currently running on your system.
+  target-architecture:
+    - all
+  copyright:
+    - paths:
+        - "*"
+      attestation: TODO
+      license: "Apache-2.0"
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - wolfi-baselayout
+      - busybox
+      - build-base
+      - go-1.20
+      - git
+      - ca-certificates-bundle
+      - openssl
+      - curl
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/google/gops
+      tag: v${{package.version}}
+      expected-commit: 70408a1556a9d904d8c79722aebe1aaa3b24beca
+      destination: gops
+
+  - runs: |      
+      cd gops
+      CGO_ENABLED=0 go build -ldflags "-s -w" -o "${{targets.destdir}}"/usr/bin/gops
+
+  - uses: strip
