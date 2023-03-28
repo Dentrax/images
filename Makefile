@@ -71,7 +71,7 @@ $(eval $(call build-package,kubectl-1.24,1.24.9-r1))
 $(eval $(call build-package,kubectl-1.25,1.25.5-r1))
 $(eval $(call build-package,kots,1.92.1-r1))
 $(eval $(call build-package,gops,0.3.27-r0))
-$(eval $(call build-package,hubble-ui,0.10.0-r0))
+$(eval $(call build-package,hubble-ui,0.10.0-r1))
 $(eval $(call build-package,hubble-ui-backend,0.10.0-r0))
 
 .build-packages: ${PACKAGES}
