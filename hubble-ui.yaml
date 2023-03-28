@@ -40,11 +40,13 @@ pipeline:
       expected-commit: aeb74a84fb8ea9f769965a4c3d432acf4dae2a08
 
   - runs: |
-      mkdir -p "${{targets.destdir}}"/etc/hubble-ui
-      cp nginx.conf "${{targets.destdir}}"/etc/hubble-ui/nginx.conf
+      mkdir -p "${{targets.destdir}}"/etc/frontend
+      cp nginx.conf "${{targets.destdir}}"/etc/frontend/nginx.conf
       
+      export DESTDIR="${{targets.destdir}}"
       mkdir -p "${{targets.destdir}}"/app
       cd hubble-ui
+      
       
       # Make node app available
       npm config set legacy-peer-deps true
@@ -53,6 +55,6 @@ pipeline:
       export NODE_ENV=production
       npm run build
       
-      cp -r server/public "${{targets.destdir}}"/app
+      cp -r server/public/* "${{targets.destdir}}"/app/
 
   - uses: strip
