@@ -1,4 +1,3 @@
-USE_CACHE ?= yes
 ARCH ?= $(shell uname -m)
 ifeq (${ARCH}, arm64)
 	ARCH = aarch64
@@ -9,10 +8,6 @@ MELANGE ?= ../melange/melange
 KEY ?= local-melange.rsa
 REPO ?= $(shell pwd)/packages
 SOURCE_DATE_EPOCH ?= 0
-CACHE_DIR ?= gs://wolfi-sources/
-
-SIGNING_PUBKEY ?= https://packages.cgr.dev/os/chainguard-enterprise.rsa.pub
-PROD ?= https://packages.cgr.dev/os
 
 MELANGE_OPTS += --repository-append ${REPO}
 MELANGE_OPTS += --keyring-append ${KEY}.pub
@@ -22,15 +17,6 @@ MELANGE_OPTS += --arch ${ARCH}
 MELANGE_OPTS += --env-file build-${ARCH}.env
 MELANGE_OPTS += --namespace chainguard
 MELANGE_OPTS += ${MELANGE_EXTRA_OPTS}
-
-ifeq (${USE_CACHE}, yes)
-	MELANGE_OPTS += --cache-source ${CACHE_DIR}
-endif
-
-ifeq (${BUILDWORLD}, no)
-MELANGE_OPTS += -k ${SIGNING_PUBKEY}
-MELANGE_OPTS += -r ${PROD}
-endif
 
 define build-package
 $(eval pkgname = $(call comma-split,$(1),1))
