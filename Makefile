@@ -1,8 +1,13 @@
-ARCH := $(shell uname -m)
-MELANGE_DIR ?= ../melange
-MELANGE ?= ${MELANGE_DIR}/melange
+ARCH ?= $(shell uname -m)
+ifeq (${ARCH}, arm64)
+	ARCH = aarch64
+endif
+TARGETDIR = packages/${ARCH}
+
+MELANGE ?= ../melange/melange
 KEY ?= local-melange.rsa
 REPO ?= $(shell pwd)/packages
+SOURCE_DATE_EPOCH ?= 0
 
 MELANGE_OPTS += --repository-append ${REPO}
 MELANGE_OPTS += --keyring-append ${KEY}.pub
@@ -10,18 +15,27 @@ MELANGE_OPTS += --signing-key ${KEY}
 MELANGE_OPTS += --pipeline-dir ${MELANGE_DIR}/pipelines
 MELANGE_OPTS += --arch ${ARCH}
 MELANGE_OPTS += --env-file build-${ARCH}.env
+MELANGE_OPTS += --namespace chainguard
 MELANGE_OPTS += ${MELANGE_EXTRA_OPTS}
 
 define build-package
-
-packages/$(1): packages/${ARCH}/$(1)-$(2).apk
-packages/${ARCH}/$(1)-$(2).apk: ${KEY}
-	mkdir -p ./$(1)/
-	${MELANGE} build $(1).yaml ${MELANGE_OPTS} --source-dir ./$(if $(3),$(3),$(1))/
-
-PACKAGES += packages/${ARCH}/$(1)-$(2).apk
+$(eval pkgname = $(call comma-split,$(1),1))
+$(eval sourcedir = $(call comma-split,$(1),2))
+$(eval sourcedir = $(or $(sourcedir),$(pkgname)))
+$(eval pkgtarget = $(TARGETDIR)/$(shell $(MELANGE) package-version $(pkgname).yaml).apk)
+packages/$(pkgname): $(pkgtarget)
+$(pkgtarget): ${KEY}
+	mkdir -p ./$(sourcedir)/
+	SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH} ${MELANGE} build $(pkgname).yaml ${MELANGE_OPTS} --source-dir ./$(sourcedir)/
 
 endef
+
+# The list of packages to be built. The order matters.
+# At some point, when ready, this should be replaced with `wolfictl text -t name .`
+# non-standard source directories are provided by adding them separated by a comma,
+# e.g. 
+# postgres-11,postgres
+PKGLIST ?= $(shell cat packages.txt | grep -v '^\#' )
 
 all: ${KEY} .build-packages
 
@@ -31,50 +45,27 @@ ${KEY}:
 clean:
 	rm -rf packages/${ARCH}
 
-# The list of packages to be built.
-#
-# Use the `build-package` macro for packages which require a source
-# directory, like `glibc/` or `busybox/`.
-# arg 1 = package name
-# arg 2 = package version
-# arg 3 = override source directory, defaults to package name, useful if you want to reuse the same subfolder for multiple packages
-# example: $(eval $(call build-package,gmp,6.2.1-r4))
+.PHONY: list list-yaml
+list:
+	$(info $(PKGNAMELIST))
+	@printf ''
 
-$(eval $(call build-package,go-1.17,1.17.13-r1))
-$(eval $(call build-package,chainguard-baselayout,20230214-r1))
-$(eval $(call build-package,hello-world,0.0.1-r1))
-$(eval $(call build-package,coredns,1.10.1-r3))
-$(eval $(call build-package,kube-oidc-proxy,1.0.4-r0))
-$(eval $(call build-package,oauth2-proxy,7.4.0-r0))
-$(eval $(call build-package,nodejs-14,14.21.2-r1))
-$(eval $(call build-package,grafana,7.5.20-r0))
-$(eval $(call build-package,dex-k8s-authenticator,1.4.0-r2))
-$(eval $(call build-package,python-3.7,3.7.16-r1))
-$(eval $(call build-package,python-3.8,3.8.10-r1))
-$(eval $(call build-package,python-3.9,3.9.16-r1))
-$(eval $(call build-package,py3.7-installer,0.5.1-r1))
-$(eval $(call build-package,py3.8-installer,0.5.1-r1))
-$(eval $(call build-package,py3.9-installer,0.5.1-r1))
-$(eval $(call build-package,py3.7-setuptools,67.5.1-r1))
-$(eval $(call build-package,py3.8-setuptools,67.5.1-r1))
-$(eval $(call build-package,py3.9-setuptools,67.5.1-r1))
-$(eval $(call build-package,py3.7-pip,23.0.1-r1))
-$(eval $(call build-package,py3.8-pip,23.0.1-r1))
-$(eval $(call build-package,py3.9-pip,23.0.1-r1))
-$(eval $(call build-package,sourcegraph-grafana,4.4.2-r4))
-$(eval $(call build-package,kubectl-1.19,1.19.16-r1))
-$(eval $(call build-package,kubectl-1.20,1.20.15-r1))
-$(eval $(call build-package,kubectl-1.21,1.21.14-r1))
-$(eval $(call build-package,kubectl-1.22,1.22.17-r1))
-$(eval $(call build-package,kubectl-1.23,1.23.15-r1))
-$(eval $(call build-package,kubectl-1.24,1.24.9-r1))
-$(eval $(call build-package,kubectl-1.25,1.25.5-r1))
-$(eval $(call build-package,kots,1.92.1-r1))
-$(eval $(call build-package,gops,0.3.27-r0))
-$(eval $(call build-package,hubble-ui,0.10.0-r1))
-$(eval $(call build-package,hubble-ui-backend,0.10.0-r0))
+list-yaml:
+	$(info $(addsuffix .yaml,$(PKGNAMELIST)))
+	@printf ''
+
+comma := ,
+comma-split = $(word $2,$(subst ${comma}, ,$1))
+
+# PKGLIST includes the optional directory e.g. mariadb-10.6,mariadb
+# PKGNAMELIST is only the names
+PKGNAMELIST = $(foreach F,$(PKGLIST), $(firstword $(subst ${comma}, ,${F})))
+
+PACKAGES := $(addprefix packages/,$(PKGNAMELIST))
+
+$(foreach pkg,$(PKGLIST),$(eval $(call build-package,$(pkg))))
 
 .build-packages: ${PACKAGES}
 
-lint:
-	wolfictl lint --skip-rule forbidden-repository-used --skip-rule forbidden-keyring-used
+dev-container:
+	docker run --privileged --rm -it -v "${PWD}:${PWD}" -w "${PWD}" cgr.dev/chainguard/sdk:latest
