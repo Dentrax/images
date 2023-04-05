@@ -11,8 +11,8 @@ REPO ?= $(shell pwd)/packages
 SOURCE_DATE_EPOCH ?= 0
 CACHE_DIR ?= gs://wolfi-sources/
 
-WOLFI_SIGNING_PUBKEY ?= https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
-WOLFI_PROD ?= https://packages.wolfi.dev/os
+SIGNING_PUBKEY ?= https://packages.cgr.dev/os/chainguard-enterprise.rsa.pub
+PROD ?= https://packages.cgr.dev/os
 
 MELANGE_OPTS += --repository-append ${REPO}
 MELANGE_OPTS += --keyring-append ${KEY}.pub
@@ -28,8 +28,8 @@ ifeq (${USE_CACHE}, yes)
 endif
 
 ifeq (${BUILDWORLD}, no)
-MELANGE_OPTS += -k ${WOLFI_SIGNING_PUBKEY}
-MELANGE_OPTS += -r ${WOLFI_PROD}
+MELANGE_OPTS += -k ${SIGNING_PUBKEY}
+MELANGE_OPTS += -r ${PROD}
 endif
 
 define build-package
