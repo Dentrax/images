@@ -1,4 +1,4 @@
-name: CI build action
+name: Docs
 
 on:
   pull_request:

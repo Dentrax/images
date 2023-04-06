@@ -1,4 +1,4 @@
-name: CI build action
+name: Openssl1
 
 on:
   pull_request:
@@ -56,18 +56,17 @@ jobs:
       - name: 'Sync public package repository'
         working-directory: ./sub-os-openssl1
         run: |
-          mkdir "${{ github.workspace }}/packages"
+          mkdir -p "${{ github.workspace }}/sub-os-openssl1/packages/x86_64"
 
-          # enable when subfolder exists
-          gsutil -m rsync -r gs://chainguard-enterprise-registry-destination/os/sub-os-openssl1 "${{ github.workspace }}/packages/" || true
-          find "${{ github.workspace }}/packages" -print -exec touch \{} \;
+          gsutil -m rsync -r gs://chainguard-enterprise-registry-destination/os/sub-os-openssl1/x86_64/ "${{ github.workspace }}/sub-os-openssl1/packages/x86_64/" || true
+          find "${{ github.workspace }}/sub-os-openssl1/packages" -print -exec touch \{} \;
 
-          gsutil cp gs://chainguard-enterprise-registry-destination/os/chainguard-enterprise.rsa.pub "${{ github.workspace }}/packages/"
+          gsutil cp gs://chainguard-enterprise-registry-destination/os/chainguard-enterprise.rsa.pub "${{ github.workspace }}/sub-os-openssl1/packages/"
 
       - name: 'Build Enterprise packages'
         working-directory: ./sub-os-openssl1
         run: |
-          make --debug MELANGE="sudo melange" MELANGE_DIR=/usr/share/melange MELANGE_EXTRA_OPTS="--keyring-append ${{ github.workspace }}/packages/chainguard-enterprise.rsa.pub" REPO="${{ github.workspace }}/packages" -j1
+          make --debug MELANGE="sudo melange" MELANGE_DIR=/usr/share/melange MELANGE_EXTRA_OPTS="--keyring-append ${{ github.workspace }}/sub-os-openssl1/packages/chainguard-enterprise.rsa.pub" REPO="${{ github.workspace }}/sub-os-openssl1/packages" -j1
 
       - name: 'Generate dependency svg'
         uses: docker://ghcr.io/wolfi-dev/wolfictl:latest
