@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    name: Chainguard packages (CI) 
+    name: Chainguard packages (CI)
     runs-on: ubuntu-8-core
 
     permissions:
@@ -55,9 +55,11 @@ jobs:
 
       - name: 'Sync public package repository'
         run: |
-          mkdir "${{ github.workspace }}/packages"
-          gsutil -m rsync -r gs://chainguard-enterprise-registry-destination/os/ "${{ github.workspace }}/packages/"
+          mkdir -p "${{ github.workspace }}/packages/x86_64"
+          gsutil -m rsync -r gs://chainguard-enterprise-registry-destination/os/x86_64/ "${{ github.workspace }}/packages/x86_64/"
           find "${{ github.workspace }}/packages" -print -exec touch \{} \;
+
+          gsutil cp gs://chainguard-enterprise-registry-destination/os/chainguard-enterprise.rsa.pub "${{ github.workspace }}/packages/"
 
       - name: 'Build Enterprise packages'
         run: |
