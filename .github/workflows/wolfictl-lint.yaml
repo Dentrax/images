@@ -1,4 +1,4 @@
-name: Wolfictl Lint
+name: Enterprise
 
 on:
   pull_request:

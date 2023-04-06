@@ -1,4 +1,4 @@
-name: Wolfictl Lint
+name: Openssl1
 
 on:
   pull_request:

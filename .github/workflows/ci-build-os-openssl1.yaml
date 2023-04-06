@@ -1,4 +1,4 @@
-name: CI build action
+name: Openssl1
 
 on:
   pull_request:
