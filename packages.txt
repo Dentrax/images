@@ -31,3 +31,5 @@ kots
 gops
 hubble-ui
 hubble-ui-backend
+mongod
+mongosh

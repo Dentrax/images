@@ -1,0 +1,40 @@
+package:
+  name: mongosh
+  version: 1.8.0
+  epoch: 0
+  description: The MongoDB Shell
+  copyright:
+    - license: Apache-2.0
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - ca-certificates-bundle
+      - busybox
+      - bash
+      - nodejs-16
+      - python3
+      - build-base
+      - curl
+      - gnutar
+      - krb5-dev
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/mongodb-js/mongosh
+      tag: v${{package.version}}
+      expected-commit: 9cf53bc336c79e505cf034bf5e6f3b3b3796cf25
+  - runs: |
+      export SEGMENT_API_KEY="dummy"
+      export NODE_JS_VERSION=$(node --version)
+      npm install -G lerna
+      npm install -g typescript
+      npm run bootstrap
+      npm run compile-ts
+      npm run compile-exec
+      mkdir -p ${{targets.destdir}}/usr/bin/
+      mv dist/mongosh ${{targets.destdir}}/usr/bin/
+  - uses: strip
