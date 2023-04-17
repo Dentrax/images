@@ -33,5 +33,6 @@ hubble-ui
 hubble-ui-backend
 mongod
 mongosh
+openjdk-14
 openjdk-15
 openjdk-16
