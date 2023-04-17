@@ -33,3 +33,4 @@ hubble-ui
 hubble-ui-backend
 mongod
 mongosh
+openjdk-14
