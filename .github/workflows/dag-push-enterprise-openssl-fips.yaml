@@ -1,0 +1,303 @@
+name: Build Packages OpenSSL FIPS Enterprise using dag
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".gitmodules"
+      - "openssl-fips/*.yaml"
+      - "openssl-fips/*.env"
+      - "openssl-fips/Makefile"
+      - "openssl-fips/packages.txt"
+      - ".github/workflows/dag-push-enterprise-openssl-fips.yaml"
+
+env:
+  PROJECT: prod-images-c6e5
+  CLUSTER_NAME: tmp-cluster-enterprise-${{github.run_id}}
+  CLUSTER_ZONE: us-central1-b
+  SERVICE_ACCOUNT: prod-images-ci
+  FQ_SERVICE_ACCOUNT: prod-images-ci@prod-images-c6e5.iam.gserviceaccount.com
+  BUCKET: chainguard-enterprise-registry-source/os/openssl-fips/
+  SRC_BUCKET: gs://chainguard-enterprise-registry-destination/os/openssl-fips/
+  SUB_REPO_NAME: openssl-fips
+  SIGNING_SECRET_NAME: melange-signing-key-enterprise
+
+jobs:
+  setup-cluster:
+    name: Setup build cluster
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: google-github-actions/auth@ef5d53e30bbcd8d0836f4288f5e50ff3e086997d # v1.0.0
+        with:
+          workload_identity_provider: "projects/618116202522/locations/global/workloadIdentityPools/prod-shared-e350/providers/prod-shared-gha"
+          service_account: ${{ env.FQ_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@d51b5346f85640ec2aa2fa057354d2b82c2fcbce # v1.0.1
+        with:
+          project_id: ${{ env.PROJECT }}
+
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+        with:
+          repository: wolfi-dev/wolfictl
+          path: ${{github.workspace}}/wolfictl
+
+      - name: Setup Build Cluster
+        working-directory: ${{github.workspace}}/wolfictl
+        run: |
+          gcloud container clusters create "${CLUSTER_NAME}" \
+            --enable-ip-alias \
+            --network                       projects/prod-shared-37eb/global/networks/prod-shared-586cca3 \
+            --subnetwork                    projects/prod-shared-37eb/regions/us-central1/subnetworks/prod-shared-imgs-us-c1-b9c111f \
+            --cluster-secondary-range-name  gke-a-pods \
+            --services-secondary-range-name gke-a-svcs \
+            --tags                          "egress-inet" \
+            --enable-dataplane-v2 \
+            --enable-intra-node-visibility \
+            --service-account "${FQ_SERVICE_ACCOUNT}" \
+            --zone            "${CLUSTER_ZONE}" \
+            --release-channel rapid \
+            --workload-pool   "${PROJECT}.svc.id.goog" \
+            --machine-type    e2-standard-32 \
+            --num-nodes       1 \
+            --spot  \
+            --no-enable-autorepair
+
+          gcloud container node-pools create arm-nodes \
+            --cluster         "${CLUSTER_NAME}" \
+            --zone            "${CLUSTER_ZONE}" \
+            --tags            "egress-inet" \
+            --service-account "${FQ_SERVICE_ACCOUNT}" \
+            --machine-type    t2a-standard-32 \
+            --num-nodes       1 \
+            --spot  \
+            --no-enable-autorepair
+
+      - uses: imjasonh/gke-auth@31f5c5f16489a15037d46b08903d983889c46ddf # v0.2.0
+        with:
+          project: "${PROJECT}"
+          location: "${CLUSTER_ZONE}"
+          cluster: "${CLUSTER_NAME}"
+
+      - working-directory: ${{github.workspace}}/wolfictl
+        run: ./scripts/setup-cluster.sh "${SERVICE_ACCOUNT}"
+
+  # TODO: Update source cache here, instead of in a separate workflow.
+  #       This likely depends on making the source cache bucket configurable by
+  #       dag, or if we have staging builds reuse the prod source cache, then
+  #       we only need to update it before prod builds.
+
+  build-amd64:
+    name: Build (amd64)
+    runs-on: ubuntu-latest
+    needs: setup-cluster
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      # Checkout and build dag from main
+      # Can't `go install` because its go.mod has `replace`s.
+      - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
+        with:
+          go-version: '1.19'
+          check-latest: true
+
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+        with:
+          repository: wolfi-dev/wolfictl
+          path: ${{github.workspace}}/wolfictl
+
+      - working-directory: ${{github.workspace}}/wolfictl
+        run: go install
+
+      - uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: "projects/618116202522/locations/global/workloadIdentityPools/prod-shared-e350/providers/prod-shared-gha"
+          service_account: ${{ env.FQ_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: ${{ env.PROJECT }}
+
+      - uses: 'google-github-actions/get-gke-credentials@v1'
+        with:
+          cluster_name: ${{ env.CLUSTER_NAME }}
+          location: ${{ env.CLUSTER_ZONE }}
+
+      - run: gcloud auth configure-docker --quiet
+
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+        with:
+          submodules: 'recursive'
+          token: ${{ secrets.ENTERPRISE_GRAFANA_REPO_ACCESS }}
+          path: ${{github.workspace}}/os
+
+      # TODO Let's not combine two experiments at the sametime, switch to using the wolfictl image as a followup
+
+      # - uses: docker://ghcr.io/wolfi-dev/wolfictl:latest
+      #   with:
+      #     entrypoint: wolfictl
+      #     args: pod \
+      #       --cpu=30 --ram=100Gi \
+      #       --bucket=${BUCKET} \
+      #       --src-bucket=${SRC_BUCKET} \
+      #       --secret-key \
+      #       --arch=arm64 \
+      #       --signing-key-name=chainguard-enterprise \
+      #       --public-key-bucket=gs://chainguard-enterprise-registry-destination/os/ \
+      #       --dir=${{github.workspace}}/os/${{ env.SUB_REPO_NAME }}
+
+      - working-directory: ${{github.workspace}}/os/${{ env.SUB_REPO_NAME }}
+        run: |
+          wolfictl pod \
+            --cpu=30 --ram=100Gi \
+            --bucket=${BUCKET} \
+            --src-bucket=${SRC_BUCKET} \
+            --secret-key \
+            --arch=amd64 \
+            --signing-key-name=chainguard-enterprise \
+            --public-key-bucket=gs://chainguard-enterprise-registry-destination/os/
+
+  build-arm64:
+    name: Build (arm64)
+    runs-on: ubuntu-latest
+    needs: setup-cluster
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      # Checkout and build dag from main
+      # Can't `go install` because its go.mod has `replace`s.
+      - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
+        with:
+          go-version: '1.19'
+          check-latest: true
+
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+        with:
+          repository: wolfi-dev/wolfictl
+          path: ${{github.workspace}}/wolfictl
+
+      - working-directory: ${{github.workspace}}/wolfictl
+        run: go install
+
+      - uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: "projects/618116202522/locations/global/workloadIdentityPools/prod-shared-e350/providers/prod-shared-gha"
+          service_account: ${{ env.FQ_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: ${{ env.PROJECT }}
+
+      - uses: 'google-github-actions/get-gke-credentials@v1'
+        with:
+          cluster_name: ${{ env.CLUSTER_NAME }}
+          location: ${{ env.CLUSTER_ZONE }}
+
+      - run: gcloud auth configure-docker --quiet
+
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+        with:
+          submodules: 'recursive'
+          token: ${{ secrets.ENTERPRISE_GRAFANA_REPO_ACCESS }}
+          path: ${{github.workspace}}/os
+
+      # TODO Let's not combine two experiments at the sametime, switch to using the wolfictl image as a followup
+
+      # - uses: docker://ghcr.io/wolfi-dev/wolfictl:latest
+      #   with:
+      #     entrypoint: wolfictl
+      #     args: pod \
+      #       --cpu=30 --ram=100Gi \
+      #       --bucket=${BUCKET} \
+      #       --src-bucket=${SRC_BUCKET} \
+      #       --secret-key \
+      #       --arch=arm64 \
+      #       --signing-key-name=chainguard-enterprise \
+      #       --public-key-bucket=gs://chainguard-enterprise-registry-destination/os/ \
+      #       --dir=./os/${{ env.SUB_REPO_NAME }}
+
+      - working-directory: ${{github.workspace}}/os/${{ env.SUB_REPO_NAME }}
+        run: |
+          wolfictl pod \
+            --cpu=30 --ram=100Gi \
+            --bucket=${BUCKET} \
+            --src-bucket=${SRC_BUCKET} \
+            --secret-key \
+            --arch=arm64 \
+            --signing-key-name=chainguard-enterprise \
+            --public-key-bucket=gs://chainguard-enterprise-registry-destination/os/
+
+  teardown-cluster:
+    name: Teardown build cluster
+    runs-on: ubuntu-latest
+    needs: [build-arm64,build-amd64]
+    if: always()
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: google-github-actions/auth@ef5d53e30bbcd8d0836f4288f5e50ff3e086997d # v1.0.0
+        with:
+          workload_identity_provider: "projects/618116202522/locations/global/workloadIdentityPools/prod-shared-e350/providers/prod-shared-gha"
+          service_account: ${{ env.FQ_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@d51b5346f85640ec2aa2fa057354d2b82c2fcbce # v1.0.1
+        with:
+          project_id: ${{ env.PROJECT }}
+
+      - uses: google-github-actions/get-gke-credentials@v1 # v1.0.1
+        with:
+          cluster_name: ${{ env.CLUSTER_NAME }}
+          location: ${{ env.CLUSTER_ZONE }}
+
+      - name: Collect diagnostics
+        if: always()
+        run: |
+          resources="pods daemonsets serviceaccounts namespaces"
+          for ns in $(kubectl get ns -oname | cut -d'/' -f 2); do
+            for resource in ${resources}; do
+              echo --- $ns $resource ---
+              kubectl get $resource -n${ns}
+              for x in $(kubectl get $resource -n${ns} -oname || true); do
+                echo "::group:: describe $resource $x"
+                # Don't fail if the resource disappears midway.
+                kubectl describe -n${ns} $x || true
+                echo '::endgroup::'
+              done
+            done
+          done
+
+      - name: Teardown Build Cluster
+        if: always()
+        run: |
+          gcloud container clusters delete "${CLUSTER_NAME}" \
+            --zone "${CLUSTER_ZONE}" \
+            --quiet
+
+  postrun:
+    name: Post Enterprise Build
+    runs-on: ubuntu-latest
+    needs: [teardown-cluster]
+    if: failure()
+    steps:
+      - uses: slackapi/slack-github-action@007b2c3c751a190b6f0f040e47ed024deaa72844 # v1.23.0
+        id: slack
+        with:
+          payload: '{"text": "[dag-push-enterprise] failure: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
