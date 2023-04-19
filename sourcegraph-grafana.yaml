@@ -1,4 +1,3 @@
-#nolint:valid-pipeline-git-checkout-commit,valid-pipeline-git-checkout-tag
 package:
   name: sourcegraph-grafana
   version: 4.4.2
@@ -39,7 +38,8 @@ pipeline:
     with:
       repository: https://github.com/sourcegraph/sourcegraph
       destination: sourcegraph
-      branch: v${{package.version}}
+      tag: v${{package.version}}
+      expected-commit: e718b1fe3b718bb2d0f9248a3143979c19611c08
 
   - runs: |
       cd sourcegraph/monitoring
@@ -56,9 +56,16 @@ pipeline:
 
       mkdir -p ${{targets.destdir}}/sg_config_grafana/provisioning/dashboards/sourcegraph
       mv generated/* ${{targets.destdir}}/sg_config_grafana/provisioning/dashboards/sourcegraph/
+
   - runs: |
       mkdir -p ${{targets.destdir}}/opt/grafana
       chmod +x entry.sh
       mv entry.sh ${{targets.destdir}}/opt/grafana/
 
       cp -R config/* ${{targets.destdir}}/sg_config_grafana/
+
+update:
+  enabled: true
+  github:
+    identifier: sourcegraph/sourcegraph
+    strip-prefix: v

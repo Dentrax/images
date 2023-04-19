@@ -11,6 +11,7 @@ package:
     runtime:
       - freetype
       - fontconfig
+
 environment:
   contents:
     repositories:
@@ -22,20 +23,23 @@ environment:
       - build-base
       - busybox
       - bash
+
 pipeline:
   - uses: fetch
     with:
       uri: https://download.java.net/java/GA/jdk14.0.2/205943a0976c4ed48cb16f1043c5c647/12/GPL/openjdk-${{package.version}}_linux-x64_bin.tar.gz
       expected-sha256: 91310200f072045dc6cef2c8c23e7e6387b37c46e9de49623ce0fa461a24623d
       strip-components: 0
+
   - runs: |
       # Java 14 is EOL, we pull the last version binary and package that
       mkdir -p ${{targets.destdir}}/usr/lib/jvm
       mv jdk-${{package.version}} ${{targets.destdir}}/usr/lib/jvm/openjdk
-      
+
       mkdir -p ${{targets.destdir}}/usr/bin
       ln -sf /usr/lib/jvm/openjdk/bin/java ${{targets.destdir}}/usr/bin/java
       ln -sf /usr/lib/jvm/openjdk/bin/javac ${{targets.destdir}}/usr/bin/javac
+
 subpackages:
   - name: openjdk-14-jre
     pipeline:
@@ -57,7 +61,7 @@ subpackages:
                   rmiregistry; do
                       cp ${{targets.destdir}}/usr/lib/jvm/openjdk/bin/${c} ${{targets.subpkgdir}}/usr/lib/jvm/openjdk/bin/${c}
           done
-          
+
           mkdir -p ${{targets.subpkgdir}}/usr/bin
           ln -sf /usr/lib/jvm/openjdk/bin/java ${{targets.subpkgdir}}/usr/bin/java
     description: OpenJDK 11 (JRE)
@@ -65,5 +69,6 @@ subpackages:
       runtime:
         - freetype
         - fontconfig
+
 update:
   enabled: false

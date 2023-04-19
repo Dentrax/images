@@ -28,12 +28,14 @@ environment:
       - ld-linux
       - curl-dev
       - clang-15
+
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/mongodb/mongo
       tag: r${{package.version}}
       expected-commit: 10fd84b6850ef672ff6ed367ca9292ad8db262d2
+
   - runs: |
       python3 -m pip install -r etc/pip/compile-requirements.txt
       python3 ./buildscripts/scons.py --ssl \
@@ -41,6 +43,7 @@ pipeline:
       mkdir -p ${{targets.destdir}}/usr/bin
       mv build/install/bin/mongod ${{targets.destdir}}/usr/bin
       find build/
+
   - uses: strip
 
 subpackages:
@@ -50,9 +53,17 @@ subpackages:
       - runs: |
           mkdir -p "${{targets.subpkgdir}}"/usr/bin
           mv build/install/bin/mongos ${{targets.subpkgdir}}/usr/bin
+
   - name: "jstestshell"
     description: "mongo shell"
     pipeline:
       - runs: |
           mkdir -p "${{targets.subpkgdir}}"/usr/bin
           mv build/opt/mongo/shell/mongo ${{targets.subpkgdir}}/usr/bin
+
+update:
+  enabled: true
+  github:
+    identifier: mongodb/mongo
+    strip-prefix: r
+    use-tag: true

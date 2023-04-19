@@ -39,6 +39,7 @@ pipeline:
     with:
       uri: https://nodejs.org/dist/v${{package.version}}/node-v${{package.version}}.tar.gz
       expected-sha256: aad2b8ac4808a069648caf0dcc938a7a01265c1efcdeb7329a7cc9474f2b87eb
+
   - name: Configure and build
     runs: |
       # Add defines recommended in libuv readme.
@@ -62,7 +63,18 @@ pipeline:
         make BUILDTYPE=Release
 
   - uses: autoconf/make
+
   - uses: autoconf/make-install
+
   - runs: |
       make DESTDIR="$${{targets.destdir}}" install
+
   - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: nodejs/node
+    strip-prefix: v
+    use-tag: true
+    tag-filter: v14.

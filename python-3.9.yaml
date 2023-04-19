@@ -41,11 +41,13 @@ pipeline:
     with:
       uri: https://www.python.org/ftp/python/${{package.version}}/Python-${{package.version}}.tar.xz
       expected-sha256: 22dddc099246dd2760665561e8adb7394ea0cc43a72684c6480f9380f7786439
+
   - name: Force use of system libraries
     runs: |
       rm -rf Modules/expat \
         Modules/_ctypes/darwin* \
         Modules/_ctypes/libffi*
+
   - name: Configure
     runs: |
       ./configure \
@@ -65,10 +67,13 @@ pipeline:
          --with-system-libmpdec \
          --without-ensurepip \
          --with-lto
+
   - uses: autoconf/make
+
   - uses: autoconf/make
     with:
       opts: altinstall DESTDIR="${{targets.destdir}}"
+
   - runs: |
       find ${{targets.destdir}}/usr/lib -type f -name '*.pyc' -exec rm -rf '{}' +
       find ${{targets.destdir}}/usr/lib -type f -name '*.pyo' -exec rm -rf '{}' +
@@ -76,9 +81,11 @@ pipeline:
       find ${{targets.destdir}}/usr/lib -type d -name 'test' -exec rm -rf '{}' +
       find ${{targets.destdir}}/usr/lib -type d -name 'tests' -exec rm -rf '{}' +
       find ${{targets.destdir}}/usr/lib -type d -name 'idle_test' -exec rm -rf '{}' +
+
   - name: Install python symlink
     runs: |
       ln -s python3.9 "${{targets.destdir}}"/usr/bin/python
+
   - uses: strip
 
 subpackages:
@@ -86,6 +93,7 @@ subpackages:
     description: "python3.9 documentation"
     pipeline:
       - uses: split/manpages
+
   - name: "python-3.9-dev"
     description: "python3.9 development headers"
     pipeline:
@@ -97,3 +105,10 @@ subpackages:
       runtime:
         - python-3.9
 
+update:
+  enabled: true
+  github:
+    identifier: python/cpython
+    strip-prefix: v
+    tag-filter: v3.9
+    use-tag: true

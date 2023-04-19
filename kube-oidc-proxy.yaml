@@ -13,6 +13,7 @@ package:
   dependencies:
     runtime:
       - libssl3
+
 environment:
   contents:
     keyring:
@@ -36,9 +37,15 @@ pipeline:
       uri: https://github.com/TremoloSecurity/kube-oidc-proxy/archive/refs/tags/v${{package.version}}.tar.gz
       expected-sha256: 3adee9fbfe3376e5a01c06c33dbf1728c5ee31b7ab576af01822d90ca0d067b4
 
-  - runs: |     
+  - runs: |
       CGO_ENABLED=0 go build \
         -trimpath -ldflags "-s -w -X=main.version=${{package.version}}" \
         -o ${{targets.destdir}}/usr/bin/kube-oidc-proxy ./cmd/.
 
   - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: TremoloSecurity/kube-oidc-proxy
+    strip-prefix: v

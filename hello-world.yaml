@@ -24,3 +24,6 @@ pipeline:
   - runs: |
       mkdir -p ${{targets.destdir}}/usr
       echo test > ${{targets.destdir}}/usr/tester
+
+update:
+  enabled: false

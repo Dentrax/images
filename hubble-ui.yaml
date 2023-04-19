@@ -14,6 +14,7 @@ package:
     runtime:
       - nginx
       - ca-certificates-bundle
+
 environment:
   contents:
     keyring:
@@ -42,19 +43,25 @@ pipeline:
   - runs: |
       mkdir -p "${{targets.destdir}}"/etc/frontend
       cp nginx.conf "${{targets.destdir}}"/etc/frontend/nginx.conf
-      
+
       export DESTDIR="${{targets.destdir}}"
       mkdir -p "${{targets.destdir}}"/app
       cd hubble-ui
-      
-      
+
+
       # Make node app available
       npm config set legacy-peer-deps true
       npm cache clean --force
       npm install
       export NODE_ENV=production
       npm run build
-      
+
       cp -r server/public/* "${{targets.destdir}}"/app/
 
   - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: cilium/hubble-ui
+    strip-prefix: v

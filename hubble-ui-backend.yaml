@@ -14,6 +14,7 @@ package:
     runtime:
       - ca-certificates-bundle
       - gops
+
 environment:
   contents:
     keyring:
@@ -33,26 +34,26 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      repository: 	https://github.com/cilium/hubble-ui
+      repository: https://github.com/cilium/hubble-ui
       tag: v${{package.version}}
       destination: hubble-ui
       expected-commit: aeb74a84fb8ea9f769965a4c3d432acf4dae2a08
 
   - runs: |
-      cd hubble-ui/backend 
-      
+      cd hubble-ui/backend
+
       go clean -modcache
-      
+
       # Remediate GHSA-4hc4-pgfx-3mrx
       # https://pkg.go.dev/github.com/cilium/cilium#section-readme
       go get github.com/cilium/cilium@v1.13.1
-      
+
       # Remediate GHSA-p782-xgp4-8hr8
       # https://pkg.go.dev/vuln/GO-2022-0493
       # Per govulncheck fixed in 0.0.0-20220412211240-33da011f77ad
       # https://pkg.go.dev/golang.org/x/sys - Current version v0.6.0
       go get golang.org/x/sys@v0.6.0
-      
+
       go mod tidy
 
   - runs: |
@@ -62,3 +63,8 @@ pipeline:
 
   - uses: strip
 
+update:
+  enabled: true
+  github:
+    identifier: cilium/hubble-ui
+    strip-prefix: v

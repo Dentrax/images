@@ -9,6 +9,7 @@ package:
     - license: MIT
       paths:
         - "*"
+
 environment:
   contents:
     repositories:
@@ -32,7 +33,7 @@ pipeline:
       uri: https://github.com/mintel/dex-k8s-authenticator/archive/refs/tags/v${{package.version}}.tar.gz
       expected-sha256: c384f37f8ca1d998ed78ec2374f6a96b05a3dba3914cfe2ff6aaeb79ff11560a
 
-# Certs, if provided, will be mounted into a volume off root
+  # Certs, if provided, will be mounted into a volume off root: c384f37f8ca1d998ed78ec2374f6a96b05a3dba3914cfe2ff6aaeb79ff11560a
   - runs: |
       # Mitigate CVE-2021-38561
       go get golang.org/x/text
@@ -42,22 +43,28 @@ pipeline:
 
       # Mitigate GHSA-vvpx-j8f3-3w6h
       go get golang.org/x/net@v0.7.0
-      
+
       # Mitigate GHSA-6q6q-88xp-6f2r
       go get gopkg.in/yaml.v2@v2.4.0
 
   - runs: |
-      mkdir -p "${{targets.destdir}}"/certs 
-            
+      mkdir -p "${{targets.destdir}}"/certs
+
       mkdir -p "${{targets.destdir}}"/app/bin/
       go build -o dex-k8s-authenticator
       mv dex-k8s-authenticator ${{targets.destdir}}/app/bin/
 
       mv html ${{targets.destdir}}/app/
       mv templates ${{targets.destdir}}/app/
-      
+
   - runs: |
       mv entrypoint.sh ${{targets.destdir}}/app/
       chmod +x ${{targets.destdir}}/app/entrypoint.sh
 
   - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: mintel/dex-k8s-authenticator
+    strip-prefix: v
