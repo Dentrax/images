@@ -13,6 +13,7 @@ package:
   dependencies:
     runtime:
       - ca-certificates-bundle
+
 environment:
   contents:
     keyring:
@@ -37,8 +38,14 @@ pipeline:
       expected-commit: 70408a1556a9d904d8c79722aebe1aaa3b24beca
       destination: gops
 
-  - runs: |      
+  - runs: |
       cd gops
       CGO_ENABLED=0 go build -ldflags "-s -w" -o "${{targets.destdir}}"/usr/bin/gops
 
   - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: google/gops
+    strip-prefix: v

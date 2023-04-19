@@ -5,6 +5,7 @@ package:
   description: The MongoDB Shell
   copyright:
     - license: Apache-2.0
+
 environment:
   contents:
     repositories:
@@ -21,12 +22,14 @@ environment:
       - curl
       - gnutar
       - krb5-dev
+
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/mongodb-js/mongosh
       tag: v${{package.version}}
       expected-commit: 9cf53bc336c79e505cf034bf5e6f3b3b3796cf25
+
   - runs: |
       export SEGMENT_API_KEY="dummy"
       export NODE_JS_VERSION=$(node --version)
@@ -37,4 +40,11 @@ pipeline:
       npm run compile-exec
       mkdir -p ${{targets.destdir}}/usr/bin/
       mv dist/mongosh ${{targets.destdir}}/usr/bin/
+
   - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: mongodb-js/mongosh
+    strip-prefix: v

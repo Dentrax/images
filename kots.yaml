@@ -27,6 +27,7 @@ package:
       - py3-magic
       - s3cmd
       - kustomize
+
 environment:
   contents:
     repositories:
@@ -41,11 +42,13 @@ environment:
       - go
       - nodejs
       - yarn
+
 pipeline:
   - uses: fetch
     with:
       uri: https://github.com/replicatedhq/kots/archive/refs/tags/v${{package.version}}.tar.gz
       expected-sha256: b190285fda58576964c85294e234bffd68bbc400c973832a9888d7841aa0dde5
+
   - runs: |
       set -x
       export DESTDIR="${{targets.destdir}}"
@@ -95,3 +98,9 @@ pipeline:
 
       ln -s /usr/local/bin/kustomize4  ${{targets.destdir}}/usr/local/bin/kustomize4
       ln -s /usr/local/bin/kustomize4  ${{targets.destdir}}/usr/local/bin/kustomize
+
+update:
+  enabled: true
+  github:
+    identifier: replicatedhq/kots
+    strip-prefix: v

@@ -12,6 +12,7 @@ package:
     runtime:
       - freetype
       - fontconfig
+
 environment:
   contents:
     repositories:
@@ -23,19 +24,22 @@ environment:
       - build-base
       - busybox
       - bash
+
 pipeline:
   - uses: fetch
     with:
       uri: https://download.java.net/java/GA/jdk16.0.2/d4a915d82b4c4fbb9bde534da945d746/7/GPL/openjdk-16.0.2_linux-x64_bin.tar.gz
       expected-sha256: 6c714ded7d881ca54970ec949e283f43d673a142fda1de79b646ddd619da9c0c
       strip-components: 0
+
   - runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/jvm
       mv jdk-${{package.version}} ${{targets.destdir}}/usr/lib/jvm/openjdk
-      
+
       mkdir -p ${{targets.destdir}}/usr/bin
       ln -sf /usr/lib/jvm/openjdk/bin/java ${{targets.destdir}}/usr/bin/java
       ln -sf /usr/lib/jvm/openjdk/bin/javac ${{targets.destdir}}/usr/bin/javac
+
 subpackages:
   - name: openjdk-16-jre
     pipeline:
@@ -56,7 +60,7 @@ subpackages:
                   rmiregistry; do
                       cp ${{targets.destdir}}/usr/lib/jvm/openjdk/bin/${c} ${{targets.subpkgdir}}/usr/lib/jvm/openjdk/bin/${c}
           done
-          
+
           mkdir -p ${{targets.subpkgdir}}/usr/bin
           ln -sf /usr/lib/jvm/openjdk/bin/java ${{targets.subpkgdir}}/usr/bin/java
     description: OpenJDK 11 (JRE)
@@ -64,5 +68,6 @@ subpackages:
       runtime:
         - freetype
         - fontconfig
+
 update:
   enabled: false

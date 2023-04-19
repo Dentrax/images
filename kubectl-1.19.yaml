@@ -9,6 +9,7 @@ package:
     - license: Apache-2.0
       paths:
         - "*"
+
 environment:
   contents:
     repositories:
@@ -26,6 +27,7 @@ environment:
       - grep
       - linux-headers
       - rsync
+
 pipeline:
   # Fetch from releases page
   # https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.19.md#downloads-for-v11916
@@ -34,6 +36,7 @@ pipeline:
       uri: https://dl.k8s.io/v${{package.version}}/kubernetes-src.tar.gz
       expected-sha512: 59bdd7de5c70c31158d4b16f13930fbca6dd29a584e47a6a2a81f2df16cda5aed1f059d0db8907cc1cb99b4f0e8263ae26fea2f494238dc0eb3f1eb211a6b2c3
       strip-components: 0 # Required due to structure of tarball
+
   # Build the kubectl binary as stated in the community docs
   #  https://github.com/kubernetes/community/blob/master/contributors/devel/development.md#building-kubernetes
   #
@@ -49,3 +52,11 @@ pipeline:
       # Drop kubectl binary in correct spot
       mkdir -p "${TARGETDIR}"
       cp _output/bin/kubectl "${TARGETDIR}/${TARGETBIN}"
+
+update:
+  enabled: true
+  github:
+    strip-prefix: v
+    identifier: kubernetes/kubernetes
+    tag-filter: v1.19
+    use-tag: true

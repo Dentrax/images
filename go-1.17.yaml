@@ -19,7 +19,9 @@ package:
       # Needed for cgo linking due to upstream issue #15696 which forces use
       # of the gold linker.
       - binutils-gold
+
 secfixes:
+
 environment:
   contents:
     repositories:
@@ -32,15 +34,18 @@ environment:
       - build-base
       - bash
       - go
+
 pipeline:
   - uses: fetch
     with:
       uri: https://go.dev/dl/go${{package.version}}.src.tar.gz
       expected-sha256: a1a48b23afb206f95e7bbaa9b898d965f90826f6f1d1fc0c1d784ada0cd300fd
       strip-components: 0
+
   - runs: |
       cd go/src
       ./make.bash -v
+
   - runs: |
       cd go
 
@@ -72,7 +77,9 @@ pipeline:
         -exec rm -rf \{\} \+
       find "${{targets.destdir}}"/usr/lib/go/src \( -type f -a -name "*.bat" \) \
         -exec rm -rf \{\} \+
+
   - uses: strip
+
 subpackages:
   - name: "go-1.17-doc"
     description: "go documentation"
@@ -80,4 +87,14 @@ subpackages:
       - runs: |
           mkdir -p "${{targets.subpkgdir}}"/usr/share
           mv "${{targets.destdir}}"/usr/share/doc "${{targets.subpkgdir}}"/usr/share/
+
 advisories:
+
+update:
+  enabled: true
+  shared: true
+  github:
+    identifier: golang/go
+    strip-prefix: go
+    tag-filter: go1.17
+    use-tag: true

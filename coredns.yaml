@@ -1,7 +1,7 @@
 package:
   name: coredns
   version: 1.10.1
-  epoch: 3
+  epoch: 4
   description: Extensible DNS server with plugin support
   target-architecture:
     - all
@@ -28,24 +28,26 @@ environment:
       - busybox
 
 pipeline:
-  - uses: fetch
+  - uses: git-checkout
     with:
-      uri: https://github.com/coredns/coredns/archive/refs/tags/v${{package.version}}.tar.gz
-      expected-sha256: f47186452e5f2925e2c71135669afd9e03b9b55831417d33d612ef2fa69924a7
+      repository: https://github.com/coredns/coredns
+      expected-commit: 055b2c31a9cf28321734e5f71613ea080d216cd3
+      tag: v${{package.version}}
 
-# We're already calculating sha, which makes explicating git commit ID redundant
-# Manually apply the git commit number (055b2c3 for v1.10.1)
   - runs: |
       # Mitigate GHSA-vvpx-j8f3-3w6h
       go get golang.org/x/net@v0.7.0
-      
-      # Manually apply the git commit number (055b2c3 for v1.10.1)
-      GIT_COMMIT="055b2c3"
 
-      CGO_ENABLED=0 go build -ldflags="-s -w -X github.com/coredns/coredns/coremain.GitCommit=${GIT_COMMIT}" -o "${{targets.destdir}}/bin/"
+      CGO_ENABLED=0 go build -ldflags="-s -w -X github.com/coredns/coredns/coremain.GitCommit=$(git rev-parse --short HEAD)" -o "${{targets.destdir}}/bin/"
 
+      # TODO James R - need to check this as fails when building locally, is copying these certs correct?
       mkdir -p "${{targets.destdir}}/etc/ssl/certs"
       mv /etc/ssl/certs/ca-certificates.crt ${{targets.destdir}}/etc/ssl/certs/
 
-
   - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: coredns/coredns
+    strip-prefix: v
