@@ -18,7 +18,7 @@ env:
 jobs:
   update:
     name: Wolfictl Update
-    if: github.repository == 'wolfi-dev/os'
+    if: github.repository == 'chainguard-dev/enterprise-packages'
     runs-on: ubuntu-latest
 
     steps:
