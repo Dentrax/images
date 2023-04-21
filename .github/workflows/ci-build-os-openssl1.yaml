@@ -84,14 +84,3 @@ jobs:
         with:
           entrypoint: wolfictl
           args: check so-name
-
-      - name: 'Generate dependency svg'
-        uses: docker://ghcr.io/wolfi-dev/wolfictl:latest
-        with:
-          entrypoint: wolfictl
-          args: svg --dir=./sub-os-openssl1
-
-      - uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
-        with:
-          name: dag.svg
-          path: ./sub-os-openssl1/dag.svg
