@@ -29,6 +29,6 @@ jobs:
         entrypoint: wolfictl
         args: update https://github.com/${{github.repository}} --github-release-query=false
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.FINE_GRAINED_ENT_PKG }}
         GIT_AUTHOR_NAME: ${{ env.GIT_AUTHOR_NAME }}
         GIT_AUTHOR_EMAIL: ${{ env.GIT_AUTHOR_EMAIL }}
