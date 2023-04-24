@@ -1,6 +1,6 @@
 package:
   name: hubble-ui-backend
-  version: 0.10.0
+  version: 0.11.0
   epoch: 0
   description: "Observability & troubleshooting for Kubernetes services"
   target-architecture:
@@ -37,7 +37,7 @@ pipeline:
       repository: https://github.com/cilium/hubble-ui
       tag: v${{package.version}}
       destination: hubble-ui
-      expected-commit: aeb74a84fb8ea9f769965a4c3d432acf4dae2a08
+      expected-commit: f22876f59bd4cc62484f460758c7f49f5345d61f
 
   - runs: |
       cd hubble-ui/backend
