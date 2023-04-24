@@ -1,7 +1,7 @@
 package:
   name: kubectl-1.23
-  version: 1.23.15
-  epoch: 1
+  version: 1.23.17
+  epoch: 0
   description: Command-line interface for Kubernetes
   target-architecture:
     - all
@@ -34,7 +34,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://dl.k8s.io/v${{package.version}}/kubernetes-src.tar.gz
-      expected-sha512: c2987ea018c02c9d74efcc3b1ea11737427a76dd4689ec8e1975951c50bb046a507d997dd02c85fa75ac8401d4212a90d848549955288f002117f169569593aa
+      expected-sha512: f39f80416da9835ed912f04e54579ebd98b0b6e3c2cc1097abc1c98ec4d9b020f0f60ac733f323b38e6230e39ebf9d40a272885af2fbdf842a6932b051053ec5
       strip-components: 0 # Required due to structure of tarball
 
   # Build the kubectl binary as stated in the community docs
