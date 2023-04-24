@@ -1,7 +1,7 @@
 package:
   name: nodejs-14
-  version: 14.21.2
-  epoch: 1
+  version: 14.21.3
+  epoch: 0
   description: "JavaScript runtime built on V8 engine - LTS version"
   target-architecture:
     - all
@@ -38,7 +38,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://nodejs.org/dist/v${{package.version}}/node-v${{package.version}}.tar.gz
-      expected-sha256: aad2b8ac4808a069648caf0dcc938a7a01265c1efcdeb7329a7cc9474f2b87eb
+      expected-sha256: 97eb4c0ea1ffb73eb0486db5125e5351f744e65df6b3d10fbc0611dec7fd27cb
 
   - name: Configure and build
     runs: |
