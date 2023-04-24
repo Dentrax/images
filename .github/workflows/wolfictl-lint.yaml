@@ -1,6 +1,9 @@
 name: Enterprise
 
 on:
+  push:
+    branches:
+      - gh-readonly-queue/main/**
   pull_request:
     branches: ['main']
     paths:
