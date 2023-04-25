@@ -1,8 +1,8 @@
 # Generated from https://pypi.org/project/pip/
 package:
   name: py3.7-pip
-  version: 23.0.1
-  epoch: 1
+  version: 23.1.1
+  epoch: 0
   description: The PyPA recommended tool for installing Python packages.
   target-architecture:
     - all
@@ -30,11 +30,11 @@ environment:
       - py3.7-setuptools
 
 pipeline:
-  - uses: fetch
+  - uses: git-checkout
     with:
-      README: 'CONFIRM WITH: curl -L https://files.pythonhosted.org/packages/6b/8b/0b16094553ecc680e43ded8f920c3873b01b1da79a54274c98f08cb29fca/pip-23.0.1.tar.gz | sha256sum'
-      expected-sha256: cd015ea1bfb0fcef59d8a286c1f8bebcb983f6317719d415dc5351efb7cd7024
-      uri: https://files.pythonhosted.org/packages/6b/8b/0b16094553ecc680e43ded8f920c3873b01b1da79a54274c98f08cb29fca/pip-${{package.version}}.tar.gz
+      repository: https://github.com/pypa/pip
+      expected-commit: ee40d71817df8346af3d96051a298db8f22e52f1
+      tag: ${{package.version}}
 
   - name: Python Build
     runs: python setup.py build
@@ -46,6 +46,7 @@ pipeline:
 
 update:
   enabled: true
+  shared: true
   github:
     identifier: pypa/pip
     use-tag: true
