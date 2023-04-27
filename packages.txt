@@ -3,7 +3,6 @@ chainguard-baselayout
 hello-world
 coredns
 kube-oidc-proxy
-oauth2-proxy
 nodejs-14
 grafana
 dex-k8s-authenticator
