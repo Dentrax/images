@@ -1,6 +1,6 @@
 package:
   name: mongosh
-  version: 1.8.1
+  version: 1.8.2
   epoch: 0
   description: The MongoDB Shell
   copyright:
@@ -28,7 +28,7 @@ pipeline:
     with:
       repository: https://github.com/mongodb-js/mongosh
       tag: v${{package.version}}
-      expected-commit: b0244ae6670f5a0f375abbb38bcf3465917de6e4
+      expected-commit: c71dbb701126389e15f54ee9010b0efe32b616b6
 
   - runs: |
       export SEGMENT_API_KEY="dummy"
