@@ -17,7 +17,7 @@ env:
   CLUSTER_ZONE: us-central1-b
   SERVICE_ACCOUNT: prod-images-ci
   FQ_SERVICE_ACCOUNT: prod-images-ci@prod-images-c6e5.iam.gserviceaccount.com
-  BUCKET: chainguard-enterprise-registry-source/os/sub-os-openssl1/
+  BUCKET: chainguard-enterprise-registry-enterprise/os/sub-os-openssl1/
   SRC_BUCKET: gs://chainguard-enterprise-registry-destination/os/sub-os-openssl1/
   SUB_REPO_NAME: sub-os-openssl1
   SIGNING_SECRET_NAME: melange-signing-key-enterprise

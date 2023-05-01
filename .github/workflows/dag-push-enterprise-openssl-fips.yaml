@@ -19,7 +19,7 @@ env:
   CLUSTER_ZONE: us-central1-b
   SERVICE_ACCOUNT: prod-images-ci
   FQ_SERVICE_ACCOUNT: prod-images-ci@prod-images-c6e5.iam.gserviceaccount.com
-  BUCKET: chainguard-enterprise-registry-source/os/openssl-fips/
+  BUCKET: chainguard-enterprise-registry-enterprise/os/openssl-fips/
   SRC_BUCKET: gs://chainguard-enterprise-registry-destination/os/openssl-fips/
   SUB_REPO_NAME: openssl-fips
   SIGNING_SECRET_NAME: melange-signing-key-enterprise
