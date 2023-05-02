@@ -1,6 +1,6 @@
 package:
   name: kots
-  version: 1.98.1
+  version: 1.98.2
   epoch: 0
   description: Kubernetes Off-The-Shelf (KOTS) Software
   target-architecture:
@@ -47,7 +47,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://github.com/replicatedhq/kots/archive/refs/tags/v${{package.version}}.tar.gz
-      expected-sha256: 652c246e0a9deeb426ae20138ff20b67dcbc69f2c9ae4393196e0886be2a1f53
+      expected-sha256: d48d96885cf865a28b1d6c4f81b76e7cf640b9693c29aa2615deefa9d1c13c06
 
   - runs: |
       set -x
