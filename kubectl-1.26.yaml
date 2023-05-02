@@ -1,0 +1,44 @@
+package:
+  name: kubectl-1.26
+  version: 1.26.4
+  epoch: 0
+  description: Command-line interface for Kubernetes
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - bash
+      - build-base
+      - busybox
+      - ca-certificates-bundle
+      - findutils
+      - go
+      - go-bindata
+      - grep
+      - linux-headers
+      - rsync
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://github.com/kubernetes/kubernetes/archive/v${{package.version}}.tar.gz
+      expected-sha256: 70ec54b87bc956b601b89694b14a46616f68e060fef215ece799a9049fe050d9
+
+  - runs: |
+      make kubectl
+      mkdir -p ${{targets.destdir}}/usr/bin/
+      cp _output/bin/kubectl ${{targets.destdir}}/usr/bin/kubectl
+
+update:
+  enabled: true
+  github:
+    strip-prefix: v
+    identifier: kubernetes/kubernetes
+    tag-filter: v1.26
+    use-tag: true
