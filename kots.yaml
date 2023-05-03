@@ -1,7 +1,7 @@
 package:
   name: kots
   version: 1.98.2
-  epoch: 0
+  epoch: 1
   description: Kubernetes Off-The-Shelf (KOTS) Software
   target-architecture:
     - all
@@ -15,6 +15,7 @@ package:
       - curl
       - bash
       - busybox
+      - kubectl-1.26
       - kubectl-1.25
       - kubectl-1.24
       - kubectl-1.23
