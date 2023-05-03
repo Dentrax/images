@@ -13,6 +13,7 @@ package:
   dependencies:
     runtime:
       - bash
+
 environment:
   contents:
     repositories:
@@ -28,6 +29,7 @@ environment:
       - yarn
       - posix-libc-utils
       - nodejs-14
+
 pipeline:
   - name: frontend
     runs: |
@@ -39,11 +41,13 @@ pipeline:
       yarn run plugins:build-bundled
 
       mv .git-bak .git # END workaround for using yarn with submodules
+
   - name: backaend
     runs: |
       make build-go
       mkdir -p ${{targets.destdir}}/usr/share/grafana/bin
       mv ./bin/linux-*/* ${{targets.destdir}}/usr/share/grafana/bin/
+
   - name: package
     runs: |
       mkdir -p ${{targets.destdir}}/usr/share/grafana/plugins-bundled
@@ -65,6 +69,7 @@ pipeline:
 
       mkdir -p ${{targets.destdir}}/etc/grafana/
       cp ${{targets.destdir}}/usr/share/grafana/conf/sample.ini ${{targets.destdir}}/etc/grafana/grafana.ini
+
 subpackages:
   - name: grafana-homepage
     pipeline:
@@ -72,12 +77,14 @@ subpackages:
           mkdir -p ${{targets.subpkgdir}}/usr/share/grafana/public/dashboards
           mv home.json ${{targets.subpkgdir}}/usr/share/grafana/public/dashboards/
     description: Default Grafana Homepage
+
   - name: grafana-dashboards
     pipeline:
       - runs: |
           mkdir -p ${{targets.subpkgdir}}/usr/share/grafana/public
           mv dashboards ${{targets.subpkgdir}}/usr/share/grafana/public/
     description: Default Grafana Dashboards
+
 secfixes:
   7.5.19-r0:
     - CVE-2021-36156
@@ -87,6 +94,7 @@ secfixes:
     - CVE-2022-31123
   7.5.21-r0:
     - CVE-2023-28119
+
 advisories:
   CVE-2021-36156:
     - timestamp: 2023-02-13T21:05:51.274628Z
@@ -112,5 +120,6 @@ advisories:
     - timestamp: 2023-05-03T15:52:54.679995568Z
       status: fixed
       fixed-version: 7.5.21-r0
+
 update:
   enabled: false # this is already auto updated via PR from the chainguard grafana fork
