@@ -1,5 +1,6 @@
 package:
   name: kots
+  # When bumping the version check if the GHSA mitigations below can be removed.
   version: 1.98.2
   epoch: 1
   description: Kubernetes Off-The-Shelf (KOTS) Software
@@ -54,6 +55,9 @@ pipeline:
       set -x
       export DESTDIR="${{targets.destdir}}"
       mkdir -p "${DESTDIR}"
+      
+      # Mitigate GHSA-2x32-jm95-2cpx, GHSA-m9hp-7r99-94h5, GHSA-vh7g-p26c-j2cw
+      go get -u github.com/dexidp/dex@2.35.0
 
       # Scripts etc.
       mv deploy/assets/backup.sh "${DESTDIR}/backup.sh"
