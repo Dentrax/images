@@ -36,3 +36,4 @@ mongosh
 openjdk-14
 openjdk-15
 openjdk-16
+prometheus-postgres-exporter
