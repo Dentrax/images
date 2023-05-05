@@ -5,11 +5,9 @@ package:
   description: Prometheus Exporter for Postgres server metrics
   copyright:
     - license: Apache-2.0
-  target-architecture:
-    - all
-    dependencies:
-      provides:
-        - 'prometheus-postgres-exporter=1.10.0'
+  dependencies:
+    provides:
+      - 'prometheus-postgres-exporter=1.10.0'
 
 environment:
   contents:
