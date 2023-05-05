@@ -1,17 +1,22 @@
 package:
   name: prometheus-postgres-exporter-0.10
-  version: 0.10.0
+  version: 0.10.1
   epoch: 1
   description: Prometheus Exporter for Postgres server metrics
   copyright:
     - license: Apache-2.0
+  target-architecture:
+    - all
 
 environment:
   contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
     packages:
       - ca-certificates-bundle
       - busybox
-      - bash
       - build-base
       - go
       - curl
@@ -21,7 +26,7 @@ pipeline:
     with:
       repository: https://github.com/prometheus-community/postgres_exporter
       tag: v${{package.version}}
-      expected-commit: f9a1edbbc6d629663aa658378e1d989293e6e488
+      expected-commit: 6cff384d7433bcb1104efe3b496cd27c0658eb09
 
   - runs: |
       go mod tidy
