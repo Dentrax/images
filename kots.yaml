@@ -1,7 +1,8 @@
 package:
   name: kots
-  version: 1.98.2
-  epoch: 1
+  # When bumping the version check if the GHSA mitigations below can be removed.
+  version: 1.98.3
+  epoch: 0
   description: Kubernetes Off-The-Shelf (KOTS) Software
   target-architecture:
     - all
@@ -48,7 +49,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://github.com/replicatedhq/kots/archive/refs/tags/v${{package.version}}.tar.gz
-      expected-sha256: d48d96885cf865a28b1d6c4f81b76e7cf640b9693c29aa2615deefa9d1c13c06
+      expected-sha256: cb439d7a1333d0639e446a8d65ab4c4966f24e53082891ff57ba14bfea46c7c4
 
   - runs: |
       set -x
