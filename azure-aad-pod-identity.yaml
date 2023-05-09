@@ -1,0 +1,41 @@
+package:
+  name: azure-aad-pod-identity
+  version: 1.8.15
+  epoch: 0
+  description: Assign Azure Active Directory Identities to Kubernetes applications.
+  copyright:
+    - license: MIT
+
+environment:
+  contents:
+    packages:
+      - ca-certificates-bundle
+      - busybox
+      - bash
+      - build-base
+      - go
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/Azure/aad-pod-identity
+      tag: v${{package.version}}
+      expected-commit: b64167ad192d8465ff3c6930a296a5d2169eece9
+
+  - runs: |
+      unset LDFLAGS
+      make build ARCH=$(go env GOARCH)
+
+  - runs: |
+      install -Dm755 bin/aad-pod-identity/nmi "${{targets.destdir}}"/usr/bin/nmi
+      install -Dm755 bin/aad-pod-identity/mic "${{targets.destdir}}"/usr/bin/mic
+
+  - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: Azure/aad-pod-identity
+    strip-prefix: v
+    tag-filter: v
+    use-tag: true

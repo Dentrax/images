@@ -37,3 +37,4 @@ openjdk-14
 openjdk-15
 openjdk-16
 prometheus-postgres-exporter-0.10
+azure-aad-pod-identity
