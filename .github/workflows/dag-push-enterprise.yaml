@@ -141,7 +141,7 @@ jobs:
       - working-directory: ${{github.workspace}}/os
         run: |
           wolfictl pod \
-            --cpu=30 --ram=100Gi \
+            --cpu=28 --ram=95Gi \
             --bucket=${BUCKET} \
             --src-bucket=${SRC_BUCKET} \
             --secret-key \
