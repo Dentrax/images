@@ -1,7 +1,8 @@
 package:
   name: kots
+  # When bumping the version check if the GHSA mitigations below can be removed.
   version: 1.98.2
-  epoch: 1
+  epoch: 2
   description: Kubernetes Off-The-Shelf (KOTS) Software
   target-architecture:
     - all
@@ -55,6 +56,10 @@ pipeline:
       export DESTDIR="${{targets.destdir}}"
       mkdir -p "${DESTDIR}"
 
+      # Mitigate GHSA-2x32-jm95-2cpx, GHSA-m9hp-7r99-94h5, GHSA-vh7g-p26c-j2cw
+      # This commit corresponds to v2.35.0: https://github.com/dexidp/dex/tree/v2.35.0
+      go get -u github.com/dexidp/dex@e4bceef9f3d1ff97a12fbbdb464047c5f1fac8b5
+
       # Scripts etc.
       mv deploy/assets/backup.sh "${DESTDIR}/backup.sh"
       mv deploy/assets/restore-db.sh "${DESTDIR}/restore-db.sh"
@@ -105,3 +110,23 @@ update:
   github:
     identifier: replicatedhq/kots
     strip-prefix: v
+
+advisories:
+  GHSA-2x32-jm95-2cpx:
+    - timestamp: 2023-05-03T11:36:28.82722-04:00
+      status: fixed
+      fixed-version: 1.98.2-r2
+  GHSA-m9hp-7r99-94h5:
+    - timestamp: 2023-05-03T11:36:28.85916-04:00
+      status: fixed
+      fixed-version: 1.98.2-r2
+  GHSA-vh7g-p26c-j2cw:
+    - timestamp: 2023-05-03T11:36:28.886865-04:00
+      status: fixed
+      fixed-version: 1.98.2-r2
+
+secfixes:
+  1.98.2-r2:
+    - GHSA-2x32-jm95-2cpx
+    - GHSA-m9hp-7r99-94h5
+    - GHSA-vh7g-p26c-j2cw
