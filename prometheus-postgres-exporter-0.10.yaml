@@ -34,7 +34,6 @@ pipeline:
       make build
 
   - runs: |
-      install -Dm755 postgres_exporter "${{targets.destdir}}"/usr/bin/postgres_exporter
       # Mitigate GHSA-cg3q-j54f-5p7p
       go get github.com/prometheus/client_golang/prometheus/promhttp@v1.11.1
       # Mitigate GHSA-7rg2-cxvp-9p7p
@@ -51,6 +50,8 @@ pipeline:
       go get golang.org/x/sys@v0.0.0-20220412211240-33da011f77ad
       # Mitigate GHSA-ppp9-7jff-5vj2 and GHSA-69ch-w2m2-3vjp
       go get golang.org/x/text@v0.3.8
+      
+      install -Dm755 postgres_exporter "${{targets.destdir}}"/usr/bin/postgres_exporter
 
   - uses: strip
 
