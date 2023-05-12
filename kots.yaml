@@ -55,17 +55,23 @@ pipeline:
       export DESTDIR="${{targets.destdir}}"
       mkdir -p "${DESTDIR}"
 
-      # Mitigate GHSA-2x32-jm95-2cpx, GHSA-m9hp-7r99-94h5, GHSA-vh7g-p26c-j2cw
-      # This commit corresponds to v2.36.0: https://github.com/dexidp/dex/tree/v2.36.0
-      go get -u github.com/dexidp/dex@2bb4896d120efec1adc98f5db178a6d7206c9cc7
+      # Mitigate
+      # GHSA-2x32-jm95-2cpx
+      # GHSA-m9hp-7r99-94h5 / CVE-2020-26290
+      # GHSA-vh7g-p26c-j2cw / CVE-2022-39222
+      # dex doesn't do go mods well, so we fetch by commit (this is v2.36.0)
+      go get github.com/dexidp/dex@2bb4896d120efec1adc98f5db178a6d7206c9cc7
 
-      # Mitigate GHSA-2q89-485c-9j2x
-      # This commit corresponds to v1.3.3: https://github.com/cloudflare/circl/tree/v1.3.3
-      go get -u github.com/cloudflare/circl@3bef500f2b925f150815a360b90081021e082939
+      # Mitigate GHSA-2q89-485c-9j2x / CVE-2023-1732
+      go get github.com/cloudflare/circl@v1.3.3
 
-      # Mitigate GHSA-2h5h-59f5-c5x9
-      # This commit corresponds to v1.1.1: https://github.com/sigstore/rekor/tree/v1.1.1
-      go get -u github.com/sigstore/rekor@0c1914e5e955cb9f514e32b222cf61a13e91ab08
+      # Mitigate GHSA-2h5h-59f5-c5x9 / CVE-2023-30551
+      go get github.com/sigstore/rekor@v1.1.1
+      
+      # Mitigate GHSA-hqxw-f8mx-cpmw / CVE-2023-2253
+      go get github.com/docker/distribution@v2.8.2-beta.1+incompatible
+      
+      go mod tidy
 
       # Scripts etc.
       mv deploy/assets/backup.sh "${DESTDIR}/backup.sh"
