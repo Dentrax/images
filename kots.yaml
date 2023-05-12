@@ -55,6 +55,18 @@ pipeline:
       export DESTDIR="${{targets.destdir}}"
       mkdir -p "${DESTDIR}"
 
+      # Mitigate GHSA-2x32-jm95-2cpx, GHSA-m9hp-7r99-94h5, GHSA-vh7g-p26c-j2cw
+      # This commit corresponds to v2.36.0: https://github.com/dexidp/dex/tree/v2.36.0
+      go get -u github.com/dexidp/dex@2bb4896d120efec1adc98f5db178a6d7206c9cc7
+
+      # Mitigate GHSA-2q89-485c-9j2x
+      # This commit corresponds to v1.3.3: https://github.com/cloudflare/circl/tree/v1.3.3
+      go get -u github.com/cloudflare/circl@3bef500f2b925f150815a360b90081021e082939
+
+      # Mitigate GHSA-2h5h-59f5-c5x9
+      # This commit corresponds to v1.1.1: https://github.com/sigstore/rekor/tree/v1.1.1
+      go get -u github.com/sigstore/rekor@0c1914e5e955cb9f514e32b222cf61a13e91ab08
+
       # Scripts etc.
       mv deploy/assets/backup.sh "${DESTDIR}/backup.sh"
       mv deploy/assets/restore-db.sh "${DESTDIR}/restore-db.sh"
