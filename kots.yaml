@@ -1,7 +1,7 @@
 package:
   name: kots
   version: 1.98.3
-  epoch: 0
+  epoch: 1
   description: Kubernetes Off-The-Shelf (KOTS) Software
   target-architecture:
     - all
@@ -67,10 +67,10 @@ pipeline:
 
       # Mitigate GHSA-2h5h-59f5-c5x9 / CVE-2023-30551
       go get github.com/sigstore/rekor@v1.1.1
-      
+
       # Mitigate GHSA-hqxw-f8mx-cpmw / CVE-2023-2253
       go get github.com/docker/distribution@v2.8.2-beta.1+incompatible
-      
+
       go mod tidy
 
       # Scripts etc.
@@ -125,6 +125,26 @@ update:
     strip-prefix: v
 
 advisories:
+  CVE-2020-26290:
+    - timestamp: 2023-05-12T11:44:13.395693-04:00
+      status: fixed
+      fixed-version: 1.98.3-r1
+  CVE-2022-39222:
+    - timestamp: 2023-05-12T11:45:09.621219-04:00
+      status: fixed
+      fixed-version: 1.98.3-r1
+  CVE-2023-1732:
+    - timestamp: 2023-05-12T11:45:39.476953-04:00
+      status: fixed
+      fixed-version: 1.98.3-r1
+  CVE-2023-2253:
+    - timestamp: 2023-05-12T11:45:52.027295-04:00
+      status: fixed
+      fixed-version: 1.98.3-r1
+  CVE-2023-30551:
+    - timestamp: 2023-05-12T11:45:45.110829-04:00
+      status: fixed
+      fixed-version: 1.98.3-r1
   GHSA-2x32-jm95-2cpx:
     - timestamp: 2023-05-03T11:36:28.82722-04:00
       status: fixed
@@ -143,3 +163,9 @@ secfixes:
     - GHSA-2x32-jm95-2cpx
     - GHSA-m9hp-7r99-94h5
     - GHSA-vh7g-p26c-j2cw
+  1.98.3-r1:
+    - CVE-2020-26290
+    - CVE-2022-39222
+    - CVE-2023-1732
+    - CVE-2023-30551
+    - CVE-2023-2253
