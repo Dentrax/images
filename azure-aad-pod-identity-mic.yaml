@@ -1,5 +1,5 @@
 package:
-  name: azure-aad-pod-identity
+  name: azure-aad-pod-identity-mic
   version: 1.8.15
   epoch: 1
   description: Assign Azure Active Directory Identities to Kubernetes applications.
@@ -28,22 +28,12 @@ pipeline:
 
   - runs: |
       unset LDFLAGS
-      make build ARCH=$(go env GOARCH)
-
-  - runs: |
-      install -Dm755 bin/aad-pod-identity/nmi "${{targets.destdir}}"/usr/bin/nmi
+      make build ARCH=$(go env GOARCH) IMAGE_VERSION=${{package.version}}
       install -Dm755 bin/aad-pod-identity/mic "${{targets.destdir}}"/usr/bin/mic
 
   - uses: strip
 
 subpackages:
-  - name: azure-aad-pod-identity-mic
-    description: Azure Active Directory Pod Identity (Managed Identity Controller)
-    pipeline:
-      - runs: |
-          install -Dm755 bin/aad-pod-identity/mic "${{targets.subpkgdir}}"/usr/bin/mic
-      - uses: strip
-
   - name: azure-aad-pod-identity-nmi
     description: Azure Active Directory Pod Identity (Node Managed Identity)
     pipeline:
