@@ -85,41 +85,5 @@ subpackages:
           mv dashboards ${{targets.subpkgdir}}/usr/share/grafana/public/
     description: Default Grafana Dashboards
 
-secfixes:
-  7.5.19-r0:
-    - CVE-2021-36156
-    - CVE-2022-31130
-    - CVE-2022-31107
-    - CVE-2022-39201
-    - CVE-2022-31123
-  7.5.21-r0:
-    - CVE-2023-28119
-
-advisories:
-  CVE-2021-36156:
-    - timestamp: 2023-02-13T21:05:51.274628Z
-      status: fixed
-      fixed-version: 7.5.19-r0
-  CVE-2022-31107:
-    - timestamp: 2023-02-13T21:05:51.288219Z
-      status: fixed
-      fixed-version: 7.5.19-r0
-  CVE-2022-31123:
-    - timestamp: 2023-02-13T21:05:51.294187Z
-      status: fixed
-      fixed-version: 7.5.19-r0
-  CVE-2022-31130:
-    - timestamp: 2023-02-13T21:05:51.285684Z
-      status: fixed
-      fixed-version: 7.5.19-r0
-  CVE-2022-39201:
-    - timestamp: 2023-02-13T21:05:51.292488Z
-      status: fixed
-      fixed-version: 7.5.19-r0
-  CVE-2023-28119:
-    - timestamp: 2023-05-03T15:52:54.679995568Z
-      status: fixed
-      fixed-version: 7.5.21-r0
-
 update:
   enabled: false # this is already auto updated via PR from the chainguard grafana fork

@@ -20,8 +20,6 @@ package:
       # of the gold linker.
       - binutils-gold
 
-secfixes:
-
 environment:
   contents:
     repositories:
@@ -87,8 +85,6 @@ subpackages:
       - runs: |
           mkdir -p "${{targets.subpkgdir}}"/usr/share
           mv "${{targets.destdir}}"/usr/share/doc "${{targets.subpkgdir}}"/usr/share/
-
-advisories:
 
 update:
   enabled: true
