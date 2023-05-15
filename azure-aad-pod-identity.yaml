@@ -32,15 +32,23 @@ pipeline:
 
   - runs: |
       install -Dm755 bin/aad-pod-identity/nmi "${{targets.destdir}}"/usr/bin/nmi
+      install -Dm755 bin/aad-pod-identity/mic "${{targets.destdir}}"/usr/bin/mic
 
   - uses: strip
 
 subpackages:
   - name: azure-aad-pod-identity-mic
-    description: Azure Active Directory 
+    description: Azure Active Directory Pod Identity (Managed Identity Controller)
     pipeline:
       - runs: |
           install -Dm755 bin/aad-pod-identity/mic "${{targets.subpkgdir}}"/usr/bin/mic
+      - uses: strip
+
+  - name: azure-aad-pod-identity-nmi
+    description: Azure Active Directory Pod Identity (Node Managed Identity)
+    pipeline:
+      - runs: |
+          install -Dm755 bin/aad-pod-identity/nmi "${{targets.subpkgdir}}"/usr/bin/nmi
       - uses: strip
 
 update:
