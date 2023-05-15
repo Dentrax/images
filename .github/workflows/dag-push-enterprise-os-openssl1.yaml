@@ -90,7 +90,7 @@ jobs:
   #       dag, or if we have staging builds reuse the prod source cache, then
   #       we only need to update it before prod builds.
 
-  
+
   build-amd64:
     name: Build (amd64)
     runs-on: ubuntu-latest
@@ -140,7 +140,7 @@ jobs:
 
       # TODO Let's not combine two experiments at the sametime, switch to using the wolfictl image as a followup
 
-      # - uses: docker://ghcr.io/wolfi-dev/wolfictl:latest
+      # - uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:5cbb46d9b3a8dd18409ad47ae7682ca761a84ac7dcec8d22f16acc3c12e37e7c
       #   with:
       #     entrypoint: wolfictl
       #     args: pod \
@@ -159,6 +159,7 @@ jobs:
             --cpu=30 --ram=100Gi \
             --bucket=${BUCKET} \
             --src-bucket=${SRC_BUCKET} \
+            --sdk-image ghcr.io/wolfi-dev/sdk:latest@sha256:48d1c07f3f2a7d681303e05a18c8c3e747afd2ae27414807240727b989fa2d1b \
             --secret-key \
             --arch=amd64 \
             --signing-key-name=chainguard-enterprise \
@@ -213,7 +214,7 @@ jobs:
 
       # TODO Let's not combine two experiments at the sametime, switch to using the wolfictl image as a followup
 
-      # - uses: docker://ghcr.io/wolfi-dev/wolfictl:latest
+      # - uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:5cbb46d9b3a8dd18409ad47ae7682ca761a84ac7dcec8d22f16acc3c12e37e7c
       #   with:
       #     entrypoint: wolfictl
       #     args: pod \
@@ -232,6 +233,7 @@ jobs:
             --cpu=30 --ram=100Gi \
             --bucket=${BUCKET} \
             --src-bucket=${SRC_BUCKET} \
+            --sdk-image ghcr.io/wolfi-dev/sdk:latest@sha256:48d1c07f3f2a7d681303e05a18c8c3e747afd2ae27414807240727b989fa2d1b \
             --secret-key \
             --arch=arm64 \
             --signing-key-name=chainguard-enterprise \
