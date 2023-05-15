@@ -3,24 +3,12 @@
 set -euo pipefail
 
 for f in *.yaml; do
-  echo "---" $f
+  echo "---" "$f"
 
-  # Check that every name-version-epoch is defined in Makefile
-  name=$(yq '.package.name' $f)
-  version=$(yq '.package.version' $f)
-  epoch=$(yq '.package.epoch' $f)
-  want="build-package,${name},${version}-r${epoch}"
-  if ! grep -q $want Makefile; then
-    echo "missing $want in Makefile"
+  # Check that every package name is listed in packages.txt
+  want=$(yq '.package.name' "$f")
+  if ! grep -q "$want" packages.txt; then
+    echo "missing $want in packages.txt"
     exit 1
-  fi
-
-  # Don't specify packages.wolfi.dev/os as a repository, and remove it from the keyring.
-  # Packages from the bootstrap repo should be allowed, but otherwise packages
-  # should be fetched locally and the local repository should be appended at
-  # build time.
-  if grep -q packages.wolfi.dev/os $f; then
-    yq -i 'del(.environment.contents.repositories)' $f
-    yq -i 'del(.environment.contents.keyring)' $f
   fi
 done
