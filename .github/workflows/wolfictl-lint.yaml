@@ -23,20 +23,20 @@ jobs:
 
       - name: Lint
         id: lint
-        uses: docker://ghcr.io/wolfi-dev/wolfictl:latest
+        uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:5cbb46d9b3a8dd18409ad47ae7682ca761a84ac7dcec8d22f16acc3c12e37e7c
         with:
           entrypoint: wolfictl
           args: lint  --skip-rule forbidden-repository-used --skip-rule forbidden-keyring-used
 
       - name: Enforce YAML formatting
         id: lint-yaml
-        uses: docker://ghcr.io/wolfi-dev/wolfictl:latest
+        uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:5cbb46d9b3a8dd18409ad47ae7682ca761a84ac7dcec8d22f16acc3c12e37e7c
         with:
           entrypoint: wolfictl
           args: lint yam
       - name: Advisory sync
         id: advisory
-        uses: docker://ghcr.io/wolfi-dev/wolfictl:latest
+        uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:5cbb46d9b3a8dd18409ad47ae7682ca761a84ac7dcec8d22f16acc3c12e37e7c
         with:
           entrypoint: wolfictl
-          args: "advisory sync-secfixes --warn"
+          args: "advisory sync-secfixes --warn -a ."
