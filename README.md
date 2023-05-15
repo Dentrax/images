@@ -11,6 +11,8 @@ details.
 
 This repo is owned by the [Images Team](https://wiki.inky.wtf/docs/teams/engineering/images/chainguard-images/).
 
+For help with patching CVEs and recording the associated advisory data, see the ["How To Patch CVEs"](https://github.com/wolfi-dev/os/blob/main/HOW_TO_PATCH_CVES.md) documentation in Wolfi.
+
 # Contents
 
 This repository is based on the open source [Wolfi OS repository](https://github.com/wolfi-dev/os) with a few differences.
@@ -19,7 +21,7 @@ This repository is based on the open source [Wolfi OS repository](https://github
 
 Tp add a new melange package, create a melange yaml file and make sure you add an entry to the Makefile that matches the `package.name` and `package.version`.
 
-The main difference to Wolfi OS is that we need to specifiy the Wolfi OS repository and keyring so we can fetch dependencies when building.  
+The main difference to Wolfi OS is that we need to specifiy the Wolfi OS repository and keyring so we can fetch dependencies when building.
 
 i.e.
 
@@ -71,7 +73,7 @@ Additionally, when working on a fork, if you fix a CVE make sure to include a `f
 
 ## Sub repositories
 
-There are situations where we need a new Enterprise repository.  One example is to support OpenSSL 1.  In this case we don't want to mix and match apks built with different OpenSSL versions.  Rather than duplicating Git repos, infrastructure and maintenance overheads we are able to add sub folders to this Enterprise Git repo that result in their own package repositories. 
+There are situations where we need a new Enterprise repository.  One example is to support OpenSSL 1.  In this case we don't want to mix and match apks built with different OpenSSL versions.  Rather than duplicating Git repos, infrastructure and maintenance overheads we are able to add sub folders to this Enterprise Git repo that result in their own package repositories.
 
 An important note is these sub package repos are signed with the same chainguard enterprise signing key and share the same build infrastructure.
 
@@ -173,4 +175,3 @@ docker run --platform linux/aarch64 --privileged -v "$PWD":/work -w /work cgr.de
 ```
 
 You can now extend this to build your own apks using whichever private enterprise bucket you need.
-
