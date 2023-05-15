@@ -28,7 +28,7 @@ jobs:
     - uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:5cbb46d9b3a8dd18409ad47ae7682ca761a84ac7dcec8d22f16acc3c12e37e7c
       with:
         entrypoint: wolfictl
-        args: update https://github.com/${{github.repository}} --github-release-query=false --use-gitsign
+        args: update https://github.com/${{github.repository}} --github-release-query=false --use-gitsign --github-labels request-version-update --github-labels "automated pr"
       env:
         GITHUB_TOKEN: ${{ secrets.FINE_GRAINED_ENT_PKG }}
         GIT_AUTHOR_NAME: ${{ env.GIT_AUTHOR_NAME }}
