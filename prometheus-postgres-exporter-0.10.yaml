@@ -38,14 +38,12 @@ pipeline:
       go get golang.org/x/crypto@v0.0.0-20211202192323-5770296d904e
       # Mitigate CVE-2022-27191 / GHSA-8c26-wmh5-6g9v
       go get golang.org/x/crypto@v0.0.0-20220314234659-1baeb1ce4c0b
+      # Mitigate CVE-2021-38561 / GHSA-ppp9-7jff-5vj2 and CVE-2022-32149 / GHSA-69ch-w2m2-3vjp
+      go get golang.org/x/text@v0.3.8
       # Mitigate CVE-2022-27664 / GHSA-69cg-p879-7622
       go get golang.org/x/net@v0.0.0-20220906165146-f3363e06e74c
       # Mitigate CVE-2022-41723 / GHSA-vvpx-j8f3-3w6h
       go get golang.org/x/net@v0.7.0
-      # Mitigate CVE-2022-29526 / GHSA-p782-xgp4-8hr8
-      go get golang.org/x/sys@v0.0.0-20220412211240-33da011f77ad
-      # Mitigate CVE-2021-38561 / GHSA-ppp9-7jff-5vj2 and CVE-2022-32149 / GHSA-69ch-w2m2-3vjp
-      go get golang.org/x/text@v0.3.8
 
   - runs: |
       go mod tidy
