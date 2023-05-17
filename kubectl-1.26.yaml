@@ -1,6 +1,6 @@
 package:
   name: kubectl-1.26
-  version: 1.26.4
+  version: 1.26.5
   epoch: 0
   description: Command-line interface for Kubernetes
   copyright:
@@ -28,7 +28,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://github.com/kubernetes/kubernetes/archive/v${{package.version}}.tar.gz
-      expected-sha256: 70ec54b87bc956b601b89694b14a46616f68e060fef215ece799a9049fe050d9
+      expected-sha256: 17769c501faa1bc8b50d7ef9b9c037bc2105b245fd1a31ea5d812df36fb6c7af
 
   - runs: |
       make kubectl
