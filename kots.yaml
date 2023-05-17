@@ -90,11 +90,10 @@ pipeline:
       # kotsadm and kots binaries
       export VERSION=${{package.version}}
       export GIT_TAG=${{package.version}}
-      MINIO_TAG=RELEASE.2022-10-24T18-35-07Z
-      RQLITE_TAG=7.10.0
-      DEX_TAG=v2.35.3
-      SCHEMAHERO_TAG=0.13.8
-      LVP_TAG=v0.4.3
+
+      # Set environment variables from repository
+      source .image.env
+
       KOTS_KUSTOMIZE_BIN_DIR=/usr/local/bin
 
       # TODO: fix pact build error on arm https://github.com/pact-foundation/pact-js-core/issues/264
