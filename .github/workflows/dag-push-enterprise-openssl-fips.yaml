@@ -142,7 +142,7 @@ jobs:
 
       # TODO Let's not combine two experiments at the sametime, switch to using the wolfictl image as a followup
 
-      # - uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:5cbb46d9b3a8dd18409ad47ae7682ca761a84ac7dcec8d22f16acc3c12e37e7c
+      # - uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:7b26085879919c4758dca37b71097bff73d5d38beba3097f3531b298bb6bd7a1
       #   with:
       #     entrypoint: wolfictl
       #     args: pod \
@@ -161,7 +161,7 @@ jobs:
             --cpu=30 --ram=100Gi \
             --bucket=${BUCKET} \
             --src-bucket=${SRC_BUCKET} \
-            --sdk-image ghcr.io/wolfi-dev/sdk:latest@sha256:48d1c07f3f2a7d681303e05a18c8c3e747afd2ae27414807240727b989fa2d1b \
+            --sdk-image ghcr.io/wolfi-dev/sdk:latest@sha256:8e70c3f9ccdbe940568900fe950ec25b279260caf6979a37a82b573591cff5ff \
             --secret-key \
             --arch=amd64 \
             --signing-key-name=chainguard-enterprise \
@@ -216,7 +216,7 @@ jobs:
 
       # TODO Let's not combine two experiments at the sametime, switch to using the wolfictl image as a followup
 
-      # - uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:5cbb46d9b3a8dd18409ad47ae7682ca761a84ac7dcec8d22f16acc3c12e37e7c
+      # - uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:7b26085879919c4758dca37b71097bff73d5d38beba3097f3531b298bb6bd7a1
       #   with:
       #     entrypoint: wolfictl
       #     args: pod \
@@ -235,7 +235,7 @@ jobs:
             --cpu=30 --ram=100Gi \
             --bucket=${BUCKET} \
             --src-bucket=${SRC_BUCKET} \
-            --sdk-image ghcr.io/wolfi-dev/sdk:latest@sha256:48d1c07f3f2a7d681303e05a18c8c3e747afd2ae27414807240727b989fa2d1b \
+            --sdk-image ghcr.io/wolfi-dev/sdk:latest@sha256:8e70c3f9ccdbe940568900fe950ec25b279260caf6979a37a82b573591cff5ff \
             --secret-key \
             --arch=arm64 \
             --signing-key-name=chainguard-enterprise \

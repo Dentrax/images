@@ -45,13 +45,13 @@ jobs:
       - run: echo ${{ steps.secrets.outputs.token }} > ./chainguard-enterprise.rsa
 
       - name: 'Generate APKIndex x86'
-        uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:5cbb46d9b3a8dd18409ad47ae7682ca761a84ac7dcec8d22f16acc3c12e37e7c
+        uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:7b26085879919c4758dca37b71097bff73d5d38beba3097f3531b298bb6bd7a1
         with:
           entrypoint: wolfictl
           args: generate-index --bucket gs://${{ matrix.BUCKET }} --publish --signing-key ./chainguard-enterprise.rsa --arch x86_64
 
       - name: 'Generate APKIndex arm64'
-        uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:5cbb46d9b3a8dd18409ad47ae7682ca761a84ac7dcec8d22f16acc3c12e37e7c
+        uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:7b26085879919c4758dca37b71097bff73d5d38beba3097f3531b298bb6bd7a1
         with:
           entrypoint: wolfictl
           args: generate-index --bucket gs://${{ matrix.BUCKET }} --publish --signing-key ./chainguard-enterprise.rsa --arch aarch64
