@@ -1,0 +1,67 @@
+package:
+  name: kiam
+  version: 4.2
+  epoch: 0
+  description: Integrate AWS IAM with Kubernetes
+  copyright:
+    - license: Apache-2.0
+  dependencies:
+    runtime:
+      - iptables
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - go
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/uswitch/kiam
+      tag: v${{package.version}}
+      expected-commit: b795246b4a42200a3d67797dd0507564c0d9d32b
+
+  - runs: |
+      # Mitigate GHSA-c3h9-896r-86jm
+      go get github.com/gogo/protobuf@v1.3.2
+
+      # Mitigate GHSA-cg3q-j54f-5p7p
+      # Mitigate CVE-2022-21698
+      go get github.com/prometheus/client_golang@v1.11.1
+
+      # Mitigate GHSA-ppp9-7jff-5vj2
+      # Mitigate GHSA-69ch-w2m2-3vjp
+      go get golang.org/x/text@v0.3.8
+
+      # Mitigate GHSA-h86h-8ppg-mxmh
+      # Mitigate GHSA-83g2-8m93-v3w7
+      # Mitigate GHSA-69cg-p879-7622
+      # Mitigate GHSA-vvpx-j8f3-3w6h
+      go get golang.org/x/net@v0.7.0
+
+      # Mitigate GHSA-8cfg-vx93-jvxw
+      go get k8s.io/client-go@v0.20.0-alpha.2
+
+      # Mitigate GHSA-3vm4-22fp-5rfm
+      # Mitigate GHSA-gwc9-m7rh-j2ww
+      # Mitigate GHSA-8c26-wmh5-6g9v
+      go get golang.org/x/crypto@1baeb1ce4c0b
+
+      go mod tidy
+      go mod vendor
+
+      go build -o ${{targets.destdir}}/usr/bin/kiam ./cmd/kiam
+
+  - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: uswitch/kiam
+    strip-prefix: v
