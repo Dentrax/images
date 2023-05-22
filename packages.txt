@@ -39,3 +39,4 @@ openjdk-16
 prometheus-postgres-exporter-0.10
 azure-aad-pod-identity-mic
 kiam
+haproxy-2.0
