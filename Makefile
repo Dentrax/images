@@ -7,7 +7,6 @@ TARGETDIR = packages/${ARCH}
 MELANGE ?= ../melange/melange
 KEY ?= local-melange.rsa
 REPO ?= $(shell pwd)/packages
-SOURCE_DATE_EPOCH ?= 0
 
 MELANGE_OPTS += --repository-append ${REPO}
 MELANGE_OPTS += --keyring-append ${KEY}.pub
@@ -26,14 +25,19 @@ $(eval pkgtarget = $(TARGETDIR)/$(shell $(MELANGE) package-version $(pkgname).ya
 packages/$(pkgname): $(pkgtarget)
 $(pkgtarget): ${KEY}
 	mkdir -p ./$(sourcedir)/
-	SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH} ${MELANGE} build $(pkgname).yaml ${MELANGE_OPTS} --source-dir ./$(sourcedir)/
+ifdef SOURCE_DATE_EPOCH
+	$(eval CONFIG_DATE_EPOCH := $(SOURCE_DATE_EPOCH))
+else
+	$(eval CONFIG_DATE_EPOCH := $(shell git log -1 --pretty=%ct --follow $(pkgname).yaml))
+endif
+	SOURCE_DATE_EPOCH=${CONFIG_DATE_EPOCH} ${MELANGE} build $(pkgname).yaml ${MELANGE_OPTS} --source-dir ./$(sourcedir)/
 
 endef
 
 # The list of packages to be built. The order matters.
 # At some point, when ready, this should be replaced with `wolfictl text -t name .`
 # non-standard source directories are provided by adding them separated by a comma,
-# e.g. 
+# e.g.
 # postgres-11,postgres
 PKGLIST ?= $(shell cat packages.txt | grep -v '^\#' )
 
@@ -68,4 +72,4 @@ $(foreach pkg,$(PKGLIST),$(eval $(call build-package,$(pkg))))
 .build-packages: ${PACKAGES}
 
 dev-container:
-	docker run --privileged --rm -it -v "${PWD}:${PWD}" -w "${PWD}" cgr.dev/chainguard/sdk:latest
+	docker run --privileged --rm -it -v "${PWD}:${PWD}" -w "${PWD}" ghcr.io/wolfi-dev/sdk:latest@sha256:3ef78225a85ab45f46faac66603c9da2877489deb643174ba1e42d8cbf0e0644
