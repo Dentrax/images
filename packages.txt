@@ -1,7 +1,6 @@
 go-1.17
 chainguard-baselayout
 hello-world
-coredns
 kube-oidc-proxy
 nodejs-14
 grafana
