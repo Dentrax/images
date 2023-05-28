@@ -1,7 +1,7 @@
 package:
   name: azure-aad-pod-identity-mic
-  version: 1.8.15
-  epoch: 1
+  version: 1.8.16
+  epoch: 0
   description: Assign Azure Active Directory Identities to Kubernetes applications.
   copyright:
     - license: MIT
@@ -24,7 +24,7 @@ pipeline:
     with:
       repository: https://github.com/Azure/aad-pod-identity
       tag: v${{package.version}}
-      expected-commit: b64167ad192d8465ff3c6930a296a5d2169eece9
+      expected-commit: 8382c3ae7a3f2df80fbfd7c4f7885ea8834645a4
 
   - runs: |
       unset LDFLAGS
