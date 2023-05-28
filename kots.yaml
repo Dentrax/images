@@ -1,6 +1,6 @@
 package:
   name: kots
-  version: 1.99.0
+  version: 1.100.0
   epoch: 0
   description: Kubernetes Off-The-Shelf (KOTS) Software
   target-architecture:
@@ -48,7 +48,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://github.com/replicatedhq/kots/archive/refs/tags/v${{package.version}}.tar.gz
-      expected-sha256: a29216cec5961a45e349e39f8596b5a2d45fb0e309cb2fe5808072d4392fcb7e
+      expected-sha256: 9e78ba782ed265e8407b2166818a9eeb3e0810f004c6ea091ab01cfa3c7664b6
 
   - runs: |
       set -x
@@ -111,10 +111,7 @@ pipeline:
 
       ln -s /usr/local/bin/kubectl-v1.25  ${{targets.destdir}}/usr/local/bin/kubectl
 
-      ln -s /usr/local/bin/helm3  ${{targets.destdir}}/usr/local/bin/helm3
       ln -s /usr/local/bin/helm3  ${{targets.destdir}}/usr/local/bin/helm
-
-      ln -s /usr/local/bin/kustomize4  ${{targets.destdir}}/usr/local/bin/kustomize4
       ln -s /usr/local/bin/kustomize4  ${{targets.destdir}}/usr/local/bin/kustomize
 
 update:
