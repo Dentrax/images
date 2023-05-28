@@ -38,5 +38,6 @@ openjdk-16
 prometheus-postgres-exporter-0.10
 azure-aad-pod-identity-mic
 kiam
+stakater-reloader-0.0.119
 kubernetes-csi-external-snapshotter-6.0
 haproxy-2.0

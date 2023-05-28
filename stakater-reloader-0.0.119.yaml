@@ -1,0 +1,45 @@
+package:
+  name: stakater-reloader-0.0.119
+  version: 0.0.119
+  epoch: 0
+  description: A Kubernetes controller to watch changes in ConfigMap and Secrets and do rolling upgrades on Pods
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - build-base
+      - go
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/stakater/Reloader
+      tag: v${{package.version}}
+      expected-commit: 9c85ce404b2a30ca8fb2844d8152a34ad157daa6
+
+  - uses: go/build
+    with:
+      packages: .
+      output: manager
+
+  - uses: strip
+
+subpackages:
+  - name: stakater-reloader-compat-0.0.119
+    description: compatibility symlinks package for stakater-reloader helm charts
+    pipeline:
+      - runs: |
+          # Symlink the binary from usr/bin to /
+          mkdir -p ${{targets.subpkgdir}}
+          ln -sf /usr/bin/manager ${{targets.subpkgdir}}/manager
+
+update:
+  enabled: false
