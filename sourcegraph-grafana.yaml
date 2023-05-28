@@ -1,7 +1,7 @@
 package:
   name: sourcegraph-grafana
-  version: 4.4.2
-  epoch: 4
+  version: 5.0.4
+  epoch: 0
   description: Sourcegraph packaged Grafana
   target-architecture:
     - all
@@ -39,7 +39,7 @@ pipeline:
       repository: https://github.com/sourcegraph/sourcegraph
       destination: sourcegraph
       tag: v${{package.version}}
-      expected-commit: e718b1fe3b718bb2d0f9248a3143979c19611c08
+      expected-commit: 72e1a0bdc1eddfd0adc0367a15853908c33f7b9f
 
   - runs: |
       cd sourcegraph/monitoring
