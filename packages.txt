@@ -36,6 +36,7 @@ openjdk-14
 openjdk-15
 openjdk-16
 prometheus-postgres-exporter-0.10
+kube-state-metrics-2.6
 azure-aad-pod-identity-mic
 kiam
 stakater-reloader-0.0.119
