@@ -1,7 +1,7 @@
 package:
   name: haproxy-ingress-0.14
   version: 0.14.0
-  epoch: 0
+  epoch: 1
   description: HAProxy Ingress
   copyright:
     - license: Apache-2.0
@@ -43,12 +43,22 @@ pipeline:
   - runs: |
       make GOOS=$(go env GOOS) GOARCH=$(go env GOARCH) linux-build
       mkdir -p ${{targets.destdir}}/usr/bin
-      mkdir -p ${{targets.destdir}}/haproxy-ingress-controller
-      cp -r ./rootfs/* ${{targets.destdir}}/haproxy-ingress-controller
-      mkdir -p ${{targets.destdir}}/var/empty ${{targets.destdir}}/etc/haproxy ${{targets.destdir}}/var/lib/haproxy ${{targets.destdir}}/var/run/haproxy
+      mkdir -p ${{targets.destdir}}/haproxy-ingress
+      cp -r ./rootfs/* ${{targets.destdir}}/haproxy-ingress
+      mkdir -p ${{targets.destdir}}/var/empty  ${{targets.destdir}}/etc/lua ${{targets.destdir}}/etc/haproxy ${{targets.destdir}}/var/lib/haproxy ${{targets.destdir}}/var/run/haproxy
       install -Dm755 ./rootfs/haproxy-ingress-controller ${{targets.destdir}}/usr/bin/haproxy-ingress-controller
 
   - uses: strip
+
+subpackages:
+  - name: "haproxy-ingress-0.14-compat"
+    description: "Compatibility package to place binaries in the location expected by upstream start.sh script"
+    pipeline:
+      - runs: |
+          # The helm chart expects the kiam binaries to be in / instead of /usr/bin
+          mkdir -p "${{targets.subpkgdir}}"
+          ln -sf /usr/bin/haproxy-ingress-controller ${{targets.subpkgdir}}/haproxy-ingress-controller
+      - uses: strip
 
 update:
   enabled: true
