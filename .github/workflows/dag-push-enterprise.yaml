@@ -100,7 +100,7 @@ jobs:
 
           kubectl set image daemonset/csi-secrets-store \
             -n kube-system \
-            node-driver-registrar=cgr.dev/chainguard/kubernetes-csi-node-driver-registrar:latest@sha256:93e7a091395e6f2d5d14979ae8591876916ef8e003198f642c0768471a02e7fc
+            node-driver-registrar=cgr.dev/chainguard/kubernetes-csi-node-driver-registrar:latest@sha256:f0c117b46aaba7a129ca30fdefa34536493f41da1353f1034949d7afa8f7fbbf
 
           kubectl set image daemonset/csi-secrets-store-provider-gcp \
             -n kube-system \
@@ -169,7 +169,7 @@ jobs:
             --cpu=28 --ram=95Gi \
             --bucket=${BUCKET} \
             --src-bucket=${SRC_BUCKET} \
-            --sdk-image ghcr.io/wolfi-dev/sdk:latest@sha256:ec70f835c3885d831ae1e5ba08425e0ec08ad2e55ed9b46f5dd5faff459e713c \
+            --sdk-image ghcr.io/wolfi-dev/sdk:latest@sha256:58058c6f8438e61b24617b96f1a2c9826243e63a1378fc0ec6d65187356a5161 \
             --secret-key \
             --arch=amd64 \
             --signing-key-name=chainguard-enterprise
@@ -227,8 +227,8 @@ jobs:
             --cpu=30 --ram=100Gi \
             --bucket=${BUCKET} \
             --src-bucket=${SRC_BUCKET} \
-            --sdk-image ghcr.io/wolfi-dev/sdk:latest@sha256:ec70f835c3885d831ae1e5ba08425e0ec08ad2e55ed9b46f5dd5faff459e713c \
-            --gcloud-image cgr.dev/chainguard/google-cloud-sdk:latest@sha256:4c957383ff6ee6877a104fc99fec8576038a777cc55e4b29a0fcddf2c3d07c14 \
+            --sdk-image ghcr.io/wolfi-dev/sdk:latest@sha256:58058c6f8438e61b24617b96f1a2c9826243e63a1378fc0ec6d65187356a5161 \
+            --gcloud-image cgr.dev/chainguard/google-cloud-sdk:latest@sha256:99e0727f6aae3266c10d6d86ed513bcc606578514186e51e7f2e00b087c529a1 \
             --secret-key \
             --arch=arm64 \
             --signing-key-name=chainguard-enterprise
