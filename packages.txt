@@ -31,6 +31,7 @@ gops
 hubble-ui
 hubble-ui-backend
 mongod
+eks-distro-kubernetes-csi-node-driver-registrar-1.23
 mongosh
 openjdk-14
 openjdk-15
