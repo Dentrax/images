@@ -34,6 +34,7 @@ mongod
 mongosh
 openjdk-14
 openjdk-15
+eks-distro-kubernetes-csi-livenessprobe-1.23
 openjdk-16
 prometheus-postgres-exporter-0.10
 kube-state-metrics-2.6
