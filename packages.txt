@@ -45,5 +45,6 @@ kiam
 haproxy-ingress-0.14
 stakater-reloader-0.0.119
 eks-distro-kubernetes-csi-external-snapshotter-1.23
+eks-distro-kubernetes-csi-external-attacher-1.23
 kubernetes-csi-external-snapshotter-6.0
 haproxy-2.0
