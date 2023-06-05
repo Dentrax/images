@@ -1,13 +1,13 @@
 package:
   name: eks-distro-kubernetes-csi-node-driver-registrar-1.23
   version: 1.23.21
-  epoch: 0
+  epoch: 1
   description: Sidecar container that registers a CSI driver with the kubelet using the kubelet plugin registration mechanism.
   copyright:
     - license: Apache-2.0
   dependencies:
     provides:
-      - eks-distro-kubernetes-csi-node-driver-registrar=1.25
+      - eks-distro-kubernetes-csi-node-driver-registrar=1.23
 
 var-transforms:
   - from: ${{package.version}}

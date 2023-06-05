@@ -1,13 +1,13 @@
 package:
   name: eks-distro-kubernetes-csi-livenessprobe-1.23
   version: 1.23.21
-  epoch: 0
+  epoch: 1
   description: A sidecar container that can be included in a CSI plugin pod to enable integration with Kubernetes Liveness Probe.
   copyright:
     - license: Apache-2.0
   dependencies:
     provides:
-      - eks-distro-kubernetes-csi-livenessprobe=1.25
+      - eks-distro-kubernetes-csi-livenessprobe=1.23
 
 var-transforms:
   - from: ${{package.version}}
