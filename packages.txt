@@ -47,5 +47,6 @@ stakater-reloader-0.0.119
 eks-distro-kubernetes-csi-external-resizer-1.23
 eks-distro-kubernetes-csi-external-snapshotter-1.23
 eks-distro-kubernetes-csi-external-attacher-1.23
+eks-distro-kubernetes-csi-external-provisioner-1.25
 kubernetes-csi-external-snapshotter-6.0
 haproxy-2.0

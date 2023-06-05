@@ -1,0 +1,51 @@
+package:
+  name: eks-distro-kubernetes-csi-external-provisioner-1.25
+  version: 1.25.14
+  epoch: 0
+  description: Sidecar container that watches Kubernetes PersistentVolumeClaim objects and triggers CreateVolume/DeleteVolume against a CSI endpoint
+  copyright:
+    - license: Apache-2.0
+  dependencies:
+    provides:
+      - eks-distro-kubernetes-csi-external-provisioner=1.25
+
+var-transforms:
+  - from: ${{package.version}}
+    match: \.(\d+)$
+    replace: -eks-$1
+    to: with-eks-package-version
+  - from: ${{vars.with-eks-package-version}}
+    match: \.
+    replace: '-'
+    to: mangled-package-version
+
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - ca-certificates-bundle
+      - busybox
+      - go
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/aws/eks-distro
+      tag: v${{vars.mangled-package-version}}
+      expected-commit: 5d743708a94b702dd19e1c623b8bdc38b78d3659
+
+  - runs: |
+      make makes-binaries-kubernetes-csi_external-provisioner
+      mkdir -p "${{targets.destdir}}"/usr/bin
+      ARCH=$(go env GOARCH)
+      OS=$(go env GOOS)
+      cp ./projects/kubernetes-csi/external-provisioner/_output/1-26/bin/external-provisioner/${OS}-${ARCH}/csi-provisioner "${{targets.destdir}}"/usr/bin/csi-provisioner
+
+  - uses: strip
+
+update:
+  enabled: true
+  manual: true # we need to manually update because melange bump doesn't yet handle pipeline mutations for var transforms
