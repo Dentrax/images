@@ -1,0 +1,49 @@
+package:
+  name: redis-6.0
+  version: 6.0.19
+  epoch: 0
+  description: Advanced key-value store
+  copyright:
+    - license: BSD-3-Clause
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - build-base
+      - automake
+      - autoconf
+      - linux-headers
+      - openssl-dev
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://download.redis.io/releases/redis-${{package.version}}.tar.gz
+      expected-sha512: a50eeb1881891a6c1cb4cff32f228a15b9967da31af5bf248c392d0a9a15e686e9b056b269d5e81fded48201f00ca52c450c6919d278e3fd5d0661639355a53a
+
+  - uses: patch
+    with:
+      patches: 0000-Disable-protected-mode.patch
+
+  - runs: |
+      export CFLAGS="$CFLAGS -DUSE_MALLOC_USABLE_SIZE"
+        make USE_JEMALLOC=no \
+        MALLOC=libc \
+        BUILD_TLS=yes \
+        all
+      make install PREFIX=/usr INSTALL_BIN="${{targets.destdir}}/usr/bin"
+
+  - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: redis/redis
+    tag-filter: 6.0.
+    use-tag: true
