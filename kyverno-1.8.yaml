@@ -1,0 +1,57 @@
+package:
+  name: kyverno-1.8
+  version: 1.8.5
+  epoch: 0
+  description: Kubernetes Native Policy Management
+  copyright:
+    - license: Apache-2.0
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - wolfi-baselayout
+      - build-base
+      - ca-certificates-bundle
+      - busybox
+      - go
+      - git
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/kyverno/kyverno
+      tag: v${{package.version}}
+      expected-commit: c19061758dc4203106ab6d87a245045c20192721
+
+  - runs: |
+      make build-all
+      mkdir -p ${{targets.destdir}}/usr/bin
+      install -Dm755 cmd/kyverno/kyverno ${{targets.destdir}}/usr/bin/kyverno
+
+subpackages:
+  - name: kyverno-init-container
+    pipeline:
+      - runs: |
+          mkdir -p ${{targets.subpkgdir}}/usr/bin
+          install -Dm755 cmd/initContainer/kyvernopre ${{targets.subpkgdir}}/usr/bin/kyvernopre
+
+  - name: kyverno-cli
+    pipeline:
+      - runs: |
+          mkdir -p ${{targets.subpkgdir}}/usr/bin
+          install -Dm755 cmd/cli/kubectl-kyverno/kubectl-kyverno ${{targets.subpkgdir}}/usr/bin/kubectl-kyverno
+
+update:
+  enabled: true
+  github:
+    identifier: kyverno/kyverno
+    strip-prefix: v
+    use-tag: true
+    tag-filter: v1.8.

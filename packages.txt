@@ -54,5 +54,6 @@ eks-distro-kubernetes-csi-livenessprobe-1.25
 kubernetes-csi-external-snapshotter-6.0
 eks-distro-kubernetes-csi-external-resizer-1.25
 haproxy-2.0
+kyverno-1.8
 redis-6.0
 eks-distro-kubernetes-csi-external-attacher-1.25
