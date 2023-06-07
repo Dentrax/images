@@ -66,8 +66,8 @@ pipeline:
       # Mitigate GHSA-2q89-485c-9j2x / CVE-2023-1732
       go get github.com/cloudflare/circl@v1.3.3
 
-      # Mitigate GHSA-2h5h-59f5-c5x9 / CVE-2023-30551
-      go get github.com/sigstore/rekor@v1.1.1
+      # Mitigate GHSA-frqx-jfcm-6jjr / CVE-2023-33199
+      go get github.com/sigstore/rekor@v1.2.0
 
       # Mitigate GHSA-hqxw-f8mx-cpmw / CVE-2023-2253
       go get github.com/docker/distribution@v2.8.2-beta.1+incompatible
@@ -113,10 +113,13 @@ pipeline:
       mv bin/kotsadm "${DESTDIR}/kotsadm"
       mv bin/kots "${DESTDIR}/kots"
 
-      ln -s /usr/local/bin/kubectl ${{targets.destdir}}/usr/local/bin/kubectl-v1.27
+      # TODO: Do we need to symlink the latest version of kubectl
+      # ln -s usr/local/bin/kubectl ${{targets.destdir}}/usr/local/bin/kubectl-v1.27
 
-      ln -s /usr/local/bin/helm3  ${{targets.destdir}}/usr/local/bin/helm
-      ln -s /usr/local/bin/kustomize4  ${{targets.destdir}}/usr/local/bin/kustomize
+      ln -s ${{targets.destdir}}/usr/local/bin/helm /usr/local/bin/helm3
+
+      # TODO: this is a manual intervention whenever kustomize bumps its major version
+      ln -s ${{targets.destdir}}/usr/local/bin/kustomize /usr/local/bin/kustomize5
 
 update:
   enabled: true
