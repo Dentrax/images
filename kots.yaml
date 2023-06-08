@@ -1,6 +1,6 @@
 package:
   name: kots
-  version: 1.100.1
+  version: 1.100.2
   epoch: 0
   description: Kubernetes Off-The-Shelf (KOTS) Software
   target-architecture:
@@ -49,7 +49,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://github.com/replicatedhq/kots/archive/refs/tags/v${{package.version}}.tar.gz
-      expected-sha256: 29c641d29d2667a39ff32586bb0f1c060ed7ebfd614487db73e6452112e952c8
+      expected-sha256: 110ab0c37b031a2297eb3a2b0392ac412b0e3cfc359291fbbb9289a6ab97e008
 
   - runs: |
       set -x
@@ -113,13 +113,13 @@ pipeline:
       mv bin/kotsadm "${DESTDIR}/kotsadm"
       mv bin/kots "${DESTDIR}/kots"
 
-      # TODO: Do we need to symlink the latest version of kubectl
-      # ln -s usr/local/bin/kubectl ${{targets.destdir}}/usr/local/bin/kubectl-v1.27
-
-      ln -s ${{targets.destdir}}/usr/local/bin/helm /usr/local/bin/helm3
+      # TODO: this is a manual intervention whenever kustomize bumps its major version
+      ln -s /usr/bin/helm ${{targets.destdir}}/usr/local/bin/helm
+      ln -s /usr/bin/helm ${{targets.destdir}}/usr/local/bin/helm3
 
       # TODO: this is a manual intervention whenever kustomize bumps its major version
-      ln -s ${{targets.destdir}}/usr/local/bin/kustomize /usr/local/bin/kustomize5
+      ln -s /usr/bin/kustomize ${{targets.destdir}}/usr/local/bin/kustomize
+      ln -s /usr/bin/kustomize ${{targets.destdir}}/usr/local/bin/kustomize5
 
 update:
   enabled: true
