@@ -59,7 +59,7 @@ jobs:
         id: secrets
         with:
           secrets: |-
-            token:${{ env.PROJECT }}/projects/182740772562/secrets/melange-signing-key-enterprise
+            token:${{ env.PROJECT }}/melange-signing-key-enterprise
 
       - run: echo ${{ steps.secrets.outputs.token }} > ./chainguard-enterprise.rsa
 
