@@ -1,7 +1,7 @@
 package:
   name: kubectl-1.26
   version: 1.26.5
-  epoch: 0
+  epoch: 1
   description: Command-line interface for Kubernetes
   copyright:
     - license: Apache-2.0
@@ -31,9 +31,16 @@ pipeline:
       expected-sha256: 17769c501faa1bc8b50d7ef9b9c037bc2105b245fd1a31ea5d812df36fb6c7af
 
   - runs: |
-      make kubectl
-      mkdir -p ${{targets.destdir}}/usr/bin/
-      cp _output/bin/kubectl ${{targets.destdir}}/usr/bin/kubectl
+      # Set up some common variables for where the binary will go
+      export TARGETDIR="${{targets.destdir}}/usr/local/bin"
+      export TARGETBIN="kubectl-v$(echo ${{package.version}} | cut -d'.' -f -2)"
+
+      # Build the kubectl binary
+      make all WHAT=cmd/kubectl/
+
+      # Drop kubectl binary in correct spot
+      mkdir -p "${TARGETDIR}"
+      cp _output/bin/kubectl "${TARGETDIR}/${TARGETBIN}"
 
 update:
   enabled: true
