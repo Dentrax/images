@@ -1,0 +1,46 @@
+package:
+  name: karpenter-0.23
+  version: 0.23.0
+  epoch: 0
+  description: Karpenter is a Kubernetes Node Autoscaler built for flexibility, performance, and simplicity.
+  target-architecture:
+    - all
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - wolfi-baselayout
+      - busybox
+      - build-base
+      - go
+      - ca-certificates-bundle
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com//aws/karpenter
+      tag: v${{package.version}}
+      expected-commit: 5a7faa0e5b521dcabce1388e74f48a27a6107157
+
+  - runs: |
+      # Mitigate GHSA-vvpx-j8f3-3w6h
+      go get golang.org/x/net@v0.7.0
+
+      go mod tidy
+      go mod vendor
+
+  - runs: |
+      mkdir -p "${{targets.destdir}}/usr/bin"
+      go build -o karpenter ./cmd/controller
+      mv ./karpenter "${{targets.destdir}}/usr/bin"
+
+  - uses: strip
+
+update:
+  enabled: false
