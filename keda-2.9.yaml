@@ -1,0 +1,58 @@
+package:
+  name: keda-2.9
+  version: 2.9.1
+  epoch: 0
+  description: Infrastructure as Code in any programming language
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - ca-certificates-bundle
+      - go
+      - busybox
+      - build-base
+      - protobuf-dev
+      - protoc
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/kedacore/keda
+      tag: v${{package.version}}
+      expected-commit: 817d1774fa827433ce58d4ff0a2a3a2f290508b1
+
+  - runs: |
+      ARCH=$(go env GOARCH) make build
+      mkdir -p "${{targets.destdir}}/usr/bin"
+      mv bin/keda "${{targets.destdir}}/usr/bin"
+
+  - uses: strip
+
+subpackages:
+  - name: "keda-adapter-2.9"
+    description: "Metrics adapter for Keda"
+    pipeline:
+      - runs: |
+          mkdir -p "${{targets.subpkgdir}}/usr/bin"
+          mv bin/keda-adapter "${{targets.subpkgdir}}/usr/bin"
+      - uses: strip
+
+  - name: "keda-compat-2.9"
+    description: "Compatibility package to place binaries in the location expected by upstream helm charts"
+    pipeline:
+      - runs: |
+          # The helm chart expects the keda binaries to be in / instead of /usr/bin
+          mkdir -p "${{targets.subpkgdir}}"
+          ln -sf /usr/bin/keda ${{targets.subpkgdir}}/keda
+          ln -sf /usr/bin/keda-admission-webhooks ${{targets.subpkgdir}}/keda-admission-webhooks
+          ln -sf /usr/bin/keda-adapter ${{targets.subpkgdir}}/keda-adapter
+      - uses: strip
+
+update:
+  enabled: false
