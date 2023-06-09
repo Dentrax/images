@@ -3,9 +3,6 @@ MELANGE_EXTRA_OPTS = --build-option fips
 
 -include os/Makefile
 
-./openssl/:
-	ln -sf os/openssl openssl
-
 .packagerules-old:
 	@echo "Solving build order, please wait..."
 	@grep -v '^\#' packages.txt | while read pkg; do		\
