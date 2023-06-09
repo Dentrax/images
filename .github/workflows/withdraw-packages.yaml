@@ -25,8 +25,8 @@ jobs:
     strategy:
       matrix:
         BUCKET:
-          - chainguard-enterprise-registry-destination/os/
-          - chainguard-enterprise-registry-destination/os/sub-os-openssl1/
+          - chainguard-enterprise-registry-destination/os
+          - chainguard-enterprise-registry-destination/os/sub-os-openssl1
 
     steps:
       - uses: actions/checkout@v3
@@ -48,9 +48,9 @@ jobs:
             for pkg in $(grep -v '\#' withdrawn-packages.txt); do
               echo "=> $pkg"
               if [[ "${{ matrix.dryrun }}" != "" ]]; then
-                echo "DRY RUN: gsutil -m rm -f gs://${{ matrix.BUCKET }}/os/$arch/$pkg"
+                echo "DRY RUN: gsutil -m rm -f gs://${{ matrix.BUCKET }}/$arch/$pkg"
               else
-                gsutil -m rm -f gs://${{ matrix.BUCKET }}/os/$arch/$pkg || true
+                gsutil -m rm -f gs://${{ matrix.BUCKET }}/$arch/$pkg || true
               fi
             done
           done
@@ -68,7 +68,7 @@ jobs:
       - name: 'Sync public package repository'
         run: |
           mkdir "${{ github.workspace }}/packages"
-          gsutil -m rsync -r gs://${{ matrix.BUCKET }}/os/ "${{ github.workspace }}/packages/"
+          gsutil -m rsync -r gs://${{ matrix.BUCKET }}/ "${{ github.workspace }}/packages/"
           find "${{ github.workspace }}/packages" -print -exec touch \{} \;
 
       - name: 'Reconcile Enterprise index'
@@ -77,7 +77,7 @@ jobs:
             pushd "${{ github.workspace }}/packages/"$arch
               melange index -o APKINDEX.tar.gz -a $arch *.apk
               melange sign-index --signing-key="${{ github.workspace }}/chainguard-enterprise.rsa" APKINDEX.tar.gz
-              gsutil -h "Cache-Control:no-store" cp "${{ github.workspace }}/packages/${arch}/APKINDEX.tar.gz" gs://${{ matrix.BUCKET }}/os/${arch}/APKINDEX.tar.gz
+              gsutil -h "Cache-Control:no-store" cp "${{ github.workspace }}/packages/${arch}/APKINDEX.tar.gz" gs://${{ matrix.BUCKET }}/${arch}/APKINDEX.tar.gz
             popd
           done
 
