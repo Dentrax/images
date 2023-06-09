@@ -19,7 +19,7 @@ MELANGE_EXTRA_OPTS = --build-option fips
 		echo "packages/$$pkgname: $$pkgtarget";			\
 		echo "$$pkgtarget: $${pkgname}.yaml \$${KEY}";		\
 		printf "\t%s\n" "@mkdir -p ./$${pkgdir}/";		\
-		printf "\t%s" "SDE=\$${SOURCE_DATE_EPOCH}; [ -z \"\$$\$$SDE\" ] && SDE=\`git log -1 --pretty=%ct --follow $${pkgname}.yaml\`;"; \
+		printf "\t%s" "SDE=\$${SOURCE_DATE_EPOCH}; [ -z \"\$$\$$SDE\" ] && SDE=0;"; \
 		printf "\t%s\n\n" "SOURCE_DATE_EPOCH=\$$\$$SDE \$${MELANGE} build $${pkgname}.yaml \$${MELANGE_OPTS} --source-dir ./$${pkgdir}/ --log-policy builtin:stderr,\$${TARGETDIR}/buildlogs/$${pkgver}.log"; \
 	done > .packagerules-old
 
