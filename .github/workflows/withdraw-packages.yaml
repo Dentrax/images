@@ -60,22 +60,26 @@ jobs:
         with:
           secrets: |-
             token:${{ env.PROJECT }}/melange-signing-key-enterprise
-
       - run: echo ${{ steps.secrets.outputs.token }} > ./chainguard-enterprise.rsa
+      - run: |
+          sudo mkdir -p /etc/apk/keys
+          sudo cp ./wolfi-signing.rsa.pub /etc/apk/keys/wolfi-signing.rsa.pub
 
-      - name: 'Generate APKIndex x86'
-        if: ${{ matrix.dryrun }} != ""
-        uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:6d228e1857362cb1e7818187d297bdeb59ba51515c839baa40d039e5982ce4c2
-        with:
-          entrypoint: wolfictl
-          args: generate-index --bucket gs://${{ matrix.BUCKET }} --publish --signing-key ./chainguard-enterprise.rsa --arch x86_64
+      - name: 'Sync public package repository'
+        run: |
+          mkdir "${{ github.workspace }}/packages"
+          gsutil -m rsync -r gs://${{ matrix.BUCKET }}/os/ "${{ github.workspace }}/packages/"
+          find "${{ github.workspace }}/packages" -print -exec touch \{} \;
 
-      - name: 'Generate APKIndex arm64'
-        if: ${{ matrix.dryrun }} != ""
-        uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:6d228e1857362cb1e7818187d297bdeb59ba51515c839baa40d039e5982ce4c2
-        with:
-          entrypoint: wolfictl
-          args: generate-index --bucket gs://${{ matrix.BUCKET }} --publish --signing-key ./chainguard-enterprise.rsa --arch aarch64
+      - name: 'Reconcile Enterprise index'
+        run: |
+          for arch in x86_64 aarch64; do
+            pushd "${{ github.workspace }}/packages/"$arch
+              melange index -o APKINDEX.tar.gz -a $arch *.apk
+              melange sign-index --signing-key="${{ github.workspace }}/chainguard-enterprise.rsa" APKINDEX.tar.gz
+              gsutil -h "Cache-Control:no-store" cp "${{ github.workspace }}/packages/${arch}/APKINDEX.tar.gz" gs://${{ matrix.BUCKET }}/os/${arch}/APKINDEX.tar.gz
+            popd
+          done
 
   postrun:
     name: Post Withdraw Enterprise Package
