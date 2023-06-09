@@ -60,3 +60,4 @@ kyverno-1.8
 external-secrets-0.7
 redis-6.0
 eks-distro-kubernetes-csi-external-attacher-1.25
+tomcat-8.5.87
