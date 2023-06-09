@@ -60,7 +60,7 @@ jobs:
         with:
           secrets: |-
             token:${{ env.PROJECT }}/melange-signing-key-enterprise
-      - run: echo ${{ steps.secrets.outputs.token }} > ./chainguard-enterprise.rsa
+      - run: echo "${{ steps.secrets.outputs.token }}" > ./chainguard-enterprise.rsa
       - run: |
           sudo mkdir -p /etc/apk/keys
           sudo cp ./wolfi-signing.rsa.pub /etc/apk/keys/wolfi-signing.rsa.pub
