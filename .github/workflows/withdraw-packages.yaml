@@ -63,7 +63,7 @@ jobs:
       - run: echo "${{ steps.secrets.outputs.token }}" > ./chainguard-enterprise.rsa
       - run: |
           sudo mkdir -p /etc/apk/keys
-          sudo cp ./wolfi-signing.rsa.pub /etc/apk/keys/wolfi-signing.rsa.pub
+          sudo cp ./chainguard-enterprise.rsa.pub /etc/apk/keys/chainguard-enterprise.rsa.pub
 
       - name: 'Sync public package repository'
         run: |
