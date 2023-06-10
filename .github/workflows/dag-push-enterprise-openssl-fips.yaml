@@ -140,7 +140,7 @@ jobs:
           token: ${{ secrets.ENTERPRISE_GRAFANA_REPO_ACCESS }}
           path: ${{github.workspace}}/os
 
-      - working-directory: ${{github.workspace}}/os
+      - working-directory: ${{github.workspace}}/os/${{ env.SUB_REPO_NAME }}
         run: |
           wolfictl pod \
             --cpu=28 --ram=95Gi \
