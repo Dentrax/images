@@ -51,5 +51,23 @@ pipeline:
       mkdir -p ${{targets.destdir}}/usr/share/tomcat/temp
       mkdir -p ${{targets.destdir}}/usr/share/tomcat/webapps
 
+subpackages:
+  - name: tomcat-8.5.87-jamf-compat
+    description: Jamf specifc compat for Tomcat. ONLY FOR JMAF USE
+    dependencies:
+      runtime:
+        - tomcat-8.5.87
+    pipeline:
+      - runs: |
+          cp ${{targets.destdir}}/usr/share/tomcat/lib/catalina.jar /tmp
+          cd /tmp
+          $JAVA_HOME/bin/jar xf catalina.jar
+          sed -i s/number=.*/number=/ org/apache/catalina/util/ServerInfo.properties
+          sed -i s/info=.*/info=JamfCloud/ org/apache/catalina/util/ServerInfo.properties
+          sed -i s/built=.*/build=/ org/apache/catalina/util/ServerInfo.properties
+          $JAVA_HOME/bin/jar -0 -c --file catalina.jar META-INF/ org/
+          mkdir -p ${{targets.subpkgdir}}/usr/share/tomcat/lib
+          mv catalina.jar ${{targets.subpkgdir}}/usr/share/tomcat/lib
+
 update:
   enabled: false
