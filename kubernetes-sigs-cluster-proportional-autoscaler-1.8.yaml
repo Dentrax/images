@@ -1,0 +1,90 @@
+package:
+  name: kubernetes-sigs-cluster-proportional-autoscaler-1.8
+  version: 1.8.3
+  epoch: 0
+  description: Kubernetes Cluster Proportional Autoscaler Container
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - wolfi-baselayout
+      - busybox
+      - build-base
+      - go
+      - ca-certificates-bundle
+
+pipeline:
+  # We can't use go/install because this requires specific ldflags to set the version
+  - uses: git-checkout
+    with:
+      repository: https://github.com/kubernetes-sigs/cluster-proportional-autoscaler
+      tag: ${{package.version}}
+      expected-commit: 9d097d0fa6c3aa6d80002dc5edbf08821cd1eb08
+
+  - runs: |
+      # Mitigate GHSA-c3h9-896r-86jm
+      go get github.com/gogo/protobuf@v1.3.2
+
+      # Mitigate GHSA-ppp9-7jff-5vj2
+      # Mitigate GHSA-69ch-w2m2-3vjp
+      go get golang.org/x/text@v0.3.8
+
+      # Remediate GHSA-p782-xgp4-8hr8
+      # https://pkg.go.dev/vuln/GO-2022-0493
+      # Per govulncheck fixed in 0.0.0-20220412211240-33da011f77ad
+      # https://pkg.go.dev/golang.org/x/sys - Current version v0.6.0
+      go get golang.org/x/sys@v0.6.0
+
+      # Mitigate GHSA-6q6q-88xp-6f2r
+      go get gopkg.in/yaml.v2@v2.4.0
+
+      # Mitigate GHSA-h86h-8ppg-mxmh
+      # Mitigate GHSA-83g2-8m93-v3w7
+      # Mitigate GHSA-69cg-p879-7622
+      # Mitigate GHSA-vvpx-j8f3-3w6h
+      go get golang.org/x/net@v0.7.0
+
+      # Mitigate GHSA-jmrx-5g74-6v2f
+      go get k8s.io/client-go@v0.17.0
+
+      # Mitigate GHSA-74fp-r6jw-h4mp
+      go get k8s.io/apimachinery@v0.17.0
+
+      # Mitigate GHSA-3vm4-22fp-5rfm
+      # Mitigate GHSA-gwc9-m7rh-j2ww
+      # Mitigate GHSA-8c26-wmh5-6g9v
+      go get golang.org/x/crypto@1baeb1ce4c0b
+
+      go mod tidy
+      go mod vendor
+
+      export CGO_ENABLED=0
+      export GOARCH=$(go env GOARCH)
+      go build -installsuffix "static" -o cluster-proportional-autoscaler-$(go env GOARCH) \
+              -ldflags "-X github.com/kubernetes-incubator/cluster-proportional-autoscaler/pkg/version.VERSION=v${{package.version}}" \
+              ./cmd/cluster-proportional-autoscaler/autoscaler.go
+      mkdir -p ${{targets.destdir}}/usr/bin
+      install -Dm755 cluster-proportional-autoscaler-$(go env GOARCH) ${{targets.destdir}}/usr/bin/cluster-proportional-autoscaler
+
+subpackages:
+  - name: "kubernetes-sigs-cluster-proportional-autoscaler-1.8-compat"
+    description: "Compatibility package to place binaries in the location expected by upstream helm charts"
+    pipeline:
+      - runs: |
+          # The helm chart expects the cluster-proportional-autoscaler binaries to be in / instead of /usr/bin
+          mkdir -p "${{targets.subpkgdir}}"
+          ln -sf /usr/bin/cluster-proportional-autoscaler ${{targets.subpkgdir}}/cluster-proportional-autoscaler
+      - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: kubernetes-sigs/cluster-proportional-autoscaler
+  ignore-regex-patterns:
+    - helm-chart-cluster-proportional-autoscaler-*
