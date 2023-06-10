@@ -1,6 +1,6 @@
 package:
   name: python-3.8
-  version: 3.8.16
+  version: 3.8.17
   epoch: 0
   description: "the Python programming language"
   target-architecture:
@@ -40,7 +40,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://www.python.org/ftp/python/${{package.version}}/Python-${{package.version}}.tar.xz
-      expected-sha256: d85dbb3774132473d8081dcb158f34a10ccad7a90b96c7e50ea4bb61f5ce4562
+      expected-sha256: 2e54b0c68191f16552f6de2e97a2396540572a219f6bbb28591a137cecc490a9
 
   - name: Force use of system libraries
     runs: |
