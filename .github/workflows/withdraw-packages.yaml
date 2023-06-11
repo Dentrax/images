@@ -79,7 +79,7 @@ jobs:
             pushd "${{ github.workspace }}/packages/"$arch
               melange index -o APKINDEX.tar.gz -a $arch *.apk
               melange sign-index --signing-key="${{ github.workspace }}/chainguard-enterprise.rsa" APKINDEX.tar.gz
-              gsutil -h "Cache-Control:no-store" cp --preserve-acl "${{ github.workspace }}/packages/${arch}/APKINDEX.tar.gz" gs://${{ matrix.BUCKET }}/${arch}/APKINDEX.tar.gz
+              gsutil -h "Cache-Control:no-store" cp -a "public-read" "${{ github.workspace }}/packages/${arch}/APKINDEX.tar.gz" gs://${{ matrix.BUCKET }}/${arch}/APKINDEX.tar.gz
             popd
           done
 
