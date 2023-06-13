@@ -114,12 +114,14 @@ pipeline:
       mv bin/kots "${DESTDIR}/kots"
 
       # TODO: this is a manual intervention whenever kustomize bumps its major version
-      ln -s /usr/bin/helm ${{targets.destdir}}/usr/local/bin/helm
-      ln -s /usr/bin/helm ${{targets.destdir}}/usr/local/bin/helm3
+      cp /usr/bin/helm ${{targets.destdir}}/usr/local/bin/helm
+      cp /usr/bin/helm ${{targets.destdir}}/usr/local/bin/helm3
 
       # TODO: this is a manual intervention whenever kustomize bumps its major version
-      ln -s /usr/bin/kustomize ${{targets.destdir}}/usr/local/bin/kustomize
-      ln -s /usr/bin/kustomize ${{targets.destdir}}/usr/local/bin/kustomize5
+      cp /usr/bin/kustomize ${{targets.destdir}}/usr/local/bin/kustomize
+      cp /usr/bin/kustomize ${{targets.destdir}}/usr/local/bin/kustomize5
+
+      cp /usr/bin/kubectl /${{targets.destdir}}/usr/local/bin/kubectl
 
 update:
   enabled: true
