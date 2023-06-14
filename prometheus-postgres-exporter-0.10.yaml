@@ -1,13 +1,13 @@
 package:
   name: prometheus-postgres-exporter-0.10
   version: 0.10.1
-  epoch: 3
+  epoch: 4
   description: Prometheus Exporter for Postgres server metrics
   copyright:
     - license: Apache-2.0
   dependencies:
     provides:
-      - 'prometheus-postgres-exporter=1.10.0'
+      - 'prometheus-postgres-exporter=0.10.1'
 
 environment:
   contents:
