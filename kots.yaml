@@ -1,7 +1,7 @@
 package:
   name: kots
   version: 1.100.2
-  epoch: 0
+  epoch: 1
   description: Kubernetes Off-The-Shelf (KOTS) Software
   target-architecture:
     - all
@@ -114,14 +114,14 @@ pipeline:
       mv bin/kots "${DESTDIR}/kots"
 
       # TODO: this is a manual intervention whenever kustomize bumps its major version
-      cp /usr/bin/helm ${{targets.destdir}}/usr/local/bin/helm
-      cp /usr/bin/helm ${{targets.destdir}}/usr/local/bin/helm3
+      ln -s /usr/bin/helm ${{targets.destdir}}/usr/local/bin/helm
+      ln -s /usr/bin/helm ${{targets.destdir}}/usr/local/bin/helm3
 
       # TODO: this is a manual intervention whenever kustomize bumps its major version
-      cp /usr/bin/kustomize ${{targets.destdir}}/usr/local/bin/kustomize
-      cp /usr/bin/kustomize ${{targets.destdir}}/usr/local/bin/kustomize5
+      ln -s /usr/bin/kustomize ${{targets.destdir}}/usr/local/bin/kustomize
+      ln -s /usr/bin/kustomize ${{targets.destdir}}/usr/local/bin/kustomize5
 
-      cp /usr/bin/kubectl /${{targets.destdir}}/usr/local/bin/kubectl
+      ln -s /usr/bin/kubectl /${{targets.destdir}}/usr/local/bin/kubectl
 
 update:
   enabled: true
