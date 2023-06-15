@@ -46,7 +46,9 @@ pipeline:
 
       # Remediate GHSA-4hc4-pgfx-3mrx
       # https://pkg.go.dev/github.com/cilium/cilium#section-readme
-      go get github.com/cilium/cilium@v1.13.1
+      # GHSA-2h44-x2wx-49f4 / CVE-2023-30851
+      # GHSA-pg5p-wwp8-97g8 / CVE-2023-29002
+      go get github.com/cilium/cilium@v1.13.2
 
       # Remediate GHSA-p782-xgp4-8hr8
       # https://pkg.go.dev/vuln/GO-2022-0493
