@@ -71,6 +71,18 @@ The `wolfictl update package` command will update the `.gitmodules` file as well
 
 Additionally, when working on a fork, if you fix a CVE make sure to include a `fixes: CVE2023-1234` commit comment.  The generated Pull Request on the Enterprise repo will include auto generated advisory fix information and secfixes updates, for the fixed CVE.
 
+### Manual updates
+
+Modify `.gitmodules` to update the version
+
+```
+git submodule update
+cd grafana
+git pull
+cd ..
+git add | commit | push
+```
+
 ## Sub repositories
 
 There are situations where we need a new Enterprise repository.  One example is to support OpenSSL 1.  In this case we don't want to mix and match apks built with different OpenSSL versions.  Rather than duplicating Git repos, infrastructure and maintenance overheads we are able to add sub folders to this Enterprise Git repo that result in their own package repositories.
