@@ -38,6 +38,7 @@ openjdk-15
 eks-distro-kubernetes-csi-livenessprobe-1.23
 openjdk-16
 prometheus-postgres-exporter-0.10
+kube-state-metrics-2.2.0
 kube-state-metrics-2.6
 eks-distro-kubernetes-csi-external-provisioner-1.23
 azure-aad-pod-identity-mic
