@@ -1,13 +1,13 @@
 package:
-  name: stakater-reloader-0.0.119
-  version: 0.0.119
-  epoch: 1
+  name: stakater-reloader-0.0.128
+  version: 0.0.128
+  epoch: 0
   description: A Kubernetes controller to watch changes in ConfigMap and Secrets and do rolling upgrades on Pods
   copyright:
     - license: Apache-2.0
   dependencies:
     provides:
-      - stakater-reloader=0.0.119
+      - stakater-reloader=0.0.128
 
 environment:
   contents:
@@ -26,7 +26,7 @@ pipeline:
     with:
       repository: https://github.com/stakater/Reloader
       tag: v${{package.version}}
-      expected-commit: 9c85ce404b2a30ca8fb2844d8152a34ad157daa6
+      expected-commit: f70dd52b2dbb9abe100d3aed263699b204d2ff36
 
   - runs: |
       # GHSA-vvpx-j8f3-3w6h
@@ -38,7 +38,7 @@ pipeline:
   - uses: strip
 
 subpackages:
-  - name: stakater-reloader-compat-0.0.119
+  - name: stakater-reloader-compat-0.0.128
     description: compatibility symlinks package for stakater-reloader helm charts
     pipeline:
       - runs: |

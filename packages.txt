@@ -57,6 +57,7 @@ kubernetes-csi-external-snapshotter-6.0
 keda-2.9
 eks-distro-kubernetes-csi-external-resizer-1.25
 haproxy-2.0
+stakater-reloader-0.0.128
 kubernetes-sigs-cluster-proportional-autoscaler-1.8
 kyverno-1.8
 external-secrets-0.7
