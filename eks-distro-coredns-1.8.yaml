@@ -1,0 +1,54 @@
+package:
+  name: eks-distro-coredns-1.8
+  version: 1.8.7
+  epoch: 0
+  description: CoreDNS is a DNS server that chains plugins
+  copyright:
+    - license: Apache-2.0
+  dependencies:
+    provides:
+      - eks-distro-coredns=1.8.7
+
+var-transforms:
+  - from: 1-24-eks-3
+    match: \.(\d+)$
+    replace: -eks-$1
+    to: with-eks-package-version
+  - from: ${{vars.with-eks-package-version}}
+    match: \.
+    replace: '-3'
+    to: mangled-package-version
+
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - ca-certificates-bundle
+      - busybox
+      - go
+      - libcap-utils
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/aws/eks-distro
+      tag: v${{vars.mangled-package-version}}
+      expected-commit: cb2ee5a5ea6a1385751809e3be068319e9baf0fb
+
+  - runs: |
+      make makes-binaries-coredns_coredns
+      mkdir -p "${{targets.destdir}}"/usr/bin
+      ARCH=$(go env GOARCH)
+      OS=$(go env GOOS)
+      cp ./projects/coredns/coredns/_output/1-23/bin/coredns/${OS}-${ARCH}/coredns "${{targets.destdir}}"/usr/bin
+
+  - uses: strip
+
+  # This MUST run after strip, which strips capabilities too!
+  - runs: setcap cap_net_bind_service=+ep "${{targets.destdir}}/usr/bin/coredns"
+
+update:
+  manual: true # we need to manually update because melange bump doesn't yet handle pipeline mutations for var transforms
