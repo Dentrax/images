@@ -50,6 +50,7 @@ stakater-reloader-0.0.119
 eks-distro-kubernetes-csi-external-resizer-1.23
 karpenter-0.23
 aws-ebs-csi-driver-1.18
+aws-load-balancer-controller-2.4.5
 eks-distro-kubernetes-csi-external-snapshotter-1.23
 eks-distro-kubernetes-csi-external-attacher-1.23
 eks-distro-kubernetes-csi-external-provisioner-1.25
