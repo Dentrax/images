@@ -68,4 +68,5 @@ external-secrets-0.7
 redis-6.0
 eks-distro-coredns-1.8
 eks-distro-kubernetes-csi-external-attacher-1.25
+kubernetes-dns-node-cache-1.17
 tomcat-8.5.87
