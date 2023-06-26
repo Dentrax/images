@@ -64,6 +64,7 @@ eks-distro-kubernetes-csi-external-resizer-1.25
 haproxy-2.0
 stakater-reloader-0.0.128
 kubernetes-sigs-cluster-proportional-autoscaler-1.8
+prometheus-node-exporter-1.5
 kyverno-1.8
 external-secrets-0.7
 redis-6.0
