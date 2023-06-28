@@ -39,6 +39,7 @@ eks-distro-kubernetes-csi-livenessprobe-1.23
 openjdk-16
 prometheus-config-reloader-0.65
 prometheus-postgres-exporter-0.10
+prometheus-operator-0.65
 kube-state-metrics-2.2.0
 kube-state-metrics-2.6
 metrics-server-0.6.2
