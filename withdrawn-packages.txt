@@ -2,3 +2,9 @@ eks-distro-kubernetes-csi-livenessprobe-1.23-1.23.21-r0.apk
 eks-distro-kubernetes-csi-node-driver-registrar-1.23-1.23.21-r0.apk
 kyverno-init-container-1.8.5-r0.apk
 kyverno-cli-1.8.5-r0.apk
+coredns-1.10.1-r1.apk
+coredns-1.10.1-r2.apk
+coredns-1.10.1-r3.apk
+coredns-1.10.1-r4.apk
+coredns-1.10.1-r5.apk
+coredns-1.10.1-r6.apk
