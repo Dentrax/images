@@ -1,0 +1,59 @@
+package:
+  name: kube-logging-logging-operator-3.17
+  version: 3.17.10
+  epoch: 0
+  description: Logging operator for Kubernetes
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - go
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/kube-logging/logging-operator
+      tag: ${{package.version}}
+      expected-commit: 71c96ae72e6926291c49b61350c117406aeca5e3
+
+  - runs: |
+      # Address CVE-2022-21698, GHSA-69ch-w2m2-3vjp and GHSA-69cg-p879-7622 GHSA-8c26-wmh5-6g9v
+      go get github.com/prometheus/client_golang@v1.11.1
+      go get golang.org/x/text@v0.3.8
+      go get golang.org/x/net@v0.7.0
+
+      # Address GHSA-3vm4-22fp-5rfm, GHSA-gwc9-m7rh-j2ww and GHSA-8c26-wmh5-6g9v
+      go get golang.org/x/crypto@1baeb1ce4c0b
+
+      go mod tidy -compat=1.17
+
+      go build -o bin/manager main.go
+      mkdir -p ${{targets.destdir}}/usr/bin
+      install -Dm755 ./bin/manager ${{targets.destdir}}/usr/bin/manager
+
+  - uses: strip
+
+subpackages:
+  - name: "kube-logging-logging-operator-compat"
+    description: "Compatibility package to place binaries in the location expected by upstream helm charts"
+    pipeline:
+      - runs: |
+          # The helm chart expects the logging-operator binaries to be in / instead of /usr/bin
+          mkdir -p "${{targets.subpkgdir}}"
+          ln -sf /usr/bin/manager ${{targets.subpkgdir}}/manager
+      - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: kube-logging/logging-operator
+    tag-filter: 3.17
+    use-tag: true
