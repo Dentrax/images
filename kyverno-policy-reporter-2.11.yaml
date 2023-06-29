@@ -1,0 +1,50 @@
+package:
+  name: kyverno-policy-reporter-2.11
+  version: 2.11.1
+  epoch: 0
+  description: Monitoring and Observability Tool for the PolicyReport CRD with an optional UI.
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - build-base
+      - go
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/kyverno/policy-reporter
+      tag: v${{package.version}}
+      expected-commit: 156ea7f77b3e5d5c767e9322e6b3a7c9d97bc6c3
+
+  - runs: |
+      # Mitigate GHSA-vvpx-j8f3-3w6h
+      go get golang.org/x/net@v0.7.0
+      go mod tidy
+      LD_FLAGS='-s -w -linkmode external -extldflags "-static"'
+      mkdir -p ${{targets.destdir}}/usr/bin
+      mkdir -p ${{targets.destdir}}/app/templates
+      cp -R ./templates ${{targets.destdir}}/app/templates
+      CGO_ENABLED=1 go build -ldflags="${LD_FLAGS}" -tags="sqlite_unlock_notify" -o  ${{targets.destdir}}/usr/bin/policyreporter -v
+
+  - uses: strip
+
+subpackages:
+  - name: kyverno-policy-reporter-2.11-compat
+    description: compatibility symlinks package for policyreporter Dockerfile
+    pipeline:
+      - runs: |
+          # Symlink the binary from usr/bin to /app/
+          mkdir -p ${{targets.subpkgdir}}/app
+          ln -sf /usr/bin/policyreporter ${{targets.subpkgdir}}/app/policyreporter
+
+update:
+  enabled: false

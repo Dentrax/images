@@ -1,0 +1,60 @@
+package:
+  name: kyverno-policy-reporter-kyverno-plugin-1.5
+  version: 1.5.0
+  epoch: 0
+  description: Policy Reporter Kyverno Plugin
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - build-base
+      - go
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/kyverno/policy-reporter-kyverno-plugin
+      tag: v${{package.version}}
+      expected-commit: c6bafd005522f9c46bf5e3938e34f0d4e17c559b
+
+  - runs: |
+      # Mitigate GHSA-vvpx-j8f3-3w6h
+      go get golang.org/x/net@v0.7.0
+
+      # CVE-2023-1732
+      go get github.com/cloudflare/circl@v1.3.3
+
+      # GHSA-232p-vwff-86mp
+      go get github.com/docker/docker@v20.10.24
+
+      # GHSA-hqxw-f8mx-cpmw
+      go get github.com/docker/distribution@v2.8.2-beta.1
+
+      go mod tidy
+      LD_FLAGS="-s -w"
+      mkdir -p ${{targets.destdir}}/usr/bin
+      mkdir -p ${{targets.destdir}}/app/templates
+      cp -R ./templates ${{targets.destdir}}/app/templates
+      CGO_ENABLED=0 go build -ldflags="${LD_FLAGS}" -o ${{targets.destdir}}/usr/bin/kyverno-plugin -v
+
+  - uses: strip
+
+subpackages:
+  - name: kyverno-policy-reporter-kyverno-plugin-1.5-compat
+    description: compatibility symlinks package for kyverno-plugin Dockerfile
+    pipeline:
+      - runs: |
+          # Symlink the binary from usr/bin to /app/
+          mkdir -p ${{targets.subpkgdir}}/app
+          ln -sf /usr/bin/kyverno-plugin ${{targets.subpkgdir}}/app/kyverno-plugin
+
+update:
+  enabled: false

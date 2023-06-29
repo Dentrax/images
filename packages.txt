@@ -68,6 +68,9 @@ tigera-operator-1.28
 kubernetes-sigs-cluster-proportional-autoscaler-1.8
 prometheus-node-exporter-1.5
 kyverno-1.8
+kyverno-policy-reporter-ui-1.7
+kyverno-policy-reporter-2.11
+kyverno-policy-reporter-kyverno-plugin-1.5
 kube-logging-logging-operator-3.17
 external-secrets-0.7
 redis-6.0
