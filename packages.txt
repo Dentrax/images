@@ -60,6 +60,7 @@ eks-distro-kubernetes-csi-external-provisioner-1.25
 eks-distro-kubernetes-csi-node-driver-registrar-1.25
 eks-distro-kubernetes-csi-livenessprobe-1.25
 kubernetes-csi-external-snapshotter-6.0
+kube-webhook-certgen-1.5.1
 keda-2.9
 eks-distro-kubernetes-csi-external-resizer-1.25
 haproxy-2.0

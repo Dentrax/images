@@ -1,0 +1,40 @@
+package:
+  name: kube-webhook-certgen-1.5.1
+  version: 1.5.1
+  epoch: 0
+  description: Kubernetes webhook certificate generator and patcher
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - ca-certificates-bundle
+      - build-base
+      - busybox
+      - go
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/kubernetes/ingress-nginx
+      tag: controller-v${{package.version}}
+      expected-commit: 63dbbdbb3a099417f411fbd1d684fa2a287c96cd
+
+  - uses: go/build
+    with:
+      modroot: ./images/kube-webhook-certgen/rootfs
+      packages: .
+      output: kube-webhook-certgen
+      ldflags: -s -w -X github.com/jet/kube-webhook-certgen/core.Version=v${{package.version}} -X github.com/jet/kube-webhook-certgen/core.BuildTime=$(date +%Y-%m-%dT%H:%M:%S%z)
+      # Mitigate CVE-2022-41723
+      deps: golang.org/x/net@v0.10.0
+
+  - uses: strip
+
+update:
+  enabled: false
