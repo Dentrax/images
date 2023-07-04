@@ -1,6 +1,6 @@
 package:
   name: kube-logging-logging-operator-3.17
-  version: 3.17.10
+  version: 3.17.11
   epoch: 0
   description: Logging operator for Kubernetes
   copyright:
@@ -22,7 +22,7 @@ pipeline:
     with:
       repository: https://github.com/kube-logging/logging-operator
       tag: ${{package.version}}
-      expected-commit: 71c96ae72e6926291c49b61350c117406aeca5e3
+      expected-commit: 2b9860cae8c8e9697187b5f991cf13edb71601a9
 
   - runs: |
       # Address CVE-2022-21698, GHSA-69ch-w2m2-3vjp and GHSA-69cg-p879-7622 GHSA-8c26-wmh5-6g9v
