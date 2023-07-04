@@ -26,6 +26,15 @@ pipeline:
       expected-commit: 8cabbee84fbfd31fd02404777d3e5e598f422a4b
 
   - runs: |
+      # Mitigate GHSA-r48q-9g5r-8q2h
+      go get github.com/emicklei/go-restful@v2.16.0
+
+      # Mitigate GHSA-vvpx-j8f3-3w6h
+      go get golang.org/x/net@v0.7.0
+
+      go mod tidy
+
+  - runs: |
       # The Makefile sets GOARCH from the ARCH env var which defaults to amd64
       set -x
       make metrics-server ARCH="$(go env GOARCH)"
