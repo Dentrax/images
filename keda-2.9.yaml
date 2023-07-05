@@ -1,7 +1,7 @@
 package:
   name: keda-2.9
   version: 2.9.1
-  epoch: 0
+  epoch: 1
   description: Infrastructure as Code in any programming language
   copyright:
     - license: Apache-2.0
@@ -28,9 +28,26 @@ pipeline:
       expected-commit: 817d1774fa827433ce58d4ff0a2a3a2f290508b1
 
   - runs: |
-      ARCH=$(go env GOARCH) make build
+      # Mitigate GHSA-vvpx-j8f3-3w6h
+      go get golang.org/x/net@v0.7.0
+
+      go mod tidy
+      go mod vendor
+      export GO111MODULE=on
+      export CGO_ENABLED=0
+      export GOOS=$(go env GOOS)
+      export GOARCH=$(go env GOARCH)
+
+      _go_ldflags="
+      -s -w
+      -X=github.com/kedacore/keda/v2/version.GitCommit=$(git rev-list -1 HEAD)
+      -X=github.com/kedacore/keda/v2/version.Version=v${{package.version}}
+      "
+
+      go build -ldflags "$_go_ldflags" -mod=vendor -o ./bin/keda main.go
+      go build -ldflags "$_go_ldflags" -mod=vendor -o ./bin/keda-adapter adapter/main.go
       mkdir -p "${{targets.destdir}}/usr/bin"
-      mv bin/keda "${{targets.destdir}}/usr/bin"
+      mv ./bin/keda "${{targets.destdir}}/usr/bin"
 
   - uses: strip
 
@@ -40,7 +57,7 @@ subpackages:
     pipeline:
       - runs: |
           mkdir -p "${{targets.subpkgdir}}/usr/bin"
-          mv bin/keda-adapter "${{targets.subpkgdir}}/usr/bin"
+          mv ./bin/keda-adapter "${{targets.subpkgdir}}/usr/bin"
       - uses: strip
 
   - name: "keda-compat-2.9"
@@ -50,7 +67,6 @@ subpackages:
           # The helm chart expects the keda binaries to be in / instead of /usr/bin
           mkdir -p "${{targets.subpkgdir}}"
           ln -sf /usr/bin/keda ${{targets.subpkgdir}}/keda
-          ln -sf /usr/bin/keda-admission-webhooks ${{targets.subpkgdir}}/keda-admission-webhooks
           ln -sf /usr/bin/keda-adapter ${{targets.subpkgdir}}/keda-adapter
       - uses: strip
 
