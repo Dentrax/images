@@ -84,6 +84,9 @@ pipeline:
       ln -s /usr/bin/kustomize ${{targets.destdir}}/usr/local/bin/kustomize
       ln -s /usr/bin/kustomize ${{targets.destdir}}/usr/local/bin/kustomize5
 
+      ln -s /usr/bin/kubectl-1.24 ${{targets.destdir}}/usr/local/bin/kubectl-v1.24
+      ln -s /usr/bin/kubectl-1.25 ${{targets.destdir}}/usr/local/bin/kubectl-v1.25
+      ln -s /usr/bin/kubectl-1.26 ${{targets.destdir}}/usr/local/bin/kubectl-v1.26
       ln -s /usr/bin/kubectl ${{targets.destdir}}/usr/local/bin/kubectl
 
 update:
