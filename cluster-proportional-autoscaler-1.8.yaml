@@ -1,5 +1,5 @@
 package:
-  name: kubernetes-sigs-cluster-proportional-autoscaler-1.8
+  name: cluster-proportional-autoscaler-1.8
   version: 1.8.3
   epoch: 0
   description: Kubernetes Cluster Proportional Autoscaler Container
@@ -73,7 +73,7 @@ pipeline:
       install -Dm755 cluster-proportional-autoscaler-$(go env GOARCH) ${{targets.destdir}}/usr/bin/cluster-proportional-autoscaler
 
 subpackages:
-  - name: "kubernetes-sigs-cluster-proportional-autoscaler-1.8-compat"
+  - name: "cluster-proportional-autoscaler-1.8-compat"
     description: "Compatibility package to place binaries in the location expected by upstream helm charts"
     pipeline:
       - runs: |
@@ -86,5 +86,7 @@ update:
   enabled: true
   github:
     identifier: kubernetes-sigs/cluster-proportional-autoscaler
+    use-tag: true
+    tag-filter: 1.8.3
   ignore-regex-patterns:
     - helm-chart-cluster-proportional-autoscaler-*
