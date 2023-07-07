@@ -1,7 +1,7 @@
 package:
   name: haproxy-ingress-0.14
-  version: 0.14.0
-  epoch: 2
+  version: 0.14.4
+  epoch: 0
   description: HAProxy Ingress
   copyright:
     - license: Apache-2.0
@@ -30,7 +30,7 @@ pipeline:
     with:
       repository: https://github.com/jcmoraisjr/haproxy-ingress
       tag: v${{package.version}}
-      expected-commit: f1bc500831ae430d1479cfcb3de57f540fd38339
+      expected-commit: a673faed894e8ff13937e82197d647689a4170cf
 
   - runs: |
       # Mitigate GHSA-r48q-9g5r-8q2h
