@@ -1,0 +1,70 @@
+package:
+  name: grafana-9.3
+  version: 9.3.16
+  epoch: 0
+  description: The open and composable observability and data visualization platform.
+  target-architecture:
+    - all
+  copyright:
+    - paths:
+        - "*"
+      attestation: TODO
+      license: AGPL-3.0-or-later
+  dependencies:
+    runtime:
+      - bash
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - build-base
+      - git
+      - go
+      - yarn
+      - posix-libc-utils
+      - nodejs-16
+      - findutils
+      - python3
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/grafana/grafana
+      tag: v${{package.version}}
+      expected-commit: 07b83b72be8497c2060810a6d242d180781459ce
+
+  - runs: |
+      yarn install
+      yarn run build
+      yarn run plugins:build-bundled
+
+      make build
+
+      mkdir -p ${{targets.destdir}}/usr/bin
+      mv ./bin/linux-*/* ${{targets.destdir}}/usr/bin/
+
+  - name: package
+    runs: |
+      mkdir -p ${{targets.destdir}}/usr/share/grafana/plugins-bundled
+      mkdir -p ${{targets.destdir}}/usr/share/grafana/scripts
+      mkdir -p ${{targets.destdir}}/usr/share/grafana/bin
+
+      mv ./conf ${{targets.destdir}}/usr/share/grafana/
+      mv ./plugins-bundled/internal ${{targets.destdir}}/usr/share/grafana/plugins-bundled/
+      mv ./public ${{targets.destdir}}/usr/share/grafana/
+      mv ./scripts/*.sh ${{targets.destdir}}/usr/share/grafana/scripts/
+
+      mkdir -p ${{targets.destdir}}/opt/grafana
+      mv ./packaging/docker/run.sh ${{targets.destdir}}/opt/grafana/
+
+      mkdir -p ${{targets.destdir}}/etc/grafana/
+      cp ${{targets.destdir}}/usr/share/grafana/conf/sample.ini ${{targets.destdir}}/etc/grafana/grafana.ini
+
+update:
+  enabled: false # since the 9.3.16 is the latest version of the 9.3.x series, we won't be able to need updates for this package
