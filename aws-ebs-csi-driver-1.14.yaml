@@ -1,0 +1,48 @@
+package:
+  name: aws-ebs-csi-driver-1.14
+  version: 1.14.1
+  epoch: 0
+  description: CSI driver for Amazon EBS.
+  copyright:
+    - license: Apache-2.0
+  dependencies:
+    provides:
+      - aws-ebs-csi-driver=1.14
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - wolfi-baselayout
+      - busybox
+      - build-base
+      - go
+      - ca-certificates-bundle
+
+pipeline:
+  # We can't use go/install because this requires specific ldflags to set the version
+  - uses: git-checkout
+    with:
+      repository: https://github.com/kubernetes-sigs/aws-ebs-csi-driver
+      tag: v${{package.version}}
+      expected-commit: 00d9bbee634ef721d9e326a1cd45ee92ef649cc3
+
+  - runs: |
+      # Mitigate GHSA-83g2-8m93-v3w7
+      # Mitigate GHSA-69cg-p879-7622
+      # Mitigate GHSA-fxg5-wq6x-vr4w
+      go get golang.org/x/net@v0.7.0
+
+      go mod tidy
+
+      # Our global LDFLAGS conflict with a Makefile parameter
+      unset LDFLAGS
+      make ARCH=$(go env GOARCH)
+      mkdir -p ${{targets.destdir}}/usr/bin
+      cp bin/aws-ebs-csi-driver ${{targets.destdir}}/usr/bin/
+
+update:
+  enabled: false
