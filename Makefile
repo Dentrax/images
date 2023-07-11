@@ -4,7 +4,7 @@ ifeq (${ARCH}, arm64)
 endif
 TARGETDIR = packages/${ARCH}
 
-MELANGE ?= ../melange/melange
+MELANGE ?= $(shell which melange)
 KEY ?= local-melange.rsa
 REPO ?= $(shell pwd)/packages
 
