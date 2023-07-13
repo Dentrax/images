@@ -32,13 +32,13 @@ pipeline:
       install -Dm755 ./bin/csi-snapshotter ${{targets.destdir}}/usr/bin/csi-snapshotter
 
 subpackages:
-  - name: kubernetes-csi-external-snapshot-controller
+  - name: kubernetes-csi-external-snapshotter-6.0-snapshot-controller
     pipeline:
       - runs: |
           mkdir -p ${{targets.destdir}}/usr/bin
           install -Dm755 ./bin/snapshot-controller ${{targets.subpkgdir}}/usr/bin/snapshot-controller
 
-  - name: kubernetes-csi-external-snapshot-validation-webhook
+  - name: kubernetes-csi-external-snapshotter-6.0-snapshot-validation-webhook
     pipeline:
       - runs: |
           mkdir -p ${{targets.destdir}}/usr/bin

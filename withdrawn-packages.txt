@@ -13,3 +13,5 @@ kubernetes-sigs-cluster-proportional-autoscaler-1.8-compat-r0.apk
 prometheus-postgres-exporter-0.10-0.10.1-r1.apk
 prometheus-postgres-exporter-0.10-0.10.1-r2.apk
 prometheus-postgres-exporter-0.10-0.10.1-r3.apk
+kubernetes-csi-external-snapshot-validation-webhook-6.0.1-r1.apk
+kubernetes-csi-external-snapshot-controller-6.0.1-r1.apk
