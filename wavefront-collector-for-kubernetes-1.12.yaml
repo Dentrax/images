@@ -1,0 +1,55 @@
+package:
+  name: wavefront-collector-for-kubernetes-1.12
+  version: 1.12.1
+  epoch: 0
+  description: Monitoring Kubernetes Clusters using Wavefront
+  copyright:
+    - license: Apache-2.0
+  dependencies:
+    provides:
+      - wavefront-collector-for-kubernetes=1.12
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - wolfi-baselayout
+      - busybox
+      - build-base
+      - go
+      - ca-certificates-bundle
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/wavefrontHQ/wavefront-collector-for-kubernetes
+      tag: v${{package.version}}
+      expected-commit: 946dbf43c8cb15dee95bdf0a6a54eca51a44a0a2
+
+  - runs: |
+      unset LDFLAGS
+      ARCH=$(go env GOARCH)
+      GIT_COMMIT="$(git rev-parse --short HEAD)"
+      RELEASE_VERSION="$(cat ./release/VERSION)"
+      LDFLAGS="-w -X main.version=${RELEASE_VERSION} -X main.commit=${GIT_COMMIT}"
+
+
+      # Mitigate CVE-2022-41723 / GHSA-vvpx-j8f3-3w6h
+      # Mitigate CVE-2022-41721 / GHSA-fxg5-wq6x-vr4w
+      go get golang.org/x/net@v0.7.0
+
+      # Mitigate CVE-2022-32149 / GHSA-69ch-w2m2-3vjp
+      go get golang.org/x/text@v0.3.8
+
+      go mod tidy
+      go mod vendor
+
+      GOARCH=${ARCH} CGO_ENABLED=0 go build -ldflags "${LDFLAGS}" -o _output/${ARCH}/wavefront-collector ./cmd/wavefront-collector/
+      mkdir -p ${{targets.destdir}}/usr/bin
+      cp _output/${ARCH}/wavefront-collector ${{targets.destdir}}/usr/bin/
+
+update:
+  enabled: false
