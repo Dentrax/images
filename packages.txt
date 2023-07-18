@@ -40,6 +40,7 @@ prometheus-operator-0.65
 kube-state-metrics-2.2.0
 kube-state-metrics-2.6
 metrics-server-0.6.2
+metrics-server-0.6.3
 kube-state-metrics-2.8
 eks-distro-kubernetes-csi-external-provisioner-1.23
 azure-aad-pod-identity-mic
