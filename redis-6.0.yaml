@@ -1,6 +1,6 @@
 package:
   name: redis-6.0
-  version: 6.0.19
+  version: 6.0.20
   epoch: 0
   description: Advanced key-value store
   copyright:
@@ -25,7 +25,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://download.redis.io/releases/redis-${{package.version}}.tar.gz
-      expected-sha512: a50eeb1881891a6c1cb4cff32f228a15b9967da31af5bf248c392d0a9a15e686e9b056b269d5e81fded48201f00ca52c450c6919d278e3fd5d0661639355a53a
+      expected-sha512: 9f1804c2aa314d46713a86ff1274f9fbcd7785dcdc3087ac1b02240439f0a66836ed29da8bd9464390464e19dca9e43c015b9e986fd9808f6af5df50ed0bb664
 
   - uses: patch
     with:
