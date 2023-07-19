@@ -1,0 +1,51 @@
+package:
+  name: flux-image-automation-controller-0
+  version: 0.31.0
+  epoch: 0
+  description: GitOps Toolkit controller that patches container image tags in Git
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - go
+      - llvm-lld
+      - gcc
+      - clang-15
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/fluxcd/image-automation-controller
+      tag: v${{package.version}}
+      expected-commit: 7889652c39d72725d105226922062f07159f8a14
+
+  - runs: |
+      mkdir -p "${{targets.destdir}}"/usr/bin
+      CGO_ENABLED=1 CGO_LDFLAGS="-static -fuse-ld=lld" go build \
+        -ldflags "-s -w" \
+        -tags 'netgo,osusergo,static_build' \
+        -trimpath -o "${{targets.destdir}}"/usr/bin/image-automation-controller .
+
+  - uses: strip
+
+subpackages:
+  - name: flux-image-automation-controller-compat
+    pipeline:
+      - runs: |
+          mkdir -p ${{targets.subpkgdir}}/usr/local/bin
+          # The upstream helm chart assumes the binary is in /.
+          ln -sf /usr/bin/image-automation-controller ${{targets.subpkgdir}}/usr/local/bin/image-automation-controller
+    dependencies:
+      runtime:
+        - flux-image-automation-controller
+
+update:
+  enabled: false
