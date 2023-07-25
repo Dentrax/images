@@ -26,7 +26,7 @@ jobs:
         uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:eb380f0284529d2713b0c3cf89a02230445d00a081fe26ee70e1bc9b1c4bd500
         with:
           entrypoint: wolfictl
-          args: lint  --skip-rule forbidden-repository-used --skip-rule forbidden-keyring-used
+          args: lint  --skip-rule forbidden-repository-used --skip-rule forbidden-keyring-used --skip-rule no-makefile-entry-for-package
 
       - name: Enforce YAML formatting
         id: lint-yaml

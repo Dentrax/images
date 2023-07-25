@@ -11,7 +11,6 @@ If that is the case then here is the process to follow to open source the packag
 1. Submit PR in [wolfi-dev/os](https://github.com/wolfi-dev/os)
 1. Once the PR is merged wait for the package to be built (check with `wolfictl apk ${pkg}-${version}-r${epoch}.apk`)
 1. Remove the melange config and any patches from this repository
-1. Remove the package entry from packages.txt
 
 **Note:** The packages themselves do not need to be withdrawn unless they are truly broken. They can be left in the GCP bucket.
 
