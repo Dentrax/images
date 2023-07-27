@@ -1,7 +1,7 @@
 package:
   name: aws-load-balancer-controller-2.4.5
   version: 2.4.5
-  epoch: 0
+  epoch: 1
   description: A Kubernetes controller for Elastic Load Balancers
   copyright:
     - license: Apache-2.0
@@ -59,6 +59,15 @@ pipeline:
       install -Dm755 /home/build/out/controller "${{targets.destdir}}"/usr/bin/controller
 
   - uses: strip
+
+subpackages:
+  - name: "aws-load-balancer-controller-compat-2.4.5"
+    description: "Compatibility package to place binaries in the location expected by upstream helm charts"
+    pipeline:
+      - runs: |
+          # The helm chart expects the binaries to be in / instead of /usr/bin
+          mkdir -p "${{targets.subpkgdir}}"
+          ln -sf /usr/bin/controller ${{targets.subpkgdir}}/controller
 
 update:
   enabled: false
