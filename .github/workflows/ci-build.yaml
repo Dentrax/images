@@ -35,6 +35,22 @@ jobs:
           echo "epoch=$(date -u +%s)" >> "$GITHUB_OUTPUT"
         shell: bash
 
+      # Checkout and build wolfictl from main
+      # Can't `go install` because its go.mod has `replace`s.
+      - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
+        with:
+          go-version: '1.20.x'
+          check-latest: true
+
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+        with:
+          repository: wolfi-dev/wolfictl
+          path: ${{github.workspace}}/wolfictl
+
+      - working-directory: ${{github.workspace}}/wolfictl
+        run: go install
+
+
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
         with:
           ref: ${{ github.event.pull_request.head.sha }}
@@ -66,7 +82,7 @@ jobs:
 
       - name: 'Build Enterprise packages'
         run: |
-          make --debug MELANGE="sudo melange" MELANGE_DIR=/usr/share/melange MELANGE_EXTRA_OPTS="--create-build-log --keyring-append ${{ github.workspace }}/packages/chainguard-enterprise.rsa.pub" REPO="${{ github.workspace }}/packages" -j1
+          make --debug MELANGE="sudo melange" MELANGE_DIR=/usr/share/melange MELANGE_EXTRA_OPTS="--create-build-log --keyring-append ${{ github.workspace }}/packages/chainguard-enterprise.rsa.pub" REPO="${{ github.workspace }}/packages" -j1 all
 
       - name: Check for file
         id: file_check
