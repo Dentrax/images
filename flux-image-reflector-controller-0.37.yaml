@@ -1,0 +1,37 @@
+package:
+  name: flux-image-reflector-controller-0
+  version: 0.26.1
+  epoch: 0
+  description: GitOps Toolkit controller that scans container registries
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - build-base
+      - go
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/fluxcd/image-reflector-controller
+      tag: v${{package.version}}
+      expected-commit: 17c56efe09844560054453835ddd98fb48225300
+
+  - uses: go/build
+    with:
+      packages: .
+      output: image-reflector-controller
+      ldflags: -s -w
+
+  - uses: strip
+
+update:
+  enabled: false

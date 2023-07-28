@@ -1,0 +1,38 @@
+package:
+  name: flux-notification-controller-0
+  version: 0.29.0
+  epoch: 0
+  description: The GitOps Toolkit event forwarded and notification dispatcher
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - go
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/fluxcd/notification-controller
+      tag: v${{package.version}}
+      expected-commit: 0ba01dde8b225c587dd53535d17f004839dfadbe
+
+  - runs: |
+      # GHSA-2q89-485c-9j2x
+      go get github.com/cloudflare/circl@v1.3.3
+      go mod tidy
+      mkdir -p "${{targets.destdir}}"/usr/bin
+      CGO_ENABLED=0 go build \
+        -trimpath -a -o "${{targets.destdir}}"/usr/bin/notification-controller .
+
+  - uses: strip
+
+update:
+  enabled: false
