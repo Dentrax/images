@@ -1,10 +1,13 @@
 package:
-  name: cluster-proportional-autoscaler-1.8
-  version: 1.8.3
+  name: cluster-proportional-autoscaler-1.8.4
+  version: 1.8.4
   epoch: 0
   description: Kubernetes Cluster Proportional Autoscaler Container
   copyright:
     - license: Apache-2.0
+  dependencies:
+    provides:
+      - cluster-proportional-autoscaler=1.8.4
 
 environment:
   contents:
@@ -25,7 +28,7 @@ pipeline:
     with:
       repository: https://github.com/kubernetes-sigs/cluster-proportional-autoscaler
       tag: ${{package.version}}
-      expected-commit: 9d097d0fa6c3aa6d80002dc5edbf08821cd1eb08
+      expected-commit: fe440432e1144a1193c421544fd9c8cd9731a4bc
 
   - runs: |
       # Mitigate GHSA-c3h9-896r-86jm
@@ -73,7 +76,7 @@ pipeline:
       install -Dm755 cluster-proportional-autoscaler-$(go env GOARCH) ${{targets.destdir}}/usr/bin/cluster-proportional-autoscaler
 
 subpackages:
-  - name: "cluster-proportional-autoscaler-1.8-compat"
+  - name: "cluster-proportional-autoscaler-1.8.4-compat"
     description: "Compatibility package to place binaries in the location expected by upstream helm charts"
     pipeline:
       - runs: |
@@ -87,6 +90,6 @@ update:
   github:
     identifier: kubernetes-sigs/cluster-proportional-autoscaler
     use-tag: true
-    tag-filter: 1.8.3
+    tag-filter: 1.8.4
   ignore-regex-patterns:
     - helm-chart-cluster-proportional-autoscaler-*
