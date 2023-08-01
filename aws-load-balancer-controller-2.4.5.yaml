@@ -1,7 +1,7 @@
 package:
   name: aws-load-balancer-controller-2.4.5
   version: 2.4.5
-  epoch: 1
+  epoch: 2
   description: A Kubernetes controller for Elastic Load Balancers
   copyright:
     - license: Apache-2.0
@@ -31,7 +31,10 @@ pipeline:
       go get golang.org/x/text@v0.3.8
 
       # Mitigate GHSA-p782-xgp4-8hr8
-      go get golang.org/x/sys@v0.6.0
+      # We must remove the pre-existing replace directive or the go get will
+      # be ineffective.
+      go mod edit -dropreplace golang.org/x/sys
+      go get golang.org/x/sys@33da011f77ad
 
       # Mitigate GHSA-83g2-8m93-v3w7
       # Mitigate GHSA-69cg-p879-7622
