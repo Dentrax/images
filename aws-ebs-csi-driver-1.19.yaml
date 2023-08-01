@@ -1,7 +1,7 @@
 package:
   name: aws-ebs-csi-driver-1.19
   version: 1.19.0
-  epoch: 1
+  epoch: 2
   description: CSI driver for Amazon EBS.
   copyright:
     - license: Apache-2.0
@@ -31,6 +31,16 @@ pipeline:
       repository: https://github.com/kubernetes-sigs/aws-ebs-csi-driver
       tag: v${{package.version}}
       expected-commit: a0ec0da261f9d24aecdec98448c63a38e7ae2cf3
+
+  - runs: |
+      # This is needed for the "go get k8s.io/kubernetes" below or it
+      # will fail because k8s.io/kms has a version of v0.0.0 in its go.mod
+      go mod edit -replace k8s.io/kms=k8s.io/kms@v0.27.1
+
+      # Mitigate GHSA-xc8m-28vv-4pjc, GHSA-cgcv-5272-97pr, GHSA-qc2g-gmh6-95p4
+      go get k8s.io/kubernetes@v1.27.3
+
+      go mod tidy
 
   - runs: |
       # Our global LDFLAGS conflict with a Makefile parameter

@@ -1,7 +1,7 @@
 package:
   name: aws-ebs-csi-driver-1.18
   version: 1.18.0
-  epoch: 1
+  epoch: 2
   description: CSI driver for Amazon EBS.
   copyright:
     - license: Apache-2.0
@@ -31,6 +31,15 @@ pipeline:
       repository: https://github.com/kubernetes-sigs/aws-ebs-csi-driver
       tag: v${{package.version}}
       expected-commit: cfe3673b921dd2f50e023371d54fdb2dd219c7a0
+
+  - runs: |
+      # Mitigate GHSA-hw7c-3rfg-p46j
+      go get google.golang.org/protobuf@v1.29.1
+
+      # Mitigate GHSA-xc8m-28vv-4pjc, GHSA-cgcv-5272-97pr, GHSA-qc2g-gmh6-95p4
+      go get k8s.io/kubernetes@v1.26.6
+
+      go mod tidy
 
   - runs: |
       # Our global LDFLAGS conflict with a Makefile parameter
