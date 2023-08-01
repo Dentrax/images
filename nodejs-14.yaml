@@ -1,15 +1,16 @@
 package:
   name: nodejs-14
   version: 14.21.3
-  epoch: 0
+  epoch: 1
   description: "JavaScript runtime built on V8 engine - LTS version"
-  target-architecture:
-    - all
+  dependencies:
+    runtime:
+      - npm
+    provides:
+      - nodejs=14
+      - nodejs-lts=14
   copyright:
-    - paths:
-        - "*"
-      attestation: TODO
-      license: MIT
+    - license: MIT
 
 environment:
   contents:
@@ -70,6 +71,12 @@ pipeline:
       make DESTDIR="$${{targets.destdir}}" install
 
   - uses: strip
+
+  # Get rid of the bundled npm, we don't need it.
+  - runs: |
+      rm -rf "${{targets.destdir}}"/usr/lib/node_modules
+      rm "${{targets.destdir}}"/usr/bin/npm
+      rm "${{targets.destdir}}"/usr/bin/npx
 
 update:
   enabled: true
