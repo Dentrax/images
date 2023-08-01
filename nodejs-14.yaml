@@ -34,6 +34,7 @@ environment:
       - busybox
       - ca-certificates-bundle
       - build-base
+      - gcc-12-default
 
 pipeline:
   - uses: fetch
@@ -52,6 +53,7 @@ pipeline:
       export CFLAGS="${CFLAGS/-Os/-O2} $common_flags"
       export CXXFLAGS="${CXXFLAGS/-Os/-O2} $common_flags"
       export CPPFLAGS="${CPPFLAGS/-Os/-O2} $common_flags"
+      export CC=gcc CXX=g++
       python3 configure.py --prefix=/usr \
         --shared-brotli \
         --shared-zlib \
@@ -61,7 +63,7 @@ pipeline:
         --openssl-use-def-ca-store \
         --with-icu-default-data-dir=$(icu-config --icudatadir) \
         --with-intl=system-icu
-        make BUILDTYPE=Release
+        make BUILDTYPE=Release CC=gcc CXX=g++
 
   - uses: autoconf/make
 
