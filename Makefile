@@ -25,13 +25,20 @@ MELANGE_OPTS += ${MELANGE_EXTRA_OPTS}
 PKGLISTCMD ?= $(WOLFICTL) text --dir . --type name --buildtime-repos-for-runtime
 
 all: ${KEY} .build-packages
-ifeq ($(MAKECMDGOALS),all)
-  PKGLIST := $(addprefix package/,$(shell $(PKGLISTCMD)))
+
+# this ensures two things:
+# 1. We only generate the graph for the list of commands that requires it
+# 2. If generating the graph fails, we error out; without this, a failure in $(shell) might go unnoticed.
+ifneq ($(findstring $(MAKECMDGOALS),all list list-yaml),)
+  PKGNAMES := $(shell $(PKGLISTCMD) || echo "failed")
+  ifeq ($(PKGNAMES),failed)
+    $(error $(PKGLISTCMD) failed)
+  endif
+  PKGLIST := $(addprefix package/,$(PKGNAMES))
 else
   PKGLIST :=
 endif
 .build-packages: $(PKGLIST)
-
 
 ${KEY}:
 	${MELANGE} keygen ${KEY}
@@ -40,16 +47,14 @@ clean:
 	rm -rf packages/${ARCH}
 
 .PHONY: list list-yaml
+
 list:
-	$(info $(shell $(PKGLISTCMD)))
+	$(info $(PKGNAMES))
 	@printf ''
 
 list-yaml:
-	$(info $(addsuffix .yaml,$(shell $(PKGLISTCMD))))
+	$(info $(addsuffix .yaml,$(PKGNAMES)))
 	@printf ''
-
-comma := ,
-comma-split = $(word $2,$(subst ${comma}, ,$1))
 
 package/%:
 	$(eval yamlfile := $*.yaml)
