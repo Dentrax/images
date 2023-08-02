@@ -1,0 +1,75 @@
+package:
+  name: libgit2-1.5
+  version: 1.5.0
+  epoch: 0
+  description: "A cross-platform, linkable library implementation of Git that you can use in your application."
+  copyright:
+    - license: GPL-2.0-only WITH GCC-exception-2.0
+  dependencies:
+    runtime:
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - wolfi-baselayout
+      - busybox
+      - ca-certificates-bundle
+      - build-base
+      - cmake
+      - samurai
+      - openssl-dev
+      - pkgconf
+      - pcre2-dev
+      - zlib-dev
+      - libssh2-dev
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://github.com/libgit2/libgit2/archive/v${{package.version}}.tar.gz
+      expected-sha256: 8de872a0f201b33d9522b817c92e14edb4efad18dae95cf156cf240b2efff93e
+
+  - name: Configure
+    runs: |
+      CC=gcc CXX=g++ cmake -B build-shared -G Ninja \
+        -DCMAKE_BUILD_TYPE=None \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_INSTALL_LIBDIR=lib \
+        -DUSE_HTTPS=OpenSSL \
+        -DREGEX_BACKEND=pcre2 \
+        -DUSE_BUNDLED_ZLIB=OFF \
+        -DUSE_SSH=ON \
+        -DBUILD_TESTS=OFF
+      cmake --build build-shared
+      DESTDIR=${{targets.destdir}} cmake --install build-shared
+
+      CC=gcc CXX=g++ cmake -B build-static -G Ninja \
+        -DCMAKE_BUILD_TYPE=None \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_INSTALL_LIBDIR=lib \
+        -DUSE_HTTPS=OpenSSL \
+        -DREGEX_BACKEND=pcre2 \
+        -DUSE_BUNDLED_ZLIB=OFF \
+        -DUSE_SSH=ON \
+        -DBUILD_TESTS=OFF \
+        -DBUILD_SHARED_LIBS=OFF
+      cmake --build build-static
+      DESTDIR=${{targets.destdir}} cmake --install build-static
+
+subpackages:
+  - name: "libgit2-dev-1.5"
+    description: "headers for libgit2"
+    pipeline:
+      - uses: split/dev
+    dependencies:
+      runtime:
+        - libgit2-1.5
+
+update:
+  enabled: true
+  release-monitor:
+    identifier: 1627

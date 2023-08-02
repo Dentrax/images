@@ -1,5 +1,5 @@
 package:
-  name: flux-source-controller-0
+  name: flux-source-controller-0.37
   version: 0.32.1
   epoch: 0
   description: The GitOps Toolkit source management component
@@ -19,6 +19,13 @@ environment:
       - gcc
       - clang-15
       - llvm-lld
+      - libgit2-dev-1.5
+      - zlib-dev
+      - zlib-static
+      - openssl-dev
+      - libssh2-dev
+      - pcre2-dev
+      - pkgconf
 
 pipeline:
   - uses: git-checkout
@@ -29,7 +36,9 @@ pipeline:
 
   - runs: |
       mkdir -p "${{targets.destdir}}"/usr/bin
-      CGO_ENABLED=1 CGO_LDFLAGS="-static -fuse-ld=lld" go build \
+      # This is the expansion of $(pkg-config --static --libs --cflags libgit2)
+      CGO_LDFLAGS="-L /lib -L/usr/lib -L/usr/local/lib -lgit2 -lssh2 -lrt -lssl -ldl -pthread -lpcre2-8 -lz -lcrypto -ldl -pthread"
+      CGO_ENABLED=1 CGO_LDFLAGS="$CGO_LDFLAGS -static -fuse-ld=lld" go build \
         -ldflags "-s -w" \
         -tags 'netgo,osusergo,static_build' \
         -trimpath -o "${{targets.destdir}}"/usr/bin/source-controller .

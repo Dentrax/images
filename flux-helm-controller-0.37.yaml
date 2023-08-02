@@ -1,5 +1,5 @@
 package:
-  name: flux-helm-controller-0
+  name: flux-helm-controller-0.37
   version: 0.27.0
   epoch: 0
   description: The GitOps Toolkit Helm reconciler, for declarative Helming
