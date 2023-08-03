@@ -17,3 +17,5 @@ kubernetes-csi-external-snapshot-validation-webhook-6.0.1-r1.apk
 kubernetes-csi-external-snapshot-controller-6.0.1-r1.apk
 cluster-proportional-autoscaler-1.8-compat-1.8.3-r0.apk
 cluster-proportional-autoscaler-1.8-1.8.3-r0.apk
+flux-image-automation-controller-0-0.27.0-r0.apk
+flux-image-reflector-controller-0-0.26.1-r0.apk
