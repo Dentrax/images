@@ -1,7 +1,7 @@
 package:
   name: kubectl-1.23
   version: 1.23.17
-  epoch: 0
+  epoch: 1
   description: Command-line interface for Kubernetes
   target-architecture:
     - all
@@ -39,11 +39,9 @@ pipeline:
 
   # Build the kubectl binary as stated in the community docs
   #  https://github.com/kubernetes/community/blob/master/contributors/devel/development.md#building-kubernetes
-  #
-  # NOTE: TARGETDIR(/usr/local/bin) corresponds to KOTS_KUBECTL_BIN_DIR in final image
   - runs: |
       # Set up some common variables for where the binary will go
-      export TARGETDIR="${{targets.destdir}}/usr/local/bin"
+      export TARGETDIR="${{targets.destdir}}/usr/bin"
       export TARGETBIN="kubectl-v$(echo ${{package.version}} | cut -d'.' -f -2)"
 
       # Build the kubectl binary
