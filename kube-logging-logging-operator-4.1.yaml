@@ -1,7 +1,7 @@
 package:
-  name: kube-logging-logging-operator-3.17
-  version: 3.17.11
-  epoch: 1
+  name: kube-logging-logging-operator-4.1
+  version: 4.1.0
+  epoch: 0
   description: Logging operator for Kubernetes
   copyright:
     - license: Apache-2.0
@@ -22,27 +22,17 @@ pipeline:
     with:
       repository: https://github.com/kube-logging/logging-operator
       tag: ${{package.version}}
-      expected-commit: 2b9860cae8c8e9697187b5f991cf13edb71601a9
+      expected-commit: f2079b2e9bf3799bb56112f52def7ba89217c090
 
   - runs: |
-      # Address CVE-2022-21698, GHSA-69ch-w2m2-3vjp and GHSA-69cg-p879-7622 GHSA-8c26-wmh5-6g9v
-      go get github.com/prometheus/client_golang@v1.11.1
-      go get golang.org/x/text@v0.3.8
-      go get golang.org/x/net@v0.7.0
-
-      # Address GHSA-3vm4-22fp-5rfm, GHSA-gwc9-m7rh-j2ww and GHSA-8c26-wmh5-6g9v
-      go get golang.org/x/crypto@1baeb1ce4c0b
-
-      go mod tidy -compat=1.17
-
-      go build -o bin/manager main.go
+      CGO_ENABLED=0 GO111MODULE=on go build -o bin/manager main.go
       mkdir -p ${{targets.destdir}}/usr/bin
       install -Dm755 ./bin/manager ${{targets.destdir}}/usr/bin/manager
 
   - uses: strip
 
 subpackages:
-  - name: "kube-logging-logging-operator-3.17-compat"
+  - name: "kube-logging-logging-operator-4.1-compat"
     description: "Compatibility package to place binaries in the location expected by upstream helm charts"
     pipeline:
       - runs: |
@@ -52,8 +42,5 @@ subpackages:
       - uses: strip
 
 update:
-  enabled: true
-  github:
-    identifier: kube-logging/logging-operator
-    tag-filter: 3.17
-    use-tag: true
+  # since we don't expect any patches for the 4.1.x series, so, disabling updates.
+  enabled: false
