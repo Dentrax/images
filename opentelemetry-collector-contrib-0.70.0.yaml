@@ -1,0 +1,47 @@
+package:
+  name: opentelemetry-collector-contrib-0.70.0
+  version: 0.70.0
+  epoch: 0
+  description: Contrib repository for the OpenTelemetry Collector
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - go
+  environment:
+    CGO_ENABLED: "0"
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/open-telemetry/opentelemetry-collector-contrib
+      tag: v${{package.version}}
+      expected-commit: e98d4ccb785a8a2c05183c5f6456408e84d67e8c
+
+  - runs: make otelcontribcol
+
+  - runs: |
+      mkdir -p ${{targets.destdir}}/usr/bin
+      mv bin/otelcontribcol* ${{targets.destdir}}/usr/bin/otelcol-contrib
+
+  - uses: strip
+
+subpackages:
+  - name: opentelemetry-collector-contrib-compat-0.70.0
+    description: "Compatibility package to place binaries in the location expected by upstream helm charts"
+    pipeline:
+      - runs: |
+          # The helm chart expects the binaries to be in / instead of /usr/bin
+          mkdir -p "${{targets.subpkgdir}}"
+          ln -sf /usr/bin/otelcol-contrib ${{targets.subpkgdir}}/otelcol-contrib
+
+update:
+  enabled: false # we don't want to update this package as latest is in wolfi
