@@ -1,0 +1,51 @@
+package:
+  name: gpu-operator
+  version: 23.6.0
+  epoch: 0
+  description: NVIDIA GPU Operator creates/configures/manages GPUs atop Kubernetes
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - build-base
+      - go
+  environment:
+    CGO_ENABLED: 0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/NVIDIA/gpu-operator
+      tag: v${{package.version}}
+      expected-commit: 25d6f8d0a6f12b020b0bbc4d60ab95ccab77f5d0
+
+  - runs: |
+      mkdir -p ${{targets.destdir}}/usr/bin
+      mkdir -p ${{targets.destdir}}/opt/${{package.name}}
+      mkdir -p ${{targets.destdir}}/licenses
+
+      CGO_ENABLED=0 GOOS=$(go env GOOS) GOARCH=$(go env GOARCH) GO111MODULE=on \
+      go build -a -o ${{targets.destdir}}/usr/bin/gpu-operator main.go
+
+      cp -r ./assets/* ${{targets.destdir}}/opt/${{package.name}}
+      cp hack/must-gather.sh ${{targets.destdir}}/usr/bin/gather
+
+      cp deployments/gpu-operator/crds/nvidia.com_clusterpolicies_crd.yaml ${{targets.destdir}}/opt/${{package.name}}/nvidia.com_clusterpolicies_crd.yaml
+      cp deployments/gpu-operator/crds/nvidia.com_clusterpolicies_crd.yaml ${{targets.destdir}}/opt/${{package.name}}/nvidia.com_clusterpolicies_crd.yaml
+
+  - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: NVIDIA/gpu-operator
+    strip-prefix: v
+    use-tag: true
