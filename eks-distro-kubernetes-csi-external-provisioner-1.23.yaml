@@ -1,6 +1,6 @@
 package:
   name: eks-distro-kubernetes-csi-external-provisioner-1.23
-  version: 1.23.21
+  version: 1.23.28
   epoch: 0
   description: Sidecar container that watches Kubernetes PersistentVolumeClaim objects and triggers CreateVolume/DeleteVolume against a CSI endpoint
   copyright:
@@ -35,14 +35,14 @@ pipeline:
     with:
       repository: https://github.com/aws/eks-distro
       tag: v${{vars.mangled-package-version}}
-      expected-commit: 3ad41b596f2454cd47fc7909f5e5eac1043d4dda
+      expected-commit: 812b1f578c7fab972604fa4d5796da5213e6e7ca
 
   - runs: |
       make makes-binaries-kubernetes-csi_external-provisioner
       mkdir -p "${{targets.destdir}}"/usr/bin
       ARCH=$(go env GOARCH)
       OS=$(go env GOOS)
-      cp ./projects/kubernetes-csi/external-provisioner/_output/1-26/bin/external-provisioner/${OS}-${ARCH}/csi-provisioner "${{targets.destdir}}"/usr/bin/csi-provisioner
+      cp ./projects/kubernetes-csi/external-provisioner/_output/1-27/bin/external-provisioner/${OS}-${ARCH}/csi-provisioner "${{targets.destdir}}"/usr/bin/csi-provisioner
 
   - uses: strip
 
