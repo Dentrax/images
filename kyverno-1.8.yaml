@@ -31,6 +31,17 @@ pipeline:
       expected-commit: c19061758dc4203106ab6d87a245045c20192721
 
   - runs: |
+      # Remediate CVE-2023-1732
+      go get github.com/cloudflare/circl@v1.3.3
+
+      # Remediate CVE-2023-2253
+      go get github.com/distribution/distribution@v2.8.2-beta.1+incompatible
+
+      # Remediate CVE-2022-41723, CVE-2022-41721
+      go mod edit -replace golang.org/x/net=golang.org/x/net@v0.13.0
+
+      go mod tidy
+
       make build-all
       mkdir -p ${{targets.destdir}}/usr/bin
       install -Dm755 cmd/kyverno/kyverno ${{targets.destdir}}/usr/bin/kyverno
