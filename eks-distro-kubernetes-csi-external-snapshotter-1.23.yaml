@@ -1,8 +1,8 @@
 package:
   name: eks-distro-kubernetes-csi-external-snapshotter-1.23
   # -distro/kubernetes-csi/external-snapshotter/csi-snapshotter:v6.2.1-eks-1-23-21
-  version: 1.23.21
-  epoch: 1
+  version: 1.23.28
+  epoch: 0
   description: Sidecar container that watches Kubernetes Snapshot CRD objects and triggers CreateSnapshot/DeleteSnapshot against a CSI endpoint.
   copyright:
     - license: Apache-2.0
@@ -36,14 +36,14 @@ pipeline:
     with:
       repository: https://github.com/aws/eks-distro
       tag: v${{vars.mangled-package-version}}
-      expected-commit: 3ad41b596f2454cd47fc7909f5e5eac1043d4dda
+      expected-commit: 812b1f578c7fab972604fa4d5796da5213e6e7ca
 
   - runs: |
       make makes-binaries-kubernetes-csi_external-snapshotter
       mkdir -p "${{targets.destdir}}"/usr/bin
       ARCH=$(go env GOARCH)
       OS=$(go env GOOS)
-      cp ./projects/kubernetes-csi/external-snapshotter/_output/1-26/bin/external-snapshotter/${OS}-${ARCH}/csi-snapshotter "${{targets.destdir}}"/usr/bin/csi-snapshotter
+      cp ./projects/kubernetes-csi/external-snapshotter/_output/1-27/bin/external-snapshotter/${OS}-${ARCH}/csi-snapshotter "${{targets.destdir}}"/usr/bin/csi-snapshotter
 
   - uses: strip
 
@@ -54,7 +54,7 @@ subpackages:
           mkdir -p ${{targets.subpkgdir}}/usr/bin
           ARCH=$(go env GOARCH)
           OS=$(go env GOOS)
-          cp ./projects/kubernetes-csi/external-snapshotter/_output/1-26/bin/external-snapshotter/${OS}-${ARCH}/snapshot-controller "${{targets.subpkgdir}}"/usr/bin/snapshot-controller
+          cp ./projects/kubernetes-csi/external-snapshotter/_output/1-27/bin/external-snapshotter/${OS}-${ARCH}/snapshot-controller "${{targets.subpkgdir}}"/usr/bin/snapshot-controller
     dependencies:
       provides:
         - eks-distro-kubernetes-csi-external-snapshot-controller=1.23
@@ -65,7 +65,7 @@ subpackages:
           mkdir -p ${{targets.subpkgdir}}/usr/bin
           ARCH=$(go env GOARCH)
           OS=$(go env GOOS)
-          cp ./projects/kubernetes-csi/external-snapshotter/_output/1-26/bin/external-snapshotter/${OS}-${ARCH}/snapshot-validation-webhook "${{targets.subpkgdir}}"/usr/bin/snapshot-validation-webhook
+          cp ./projects/kubernetes-csi/external-snapshotter/_output/1-27/bin/external-snapshotter/${OS}-${ARCH}/snapshot-validation-webhook "${{targets.subpkgdir}}"/usr/bin/snapshot-validation-webhook
     dependencies:
       provides:
         - eks-distro-kubernetes-csi-external-snapshot-validation-webhook=1.23
