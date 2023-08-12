@@ -1,3 +1,13 @@
+# This is flux v2 pinned at the last v0 update before the v2.0.0 release to
+# fulfil a specific request from JAMF to support their upgrade path. All
+# components released as part of this tag are also suffixed with `-0.37` to
+# indicate they belong as part of the same image commitment.
+# Ref: https://github.com/fluxcd/flux2/releases/tag/v0.41.2
+#
+# Since flux does not backport fixes, this means `flux-0` pins flux at v0.41.2.
+# This package will never be updated, and is only kept around long enough to
+# fulfil the upgrade path we've promised JAMF since it will accrew CVE's
+# indefinitely.
 package:
   name: flux-0
   version: 0.41.2

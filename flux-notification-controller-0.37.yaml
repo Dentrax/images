@@ -1,5 +1,15 @@
+# Flux contains multiple components that are released together as a package of
+# individually versioned components with no logical mapping between them.
+# The versioning stream suffixed to this package name (-0.37) indicates the
+# flux version of this component. The component versions can be found here:
+# Ref: https://github.com/fluxcd/flux2/releases/tag/v0.37.0
+#
+# This package exists as a commitment to JAMF to support their upgrade path,
+# and should never be updated. It is only kept around long enough to fulfill
+# said upgrade path we agreed to.
 package:
   name: flux-notification-controller-0.37
+  # The version of notification-controller at the time of flux v0.37
   version: 0.29.0
   epoch: 0
   description: The GitOps Toolkit event forwarded and notification dispatcher

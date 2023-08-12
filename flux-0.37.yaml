@@ -1,3 +1,11 @@
+# This is flux v2 pinned at exactly the v0.37 version to fulfil a specific
+# request from JAMF to support their upgrade path. All components released as
+# part of this tag are also suffixed with `-0.37` to indicate they belong as
+# part of the same image commitment.
+# Ref: # https://github.com/fluxcd/flux2/releases/tag/v0.37.0
+#
+# It will never be updated, and is only kept around long enough to fulfill the
+# upgrade path since it will accrew CVE's indefinitely.
 package:
   name: flux-0.37
   version: 0.37.0
