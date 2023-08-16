@@ -1,7 +1,7 @@
 package:
   name: sourcegraph-grafana
   version: 5.0.5
-  epoch: 0
+  epoch: 1
   description: Sourcegraph packaged Grafana
   target-architecture:
     - all
@@ -69,3 +69,4 @@ update:
   github:
     identifier: sourcegraph/sourcegraph
     strip-prefix: v
+    tag-filter: v
