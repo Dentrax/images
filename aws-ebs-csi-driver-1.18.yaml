@@ -1,11 +1,19 @@
 package:
   name: aws-ebs-csi-driver-1.18
   version: 1.18.0
-  epoch: 2
+  epoch: 3
   description: CSI driver for Amazon EBS.
   copyright:
     - license: Apache-2.0
   dependencies:
+    runtime:
+      - mount
+      - lsblk
+      - blkid
+      - blockdev
+      - xfsprogs
+      - e2fsprogs
+      - e2fsprogs-extra
     provides:
       - aws-ebs-csi-driver=1.18
 
