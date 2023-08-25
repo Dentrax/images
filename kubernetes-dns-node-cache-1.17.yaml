@@ -1,6 +1,6 @@
 package:
   name: kubernetes-dns-node-cache-1.17
-  version: 1.17.0
+  version: 1.17.4
   epoch: 0
   description: NodeLocal DNSCache improves Cluster DNS performance by running a DNS caching agent on cluster nodes as a DaemonSet.
   copyright:
@@ -24,7 +24,7 @@ pipeline:
     with:
       repository: https://github.com/kubernetes/dns
       tag: ${{package.version}}
-      expected-commit: ce81888a2737f746f1e5e69473e55a822742e3c1
+      expected-commit: 7fcc32a1876c5344eedea0fa9c41ca92c980e5fe
 
   - runs: |
       # Mitigate GHSA-ppp9-7jff-5vj2 and GHSA-69ch-w2m2-3vjp
@@ -44,6 +44,9 @@ pipeline:
 
       # Mitigate CVE-2022-21698, GHSA-cg3q-j54f-5p7p
       go get github.com/prometheus/client_golang@v1.11.1
+
+      # Mitigate CVE-2020-13949
+      go get github.com/coredns/coredns@v1.7.1
 
       go mod tidy
       go mod vendor
