@@ -47,5 +47,4 @@ pipeline:
   - uses: strip
 
 update:
-  enabled: true
   manual: true # we need to manually update because melange bump doesn't yet handle pipeline mutations for var transforms
