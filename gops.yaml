@@ -1,6 +1,6 @@
 package:
   name: gops
-  version: 0.3.27
+  version: 0.3.28
   epoch: 0
   description: Command to list and diagnose Go processes currently running on your system.
   target-architecture:
@@ -35,7 +35,7 @@ pipeline:
     with:
       repository: https://github.com/google/gops
       tag: v${{package.version}}
-      expected-commit: 70408a1556a9d904d8c79722aebe1aaa3b24beca
+      expected-commit: ac7253a1736413f0a618f28559ce5034c71e61f6
       destination: gops
 
   - runs: |
