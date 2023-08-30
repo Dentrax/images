@@ -1,6 +1,6 @@
 package:
   name: kyverno-policy-reporter-kyverno-plugin-1.5
-  version: 1.5.0
+  version: 1.5.2
   epoch: 0
   description: Policy Reporter Kyverno Plugin
   copyright:
@@ -23,7 +23,7 @@ pipeline:
     with:
       repository: https://github.com/kyverno/policy-reporter-kyverno-plugin
       tag: v${{package.version}}
-      expected-commit: c6bafd005522f9c46bf5e3938e34f0d4e17c559b
+      expected-commit: e92a54498465dbb3e4a51549d6981915ada07a6d
 
   - runs: |
       # Mitigate GHSA-vvpx-j8f3-3w6h
