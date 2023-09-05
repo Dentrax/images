@@ -2,6 +2,3 @@
 	path = grafana
 	url = https://github.com/chainguard-images/grafana.git
 	branch = v7.5.26
-[submodule "openssl-fips/os"]
-	path = openssl-fips/os
-	url = https://github.com/wolfi-dev/os
