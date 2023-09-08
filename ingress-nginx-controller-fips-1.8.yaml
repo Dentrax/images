@@ -2,7 +2,7 @@
 package:
   name: ingress-nginx-controller-fips-1.8
   version: 1.8.0
-  epoch: 0
+  epoch: 1
   description: "Ingress-NGINX Controller for Kubernetes"
   copyright:
     - license: Apache-2.0
@@ -92,6 +92,7 @@ environment:
       - lua-resty-redis
       - lua-resty-string
       - lua-resty-upload
+      - rsync
 
 vars:
   NGINX_VERSION: "1.21.6"
@@ -136,6 +137,9 @@ pipeline:
 
   - name: Build ingress-nginx controller from source
     runs: |
+      mkdir -p "${{targets.destdir}}/etc/nginx"
+      rsync -r rootfs/etc/nginx/ "${{targets.destdir}}/etc/nginx"
+
       export PKG="k8s.io/ingress-nginx"
       export COMMIT_SHA=$(git rev-parse --short HEAD)
       export REPO_INFO=$(git config --get remote.origin.url)$
