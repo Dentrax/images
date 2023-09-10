@@ -2,7 +2,7 @@
 package:
   name: ingress-nginx-controller-fips-1.8
   version: 1.8.0
-  epoch: 1
+  epoch: 2
   description: "Ingress-NGINX Controller for Kubernetes"
   copyright:
     - license: Apache-2.0
@@ -93,6 +93,7 @@ environment:
       - lua-resty-string
       - lua-resty-upload
       - rsync
+      - modsecurity
 
 vars:
   NGINX_VERSION: "1.21.6"
@@ -290,6 +291,8 @@ pipeline:
       cd "$BUILD_PATH"
       git clone -n https://github.com/SpiderLabs/ModSecurity
       cd ModSecurity/
+      git branch
+      git checkout ${{vars.MODSECURITY_LIB_VERSION}}
 
       mkdir -p ${{targets.destdir}}/etc/nginx/modsecurity
       cp modsecurity.conf-recommended ${{targets.destdir}}/etc/nginx/modsecurity/modsecurity.conf
@@ -503,6 +506,8 @@ pipeline:
       ${BUILD_PATH}/ModSecurity-nginx-"${{vars.MODSECURITY_NGINX_VERSION}}"  \
       ${BUILD_PATH}/ngx_http_geoip2_module-"${{vars.GEOIP2_VERSION}}"  \
       ${BUILD_PATH}/ngx_brotli
+
+  - uses: strip
 
 update:
   enabled: false
