@@ -290,24 +290,6 @@ pipeline:
       cd "$BUILD_PATH"
       git clone -n https://github.com/SpiderLabs/ModSecurity
       cd ModSecurity/
-      git branch
-      git checkout ${{vars.MODSECURITY_LIB_VERSION}}
-      git submodule init
-      git submodule update
-
-      sh build.sh
-
-      # https://github.com/SpiderLabs/ModSecurity/issues/1909#issuecomment-465926762
-      sed -i '115i LUA_CFLAGS="${LUA_CFLAGS} -DWITH_LUA_JIT_2_1"' build/lua.m4
-      sed -i '117i AC_SUBST(LUA_CFLAGS)' build/lua.m4
-
-      ./configure \
-      --disable-doxygen-doc \
-      --disable-doxygen-html \
-      --disable-examples
-
-      make -j$(nproc)
-      make install
 
       mkdir -p ${{targets.destdir}}/etc/nginx/modsecurity
       cp modsecurity.conf-recommended ${{targets.destdir}}/etc/nginx/modsecurity/modsecurity.conf
