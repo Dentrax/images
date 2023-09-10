@@ -2,7 +2,7 @@
 package:
   name: ingress-nginx-controller-fips-1.8
   version: 1.8.0
-  epoch: 2
+  epoch: 3
   description: "Ingress-NGINX Controller for Kubernetes"
   copyright:
     - license: Apache-2.0
@@ -140,6 +140,7 @@ pipeline:
     runs: |
       mkdir -p "${{targets.destdir}}/etc/nginx"
       rsync -r rootfs/etc/nginx/ "${{targets.destdir}}/etc/nginx"
+      rsync -r images/nginx/rootfs/etc/nginx/ "${{targets.destdir}}/etc/nginx"
 
       export PKG="k8s.io/ingress-nginx"
       export COMMIT_SHA=$(git rev-parse --short HEAD)
