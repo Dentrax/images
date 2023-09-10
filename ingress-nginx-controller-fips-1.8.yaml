@@ -2,7 +2,7 @@
 package:
   name: ingress-nginx-controller-fips-1.8
   version: 1.8.0
-  epoch: 3
+  epoch: 4
   description: "Ingress-NGINX Controller for Kubernetes"
   copyright:
     - license: Apache-2.0
@@ -170,9 +170,6 @@ pipeline:
       -X ${PKG}/version.COMMIT=${COMMIT_SHA} \
       -X ${PKG}/version.REPO=${REPO_INFO}" \
       -o "${{targets.destdir}}/nginx-ingress-controller" ${PKG}/cmd/nginx
-
-      setcap cap_net_bind_service=+ep ${{targets.destdir}}/nginx-ingress-controller \
-      && setcap -v cap_net_bind_service=+ep ${{targets.destdir}}/nginx-ingress-controller
 
   - uses: fetch
     with:
@@ -467,19 +464,7 @@ pipeline:
       echo "::::::::::::::::::::::::::::::::::::::::::::::"
       make DESTDIR="${{targets.destdir}}" install
 
-      echo "::::::::::::::::::::::::::::::::::::::::::"
-      echo ":::: SETCAP NGINX                     ::::"
-      echo "::::::::::::::::::::::::::::::::::::::::::"
 
-      setcap cap_net_bind_service=+ep ${{targets.destdir}}/usr/local/nginx/sbin/nginx \
-        && setcap -v cap_net_bind_service=+ep ${{targets.destdir}}/usr/local/nginx/sbin/nginx
-
-       echo "::::::::::::::::::::::::::::::::::::::::::"
-       echo ":::: SETCAP DUMB INIT                  ::::"
-       echo "::::::::::::::::::::::::::::::::::::::::::"
-
-      setcap cap_net_bind_service=+ep /usr/bin/dumb-init \
-        && setcap -v cap_net_bind_service=+ep /usr/bin/dumb-init
 
 
       echo "::::::::::::::::::::::::::::::::::::::::::::"
@@ -509,6 +494,25 @@ pipeline:
       ${BUILD_PATH}/ngx_brotli
 
   - uses: strip
+
+  # Must run this after strip, because strip removes capability
+  - runs: |
+      setcap cap_net_bind_service=+ep ${{targets.destdir}}/nginx-ingress-controller \
+      && setcap -v cap_net_bind_service=+ep ${{targets.destdir}}/nginx-ingress-controller
+
+      echo "::::::::::::::::::::::::::::::::::::::::::"
+      echo ":::: SETCAP NGINX                     ::::"
+      echo "::::::::::::::::::::::::::::::::::::::::::"
+
+      setcap cap_net_bind_service=+ep ${{targets.destdir}}/usr/local/nginx/sbin/nginx \
+        && setcap -v cap_net_bind_service=+ep ${{targets.destdir}}/usr/local/nginx/sbin/nginx
+
+      echo "::::::::::::::::::::::::::::::::::::::::::"
+      echo ":::: SETCAP DUMB INIT                  ::::"
+      echo "::::::::::::::::::::::::::::::::::::::::::"
+
+      setcap cap_net_bind_service=+ep /usr/bin/dumb-init \
+        && setcap -v cap_net_bind_service=+ep /usr/bin/dumb-init
 
 update:
   enabled: false
