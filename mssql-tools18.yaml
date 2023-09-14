@@ -1,0 +1,49 @@
+package:
+  name: mssql-tools18
+  version: 18.2.1.1
+  epoch: 0
+  description: "Tools for Microsoft(R) SQL Server(R)"
+  copyright:
+    - license: "MICROSOFT SOFTWARE LICENSE"
+    - license: "https://odbceula.blob.core.windows.net/eula18/LICENSE18.TXT"
+  dependencies:
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - curl
+      - dpkg-dev
+      # These two are needed because the tar implementation is finicky.
+      - gnutar
+      - xz
+
+pipeline:
+  # Make sure that one of the legs of the `fetch` pipeline is executed.
+  # Note we don't extract since we need to use the `dpkg-deb` tool to extract.
+  - assertions:
+      required-steps: 1
+    pipeline:
+      - if: ${{build.arch}} == "x86_64"
+        uses: fetch
+        with:
+          uri: https://packages.microsoft.com/ubuntu/22.04/prod/pool/main/m/mssql-tools18/mssql-tools18_18.2.1.1-1_amd64.deb
+          expected-sha512: 6871153607826fe62112e607dd99645bb592fba919d66a0eeb748440f26874563fd2c99838f802ca845b91c3ac77ff7e95684bf6fc1496704bba3d9087b77aa9
+          extract: false
+      - if: ${{build.arch}} == "aarch64"
+        uses: fetch
+        with:
+          uri: https://packages.microsoft.com/ubuntu/22.04/prod/pool/main/m/mssql-tools18/mssql-tools18_18.2.1.1-1_arm64.deb
+          expected-sha512: a78822176b5c83a181ff0bbe8c4701b64ca8ac8b4c18bca6197e333686e8183f8a884ab7d4ac6d7d3d2e7c4f99b496e95b2264863e5ed14947a04dc14360aa51
+          extract: false
+
+  - runs: |
+      mkdir -p ${{targets.destdir}}/${{package.name}}
+      dpkg-deb -x *.deb ${{targets.destdir}}
+
+update:
+  enabled: false

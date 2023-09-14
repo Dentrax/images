@@ -1,0 +1,49 @@
+package:
+  name: msodbcsql18
+  version: 18.3.1.1
+  epoch: 0
+  description: "ODBC Driver for Microsoft(R) SQL Server(R)"
+  copyright:
+    - license: "MICROSOFT SOFTWARE LICENSE"
+    - license: "https://odbceula.blob.core.windows.net/eula18/LICENSE18.TXT"
+  dependencies:
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - curl
+      - dpkg-dev
+      # These two are needed because the tar implementation is finicky.
+      - gnutar
+      - xz
+
+pipeline:
+  # Make sure that one of the legs of the `fetch` pipeline is executed.
+  # Note we don't extract since we need to use the `dpkg-deb` tool to extract.
+  - assertions:
+      required-steps: 1
+    pipeline:
+      - if: ${{build.arch}} == "x86_64"
+        uses: fetch
+        with:
+          uri: https://packages.microsoft.com/ubuntu/22.04/prod/pool/main/m/msodbcsql18/msodbcsql18_18.3.1.1-1_amd64.deb
+          expected-sha512: 45d6fb0605ba0ce4b4f7d77ab049a320500d6f06ed1142119b6ee7410c048d7a7e99ea545d8d1eb987a62ff2b258464242221b52249fec34928d37ef6ec07a3c
+          extract: false
+      - if: ${{build.arch}} == "aarch64"
+        uses: fetch
+        with:
+          uri: https://packages.microsoft.com/ubuntu/22.04/prod/pool/main/m/msodbcsql18/msodbcsql18_18.3.1.1-1_arm64.deb
+          expected-sha512: d0efc37607ce794648dfa19957fc92250fff85240037e1a1115fe1a182b8c15001652801f50774873ec3df108444e93c07d29da322b0e9e245f425ecd0dc006d
+          extract: false
+
+  - runs: |
+      mkdir -p ${{targets.destdir}}/${{package.name}}
+      dpkg-deb -x *.deb ${{targets.destdir}}
+
+update:
+  enabled: false
