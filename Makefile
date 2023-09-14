@@ -22,7 +22,7 @@ MELANGE_OPTS += ${MELANGE_EXTRA_OPTS}
 # wolfictl determines the list and order
 # set only to be called when needed, so make can be instant to run
 # when it is not
-PKGLISTCMD ?= $(WOLFICTL) text --dir . --type name --buildtime-repos-for-runtime
+PKGLISTCMD ?= $(WOLFICTL) text --dir . --type name
 
 all: ${KEY} .build-packages
 
