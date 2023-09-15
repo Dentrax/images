@@ -1,10 +1,13 @@
 package:
   name: gpu-operator
-  version: 23.6.0
+  version: 23.6.1
   epoch: 0
   description: NVIDIA GPU Operator creates/configures/manages GPUs atop Kubernetes
   copyright:
     - license: Apache-2.0
+  dependencies:
+    runtime:
+      - kubectl
 
 environment:
   contents:
@@ -25,7 +28,7 @@ pipeline:
     with:
       repository: https://github.com/NVIDIA/gpu-operator
       tag: v${{package.version}}
-      expected-commit: 25d6f8d0a6f12b020b0bbc4d60ab95ccab77f5d0
+      expected-commit: dd2fe9c9be315f61ab7012041d44b7a571a2bd4c
 
   - runs: |
       mkdir -p ${{targets.destdir}}/usr/bin
@@ -39,7 +42,7 @@ pipeline:
       cp hack/must-gather.sh ${{targets.destdir}}/usr/bin/gather
 
       cp deployments/gpu-operator/crds/nvidia.com_clusterpolicies_crd.yaml ${{targets.destdir}}/opt/${{package.name}}/nvidia.com_clusterpolicies_crd.yaml
-      cp deployments/gpu-operator/crds/nvidia.com_clusterpolicies_crd.yaml ${{targets.destdir}}/opt/${{package.name}}/nvidia.com_clusterpolicies_crd.yaml
+      cp deployments/gpu-operator/charts/node-feature-discovery/crds/nfd-api-crds.yaml ${{targets.destdir}}/opt/${{package.name}}/nfd-api-crds.yaml
 
   - uses: strip
 
