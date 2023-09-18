@@ -6,7 +6,7 @@ TARGETDIR = packages/${ARCH}
 
 MELANGE ?= $(shell which melange)
 WOLFICTL ?= $(shell which wolfictl)
-KEY ?= local-melange.rsa
+KEY ?= local-melange-enterprise.rsa
 REPO ?= $(shell pwd)/packages
 
 MELANGE_OPTS += --repository-append ${REPO}
@@ -67,4 +67,4 @@ packages/$(ARCH)/%.apk: $(KEY)
 	@SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH) $(MELANGE) build $(yamlfile) $(MELANGE_OPTS) --source-dir ./$(pkgname)/ --log-policy builtin:stderr,$(TARGETDIR)/buildlogs/$*.log
 
 dev-container:
-	docker run --privileged --rm -it -v "${PWD}:${PWD}" -w "${PWD}" ghcr.io/wolfi-dev/sdk:latest@sha256:3ef78225a85ab45f46faac66603c9da2877489deb643174ba1e42d8cbf0e0644
+	docker run --privileged --rm -it -v "${PWD}:${PWD}" -w "${PWD}" ghcr.io/wolfi-dev/sdk:latest@sha256:f0df69f51e1a2de2f3fef0d3aca3fa951a408f8d42983598bfac784db934d430

@@ -54,7 +54,7 @@ jobs:
       - name: 'Generate local signing key'
         working-directory: ./sub-os-openssl1
         run: |
-          make MELANGE="melange" local-melange.rsa
+          make MELANGE="melange" local-melange-enterprise.rsa
 
       - name: 'Sync public package repository'
         working-directory: ./sub-os-openssl1

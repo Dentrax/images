@@ -70,7 +70,7 @@ jobs:
 
       - name: 'Generate local signing key'
         run: |
-          make MELANGE="melange" local-melange.rsa
+          make MELANGE="melange" local-melange-enterprise.rsa
 
       - name: 'Sync public package repository'
         run: |

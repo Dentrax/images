@@ -5,7 +5,7 @@ endif
 TARGETDIR = packages/${ARCH}
 
 MELANGE ?= ../melange/melange
-KEY ?= local-melange.rsa
+KEY ?= local-melange-enterprise.rsa
 REPO ?= $(shell pwd)/packages
 SOURCE_DATE_EPOCH ?= 0
 
@@ -33,7 +33,7 @@ endef
 # The list of packages to be built. The order matters.
 # At some point, when ready, this should be replaced with `wolfictl text -t name .`
 # non-standard source directories are provided by adding them separated by a comma,
-# e.g. 
+# e.g.
 # postgres-11,postgres
 PKGLIST ?= $(shell cat packages.txt | grep -v '^\#' )
 
