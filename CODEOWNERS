@@ -1,6 +1,4 @@
 # Each line is a file pattern followed by one or more owners.
-*       @chainguard-dev/images-maintainers @chainguard-dev/customer-engineering
-
 /.github/ @chainguard-dev/images-maintainers
 /.chainguard/ @chainguard-dev/images-maintainers
 /openssl-fips/ @chainguard-dev/images-maintainers
