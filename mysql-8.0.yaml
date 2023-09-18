@@ -1,0 +1,115 @@
+package:
+  name: mysql-8.0
+  version: 8.0.34
+  epoch: 0
+  description: "The MySQL open source relational database"
+  copyright:
+    - license: GPL-3.0-or-later
+  dependencies:
+    runtime:
+      - pwgen
+    provides:
+      - mysql=${{package.full-version}}
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - wolfi-baselayout
+      - busybox
+      - bison
+      - ca-certificates-bundle
+      - build-base
+      - cmake
+      - openssl-dev
+      - ncurses-dev
+      - libaio-dev
+      - pcre2-dev
+      - xz-dev
+      - libevent-dev
+      - readline-dev
+      - linux-pam-dev
+      - libtirpc-dev
+      - rpcsvc-proto
+
+pipeline:
+  # MySQL requires boost 1.77 and we are not building that version only >1.83, so we are using the existing package for now
+  - working-directory: /home/build/boost
+    pipeline:
+      - uses: fetch
+        with:
+          uri: https://boostorg.jfrog.io/artifactory/main/release/1.77.0/source/boost_1_77_0.tar.bz2
+          expected-sha256: fc9f85fc030e233142908241af7a846e60630aa7388de9a5fafb1f3a26840854
+
+  - working-directory: /home/build/mysql
+    pipeline:
+      - uses: fetch
+        with:
+          uri: https://dev.mysql.com/get/Downloads/${{package.name}}/mysql-${{package.version}}.tar.gz
+          expected-sha256: e65d03a3c42618b5fbf99042aed33209402e9b27aa62c7c8743ffd4788d8db1d
+      - uses: cmake/configure
+        with:
+          opts: |
+            -DWITH_BOOST=/home/build/boost \
+            -DWITH_UNIT_TESTS=OFF \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=/usr \
+            -DSYSCONFDIR=/etc \
+            -DMYSQL_DATADIR=/var/lib/mysql \
+            -DMYSQL_UNIX_ADDR=/run/mysqld/mysqld.sock \
+            -DDEFAULT_CHARSET=utf8mb4 \
+            -DDEFAULT_COLLATION=utf8mb4_general_ci \
+            -DENABLED_LOCAL_INFILE=ON \
+            -DINSTALL_INFODIR=share/info \
+            -DINSTALL_MANDIR=share/man \
+            -DINSTALL_PLUGINDIR=lib/${{package.name}}/plugin \
+            -DINSTALL_INCLUDEDIR=include/mysql \
+            -DINSTALL_DOCREADMEDIR=share/doc/${{package.name}} \
+            -DINSTALL_SUPPORTFILESDIR=share/support/${{package.name}} \
+            -DINSTALL_MYSQLSHAREDIR=share/${{package.name}} \
+            -DINSTALL_DOCDIR=share/doc/${{package.name}} \
+            -DWITH_ASAN=OFF \
+            -DWITH_JEMALLOC=OFF \
+            -DWITH_LIBWRAP=OFF \
+            -DWITH_SYSTEMD=OFF \
+            -DWITH_SSL=system \
+            -DWITH_VALGRIND=OFF \
+            -DWITH_ZLIB=bundled
+      - uses: cmake/build
+      - uses: cmake/install
+
+  - uses: strip
+
+subpackages:
+  - name: "mysql-8.0-dev"
+    description: "headers for mysql"
+    pipeline:
+      - uses: split/dev
+    dependencies:
+      provides:
+        - mysql-dev=${{package.full-version}}
+
+  - name: mysql-8.0-oci-entrypoint
+    description: Entrypoint for MySQL in OCI containers
+    dependencies:
+      provides:
+        - mysql-oci-entrypoint=${{package.full-version}}
+      runtime:
+        - bash
+        - busybox
+    pipeline:
+      - runs: |
+          mkdir -p ${{targets.subpkgdir}}/usr/local/bin/
+          cp docker-entrypoint.sh ${{targets.subpkgdir}}/usr/local/bin/
+          chmod +x ${{targets.subpkgdir}}/usr/local/bin/docker-entrypoint.sh
+
+update:
+  enabled: true
+  github:
+    identifier: mysql/mysql-server
+    strip-prefix: mysql-
+    use-tag: true
+    tag-filter: mysql-8.0.
