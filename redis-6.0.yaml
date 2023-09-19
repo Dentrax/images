@@ -1,10 +1,13 @@
 package:
   name: redis-6.0
   version: 6.0.20
-  epoch: 0
+  epoch: 1
   description: Advanced key-value store
   copyright:
     - license: BSD-3-Clause
+  dependencies:
+    runtime:
+      - posix-libc-utils # `getent` is required on startup in ha mode for ip introspection cluster formation
 
 environment:
   contents:
@@ -40,6 +43,27 @@ pipeline:
       make install PREFIX=/usr INSTALL_BIN="${{targets.destdir}}/usr/bin"
 
   - uses: strip
+
+subpackages:
+  - name: redis-cli-6.0
+    pipeline:
+      - runs: |
+          mkdir -p "${{targets.subpkgdir}}"/usr/bin
+          mv "${{targets.destdir}}"/usr/bin/redis-cli "${{targets.subpkgdir}}"/usr/bin/redis-cli
+    description: redis-cli is the command line interface utility to talk with Redis.
+    dependencies:
+      provides:
+        - redis-cli=6.0.99
+
+  - name: redis-benchmark-6.0
+    pipeline:
+      - runs: |
+          mkdir -p "${{targets.subpkgdir}}"/usr/bin
+          mv "${{targets.destdir}}"/usr/bin/redis-benchmark "${{targets.subpkgdir}}"/usr/bin/redis-benchmark
+    description: redis-benchmark utility that simulates running commands done by N clients while at the same time sending M total queries.
+    dependencies:
+      provides:
+        - redis-benchmark=6.0.99
 
 update:
   enabled: true
