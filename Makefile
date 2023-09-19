@@ -67,4 +67,8 @@ packages/$(ARCH)/%.apk: $(KEY)
 	@SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH) $(MELANGE) build $(yamlfile) $(MELANGE_OPTS) --source-dir ./$(pkgname)/ --log-policy builtin:stderr,$(TARGETDIR)/buildlogs/$*.log
 
 dev-container:
-	docker run --privileged --rm -it -v "${PWD}:${PWD}" -w "${PWD}" ghcr.io/wolfi-dev/sdk:latest@sha256:f0df69f51e1a2de2f3fef0d3aca3fa951a408f8d42983598bfac784db934d430
+	docker run --privileged --rm -it \
+			-v "${PWD}:${PWD}" \
+			-v "${HOME}/.cache/wolfictl/dev-container-enterprise/root:/root" \
+			-w "${PWD}" \
+			ghcr.io/wolfi-dev/sdk:latest@sha256:f0df69f51e1a2de2f3fef0d3aca3fa951a408f8d42983598bfac784db934d430
