@@ -1,0 +1,47 @@
+package:
+  name: prometheus-redis-exporter-fips
+  version: 1.54.0
+  epoch: 0
+  description: Prometheus Exporter for Redis Metrics.
+  copyright:
+    - license: MIT
+
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - busybox
+      - build-base
+      - ca-certificates-bundle
+      - go-fips
+      - wolfi-baselayout
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/oliver006/redis_exporter
+      tag: v${{package.version}}
+      expected-commit: 4df89bf3349009a8b145bf19fb086c775a6de1b9
+
+  - uses: go/build
+    with:
+      packages: .
+      output: redis_exporter
+      go-package: go-fips
+      ldflags: |
+        -s -w -extldflags -static
+        ${LDFLAGS} -X main.BuildVersion=v${{package.version}}
+        ${LDFLAGS} -X main.BuildCommitSha=$(git rev-parse HEAD)
+        ${LDFLAGS} -X main.BuildDate=$(date +%F-%T)
+
+  - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: oliver006/redis_exporter
+    strip-prefix: v
+    tag-filter: v
