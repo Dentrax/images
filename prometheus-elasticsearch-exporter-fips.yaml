@@ -1,0 +1,42 @@
+package:
+  name: prometheus-elasticsearch-exporter-fips
+  version: 1.6.0
+  epoch: 0
+  description: Elasticsearch stats exporter for Prometheus
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - ca-certificates-bundle
+      - busybox
+      - bash
+      - build-base
+      - go-fips
+      - curl
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/prometheus-community/elasticsearch_exporter
+      tag: v${{package.version}}
+      expected-commit: a5f42797a10de8229eb5544c25c092f2fece5b63
+
+  - runs: |
+      make common-build
+
+  - runs: |
+      install -Dm755 elasticsearch_exporter "${{targets.destdir}}"/usr/bin/elasticsearch_exporter
+
+  - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: prometheus-community/elasticsearch_exporter
+    strip-prefix: v
