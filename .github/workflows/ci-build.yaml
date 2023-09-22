@@ -7,11 +7,6 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - "*.yaml"
-      - "*.env"
-      - "Makefile"
-      - ".github/workflows/dag-push-enterprise.yaml"
 
 jobs:
   build:
@@ -32,6 +27,7 @@ jobs:
     permissions:
       packages: read
       contents: read
+      pull-requests: read
       id-token: write
 
     env:
@@ -39,14 +35,7 @@ jobs:
       FQ_SERVICE_ACCOUNT: prod-images-ci@prod-images-c6e5.iam.gserviceaccount.com
 
     steps:
-      - name: Generate snapshot date
-        id: snapshot-date
-        run: |
-          echo "date=$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
-          echo "epoch=$(date -u +%s)" >> "$GITHUB_OUTPUT"
-        shell: bash
-
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4.0.0
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           submodules: 'recursive'
@@ -57,25 +46,49 @@ jobs:
           # This is to avoid fatal errors about "dubious ownership" because we are
           # running inside of a container action with the workspace mounted in.
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          
-      - uses: google-github-actions/auth@ef5d53e30bbcd8d0836f4288f5e50ff3e086997d # v1.0.0
+
+      - name: check changes
+        uses: dorny/paths-filter@4512585405083f25c027a35db413c2b3b9006d50 # v2.11.1
+        id: changes
+        with:
+          filters: |
+            change:
+              - "*.yaml"
+              - "*.env"
+              - "Makefile"
+              - ".github/workflows/dag-push-enterprise.yaml"
+
+      - name: Generate snapshot date
+        if: steps.changes.outputs.change == 'true'
+        id: snapshot-date
+        run: |
+          echo "date=$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
+          echo "epoch=$(date -u +%s)" >> "$GITHUB_OUTPUT"
+        shell: bash
+
+      - uses: google-github-actions/auth@35b0e87d162680511bf346c299f71c9c5c379033 # v1.1.1
+        if: steps.changes.outputs.change == 'true'
         with:
           workload_identity_provider: "projects/618116202522/locations/global/workloadIdentityPools/prod-shared-e350/providers/prod-shared-gha"
           service_account: ${{ env.FQ_SERVICE_ACCOUNT }}
 
-      - run: |
+      - if: steps.changes.outputs.change == 'true'
+        run: |
           # TODO: Replace this with a wolfi image :(
           apk add google-cloud-sdk
 
-      - uses: google-github-actions/setup-gcloud@62d4898025f6041e16b1068643bfc5a696863587 # v1.1.0
+      - uses: google-github-actions/setup-gcloud@e30db14379863a8c79331b04a9969f4c1e225e0b # v1.1.1
+        if: steps.changes.outputs.change == 'true'
         with:
           project_id: ${{ env.PROJECT }}
 
       - name: 'Generate local signing key'
+        if: steps.changes.outputs.change == 'true'
         run: |
           make MELANGE="melange" local-melange-enterprise.rsa
 
       - name: 'Sync public package repository'
+        if: steps.changes.outputs.change == 'true'
         run: |
           mkdir -p "./packages/${{ matrix.arch }}"
           gsutil -m rsync -r gs://chainguard-enterprise-registry-destination/os/${{ matrix.arch }}/ "./packages/${{ matrix.arch }}/"
@@ -86,10 +99,12 @@ jobs:
           gsutil cp gs://chainguard-enterprise-registry-destination/os/chainguard-enterprise.rsa.pub "./packages/"
 
       - name: 'Build Enterprise packages'
+        if: steps.changes.outputs.change == 'true'
         run: |
           make --debug MELANGE_EXTRA_OPTS="--create-build-log --keyring-append ./packages/chainguard-enterprise.rsa.pub" REPO="./packages" -j1 all
 
       - name: Check for file
+        if: steps.changes.outputs.change == 'true'
         id: file_check
         run: |
           if test -f "packages.log"; then
@@ -99,18 +114,19 @@ jobs:
           fi
 
       - name: Check sonames
-        if: steps.file_check.outputs.exists == 'true'
+        if: ${{ steps.file_check.outputs.exists == 'true' && steps.changes.outputs.change == 'true'}}
         run: |
           wolfictl check so-name
 
       - name: Check diff
-        if: steps.file_check.outputs.exists == 'true'
+        if: ${{ steps.file_check.outputs.exists == 'true' && steps.changes.outputs.change == 'true'}}
         # Let's not fail the whole job if this step fails as it is for improved UX rather than an enforced check
         continue-on-error: true
         run: |
           wolfictl check diff
 
       - name: Check for diff file
+        if: steps.changes.outputs.change == 'true'
         id: diff_file_check
         run: |
           if test -f "diff.log"; then
