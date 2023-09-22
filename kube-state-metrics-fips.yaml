@@ -1,0 +1,40 @@
+package:
+  name: kube-state-metrics-fips
+  version: 2.10.0
+  epoch: 0
+  description: Add-on agent to generate and expose cluster-level metrics.
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - build-base
+      - go-fips
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/kubernetes/kube-state-metrics
+      tag: v${{package.version}}
+      expected-commit: 25fb4fa0767de7ee314500fcb7481ca7b3a55a35
+
+  - runs: |
+      mkdir -p ${{targets.destdir}}/usr/bin
+      make build-local
+      cp kube-state-metrics ${{targets.destdir}}/usr/bin
+
+  - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: kubernetes/kube-state-metrics
+    strip-prefix: v
+    tag-filter: v
