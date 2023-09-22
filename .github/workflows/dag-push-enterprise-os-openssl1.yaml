@@ -159,7 +159,7 @@ jobs:
             --cpu=30 --ram=100Gi \
             --bucket=${BUCKET} \
             --src-bucket=${SRC_BUCKET} \
-            --sdk-image ghcr.io/wolfi-dev/sdk:latest@sha256:d8840149cdacbfc392c0a8da8be328703cc3fa87165595f462669d03d9d68782 \
+            --sdk-image ghcr.io/wolfi-dev/sdk:latest@sha256:e8fdeba5ac209bddf917370cdc49e5a0f67e627511b3dc5b771186e7b309156d \
             --secret-key \
             --arch=amd64 \
             --signing-key-name=chainguard-enterprise \
@@ -233,7 +233,7 @@ jobs:
             --cpu=30 --ram=100Gi \
             --bucket=${BUCKET} \
             --src-bucket=${SRC_BUCKET} \
-            --sdk-image ghcr.io/wolfi-dev/sdk:latest@sha256:d8840149cdacbfc392c0a8da8be328703cc3fa87165595f462669d03d9d68782 \
+            --sdk-image ghcr.io/wolfi-dev/sdk:latest@sha256:e8fdeba5ac209bddf917370cdc49e5a0f67e627511b3dc5b771186e7b309156d \
             --secret-key \
             --arch=arm64 \
             --signing-key-name=chainguard-enterprise \
