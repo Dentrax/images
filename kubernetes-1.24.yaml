@@ -195,4 +195,4 @@ update:
   github:
     identifier: kubernetes/kubernetes
     strip-prefix: v
-    tag-filter: v1.24
+    tag-filter: v1.24.
