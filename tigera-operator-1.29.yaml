@@ -1,13 +1,13 @@
 package:
-  name: tigera-operator-1.28
-  version: 1.28.5
-  epoch: 1
+  name: tigera-operator-1.29
+  version: 1.29.7
+  epoch: 0
   description: Kubernetes operator for installing Calico and Calico Enterprise
   copyright:
     - license: Apache-2.0
   dependencies:
     provides:
-      - tigera-operator=1.28
+      - tigera-operator=1.29
 
 environment:
   contents:
@@ -27,7 +27,7 @@ pipeline:
     with:
       repository: https://github.com/tigera/operator
       tag: v${{package.version}}
-      expected-commit: da321379260ad5bdc17c5f8bb5490150d0265e91
+      expected-commit: 433f22c3c46967149d6e7ce6c1ccdf62fe6ca508
 
   - runs: |
       # Mitigate GHSA-69ch-w2m2-3vjp
@@ -63,5 +63,5 @@ update:
   github:
     identifier: tigera/operator
     use-tag: true
-    strip-prefix: v1.28.
+    strip-prefix: v1.29.
     tag-filter: v
