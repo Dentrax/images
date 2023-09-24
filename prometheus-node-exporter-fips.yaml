@@ -1,0 +1,42 @@
+package:
+  name: prometheus-node-exporter-fips
+  version: 1.6.1
+  epoch: 0
+  description: Prometheus Exporter for machine metrics
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - ca-certificates-bundle
+      - busybox
+      - bash
+      - build-base
+      - go-fips
+      - curl
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/prometheus/node_exporter
+      tag: v${{package.version}}
+      expected-commit: 4a1b77600c1873a8233f3ffb55afcedbb63b8d84
+
+  - runs: |
+      make build
+
+  - runs: |
+      install -Dm755 node_exporter "${{targets.destdir}}"/usr/bin/node_exporter
+
+  - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: prometheus/node_exporter
+    strip-prefix: v
