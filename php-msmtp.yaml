@@ -1,0 +1,33 @@
+# php-msmtp configuration file so that PHP will use
+# `/usr/sbin/ssmtp -t` to send email. The `-t` flag tells ssmtp to read the
+# recipient addresses from the email headers.
+package:
+  name: php-msmtp
+  version: 1.0.0
+  epoch: 0
+  description: "PHP SMTP configuration to use /usr/sbin/ssmtp -t"
+  copyright:
+    - license: "Apache-2.0"
+  dependencies:
+    runtime:
+      - msmtp
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - ca-certificates-bundle
+      - build-base
+      - busybox
+
+pipeline:
+  - runs: |
+      mkdir -p ${{targets.destdir}}/etc/php/conf.d
+      echo 'sendmail_path = "/usr/sbin/ssmtp -t"' > ${{targets.destdir}}/etc/php/conf.d/mail.ini
+
+# This package is not updated because it is a configuration file.
+update:
+  enabled: false
