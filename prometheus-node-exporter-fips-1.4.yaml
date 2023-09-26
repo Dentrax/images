@@ -1,6 +1,6 @@
 package:
   name: prometheus-node-exporter-fips-1.4
-  version: 1.4.0
+  version: 1.4.1
   epoch: 0
   description: Prometheus Exporter for machine metrics
   copyright:
@@ -25,7 +25,7 @@ pipeline:
     with:
       repository: https://github.com/prometheus/node_exporter
       tag: v${{package.version}}
-      expected-commit: 7da1321761b3b8dfc9e496e1a60e6a476fec6018
+      expected-commit: a954c9fea6bcccea7f68a77a002a2a878ef1d60c
 
   - runs: |
       go get -u github.com/prometheus/exporter-toolkit@v0.7.3 # CVE-2022-46146
