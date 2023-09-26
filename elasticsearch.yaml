@@ -1,0 +1,73 @@
+package:
+  name: elasticsearch
+  version: "8.10.2"
+  epoch: 0
+  description:
+  copyright:
+    - license: SSPL
+  dependencies:
+    runtime:
+      - bash # some helper scripts use bashw
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - curl
+      - openjdk-17
+      - openjdk-17-default-jvm
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/elastic/elasticsearch
+      tag: v${{package.version}}
+      expected-commit: 6d20dd8ce62365be9b1aca96427de4622e970e9e
+
+  - runs: |
+      export LANG=en_US.UTF-8
+
+      ./gradlew localDistro
+
+      mkdir -p ${{targets.destdir}}/usr/share/elasticsearch/logs
+
+      # https://github.com/elastic/elasticsearch/blob/d87b93f3174e82a86f4fad0ea8b85ac7b454f96d/plugins/examples/settings.gradle#L59-L76
+      if [ "${{build.arch}}" = "aarch64" ]; then
+        BUILD_DIR="linux-aarch64-tar"
+      else
+        BUILD_DIR="linux-tar"
+      fi
+
+      find distribution/archives
+      install -dm777 ${{targets.destdir}}/usr/share/elasticsearch/
+      mv distribution/archives/${BUILD_DIR}/build/install/elasticsearch-${{package.version}}-SNAPSHOT/bin ${{targets.destdir}}/usr/share/elasticsearch
+      mv distribution/archives/${BUILD_DIR}/build/install/elasticsearch-${{package.version}}-SNAPSHOT/lib ${{targets.destdir}}/usr/share/elasticsearch
+      mv distribution/archives/${BUILD_DIR}/build/install/elasticsearch-${{package.version}}-SNAPSHOT/config ${{targets.destdir}}/usr/share/elasticsearch
+      mv distribution/archives/${BUILD_DIR}/build/install/elasticsearch-${{package.version}}-SNAPSHOT/modules ${{targets.destdir}}/usr/share/elasticsearch
+      mv distribution/archives/${BUILD_DIR}/build/install/elasticsearch-${{package.version}}-SNAPSHOT/plugins ${{targets.destdir}}/usr/share/elasticsearch
+      mv distribution/archives/${BUILD_DIR}/build/install/elasticsearch-${{package.version}}-SNAPSHOT/jdk ${{targets.destdir}}/usr/share/elasticsearch
+
+      # Grab the docker entrypoint from the source tree
+      mv ./distribution/docker/src/docker/bin/docker-entrypoint.sh  ${{targets.destdir}}/usr/share/elasticsearch/bin
+
+      # Set permissions to read/write the config dir
+      chmod -R 775 ${{targets.destdir}}/usr/share/elasticsearch/
+      mkdir -p ${{targets.destdir}}/usr/bin
+      for i in ${{targets.destdir}}/usr/share/elasticsearch/bin/*; do
+        name=$(basename $i)
+        ln -sf /usr/share/elasticsearch/bin/$name ${{targets.destdir}}/usr/bin/$name
+      done
+
+      # Manually set this to docker: https://github.com/elastic/elasticsearch/blob/58f45eabb116b245a0e607dbd900173ecfd46a0f/distribution/docker/src/docker/Dockerfile#L105
+      sed -i -e 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/'  ${{targets.destdir}}/usr/share/elasticsearch/bin/elasticsearch-env
+
+update:
+  enabled: true
+  github:
+    identifier: elastic/elasticsearch
+    strip-prefix: v
