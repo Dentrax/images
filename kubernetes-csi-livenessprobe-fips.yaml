@@ -1,0 +1,40 @@
+package:
+  name: kubernetes-csi-livenessprobe-fips
+  version: 2.11.0
+  epoch: 0
+  description: A sidecar container that can be included in a CSI plugin pod to enable integration with Kubernetes Liveness Probe.
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - ca-certificates-bundle
+      - busybox
+      - go-fips
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/kubernetes-csi/livenessprobe
+      tag: v${{package.version}}
+      expected-commit: 33ea6c01f303d03e7e493e8e4622c08ce11722b8
+
+  - uses: go-fips/build
+    with:
+      packages: ./cmd/livenessprobe
+      ldflags: "-s -w -X main.version=v${{package.version}} -extldflags '-static'"
+      vendor: "true"
+      output: livenessprobe
+
+  - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: kubernetes-csi/livenessprobe
+    strip-prefix: v
