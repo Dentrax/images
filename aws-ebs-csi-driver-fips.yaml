@@ -1,0 +1,52 @@
+package:
+  name: aws-ebs-csi-driver-fips
+  version: 1.23.0
+  epoch: 0
+  description: CSI driver for Amazon EBS.
+  copyright:
+    - license: Apache-2.0
+  dependencies:
+    runtime:
+      - mount
+      - lsblk
+      - blkid
+      - blockdev
+      - xfsprogs
+      - e2fsprogs
+      - e2fsprogs-extra
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - wolfi-baselayout
+      - busybox
+      - build-base
+      - go-fips
+      - ca-certificates-bundle
+
+pipeline:
+  # We can't use go/install because this requires specific ldflags to set the version
+  - uses: git-checkout
+    with:
+      repository: https://github.com/kubernetes-sigs/aws-ebs-csi-driver
+      tag: v${{package.version}}
+      expected-commit: baf69b062f0c098acc81a62823582ed475ee8ff9
+
+  - runs: |
+      # Our global LDFLAGS conflict with a Makefile parameter
+      unset LDFLAGS
+      make ARCH=$(go env GOARCH)
+      mkdir -p ${{targets.destdir}}/usr/bin
+      cp bin/aws-ebs-csi-driver ${{targets.destdir}}/usr/bin/
+
+update:
+  enabled: true
+  github:
+    identifier: kubernetes-sigs/aws-ebs-csi-driver
+    strip-prefix: v
+    use-tag: true
+    tag-filter: v
