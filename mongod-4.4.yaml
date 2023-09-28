@@ -1,0 +1,79 @@
+package:
+  name: mongod-4.4
+  version: 4.4.25
+  epoch: 0
+  description: "The MongoDB Database"
+  copyright:
+    - license: "SSPL"
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - build-base
+      - busybox
+      - ca-certificates-bundle
+      - curl-dev
+      - ld-linux
+      - openssl-dev
+      - py3-pip
+      - python3
+      - python3-dev
+      - wolfi-base
+      - xz-dev
+      - zlib-dev
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/mongodb/mongo
+      tag: r${{package.version}}
+      expected-commit: 3e18c4c56048ddf22a6872edc111b542521ad1d5
+
+  - uses: patch
+    with:
+      patches: optional.patch disable-fips-cli-arg.patch
+
+  - runs: |
+      python3 -m pip install scons
+      # PyYAML 6.0.0 or older don't install with newer python interpreters
+      sed -r -e 's/^PyYAML(.+)$/PyYAML >= 6.0.0/g' -i etc/pip/components/core.req
+      python3 -m pip install -r etc/pip/compile-requirements.txt
+      # fix build object cache hash calcuation in a fips-enabled environment
+      sed 's/hashlib.md5()/hashlib.sha256()/g' -i site_scons/mongo/generators.py
+      scons \
+        CXXFLAGS="--param destructive-interference-size=64" \
+        --ssl \
+        --separate-debug=on \
+        --disable-warnings-as-errors \
+        install-devcore
+      mkdir -p ${{targets.destdir}}/usr/bin
+      mv build/install/bin/mongod ${{targets.destdir}}/usr/bin
+
+  - uses: strip
+
+subpackages:
+  - name: "mongos"
+    description: "mongo sharding"
+    pipeline:
+      - runs: |
+          mkdir -p "${{targets.subpkgdir}}"/usr/bin
+          mv build/install/bin/mongos ${{targets.subpkgdir}}/usr/bin
+
+  - name: "mongo"
+    description: "mongo shell"
+    pipeline:
+      - runs: |
+          mkdir -p "${{targets.subpkgdir}}"/usr/bin
+          mv build/install/bin/mongo ${{targets.subpkgdir}}/usr/bin
+
+update:
+  enabled: true
+  github:
+    identifier: mongodb/mongo
+    strip-prefix: r
+    use-tag: true
+    tag-filter: r4.4.
