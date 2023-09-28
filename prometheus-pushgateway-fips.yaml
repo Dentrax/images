@@ -1,0 +1,56 @@
+package:
+  name: prometheus-pushgateway-fips
+  version: 1.6.2
+  epoch: 0
+  description: Push acceptor for ephemeral and batch jobs.
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - ca-certificates-bundle
+      - busybox
+      - bash
+      - go-fips
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/prometheus/pushgateway
+      tag: v${{package.version}}
+      expected-commit: dd0ca68e2cf68ba061ed9e73b19e1928a4f6338f
+
+  - runs: |
+      GOLDFLAGS="-s -w -X github.com/prometheus/common/version.Version=${{package.version}}
+        -X github.com/prometheus/common/version.Revision=WolfiLinux
+        -X github.com/prometheus/common/version.Branch=master
+        -X github.com/prometheus/common/version.BuildUser=$USER@$HOSTNAME
+        -X github.com/prometheus/common/version.BuildDate=$(date -u "+%Y%m%d-%H:%M:%S" ${SOURCE_DATE_EPOCH:+-d @$SOURCE_DATE_EPOCH})
+      "
+      if [ -n "$LDFLAGS" ]; then
+        # LDFLAGS (and only LDFLAGS) should be passed to -extldflags.
+        GOLDFLAGS="$GOLDFLAGS -extldflags '$LDFLAGS'"
+      fi
+
+      go build \
+        -trimpath \
+        -mod=readonly \
+        -ldflags "$GOLDFLAGS" \
+        -tags netgo,builtinassets \
+        .
+
+  - runs: |
+      install -Dm755 pushgateway "${{targets.destdir}}"/usr/bin/pushgateway
+
+  - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: prometheus/pushgateway
+    strip-prefix: v
