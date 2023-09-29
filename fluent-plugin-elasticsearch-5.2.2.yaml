@@ -2,16 +2,14 @@
 package:
   name: fluent-plugin-elasticsearch-5.2.2
   version: 5.2.2
-  epoch: 0
+  epoch: 1
   description: Elasticsearch output plugin for Fluent event collector
   copyright:
     - license: Apache-2.0
   dependencies:
     runtime:
-      - ruby3.2-elasticsearch
+      - ruby3.2-elasticsearch-7.13.3
       - ruby3.2-excon
-      - ruby3.2-faraday
-      - ruby3.2-faraday-excon
       - ruby3.2-fluentd
 
 environment:
