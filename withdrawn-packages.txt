@@ -22,3 +22,4 @@ flux-image-reflector-controller-0-0.26.1-r0.apk
 kube-logging-logging-operator-compat-3.17.11-r0.apk
 kube-logging-logging-operator-compat-3.17.10-r0.apk
 configmap-reload-fips-0.11.1-r3.apk
+configmap-reload-fips-1.11-0.11.1-r0.apk
