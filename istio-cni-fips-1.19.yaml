@@ -1,0 +1,79 @@
+package:
+  name: istio-cni-fips-1.19
+  version: 1.19.1
+  epoch: 0
+  description:
+  copyright:
+    - license: Apache-2.0
+  dependencies:
+    provides:
+      - istio-cni-fips=${{package.full-version}}
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - ca-certificates-bundle
+      - busybox
+      - go-fips
+  environment:
+    CGO_ENABLED: "0"
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/istio/istio
+      tag: ${{package.version}}
+      expected-commit: a780cd199d51787fab562748696d531e3d11c7a7
+
+  - uses: go-fips/build
+    with:
+      packages: ./cni/cmd/istio-cni
+      output: istio-cni
+      ldflags: -s -w -extldflags '-static'
+
+  - uses: strip
+
+subpackages:
+  - name: ${{package.name}}-compat
+    pipeline:
+      - runs: |
+          # See https://github.com/istio/istio/blob/1.19.0/cni/deployments/kubernetes/Dockerfile.install-cni
+          mkdir -p ${{targets.subpkgdir}}/opt/cni/bin
+          ln -sf /usr/bin/istio-cni ${{targets.subpkgdir}}/opt/cni/bin/istio-cni
+    dependencies:
+      provides:
+        - istio-cni-fips-compat=${{package.full-version}}
+
+  - name: istio-install-cni-fips-1.19
+    pipeline:
+      - uses: go-fips/build
+        with:
+          packages: ./cni/cmd/install-cni
+          output: install-cni
+          ldflags: -s -w -extldflags '-static'
+          subpackage: true
+      - uses: strip
+    dependencies:
+      provides:
+        - istio-install-cni-fips=${{package.full-version}}
+
+  - name: istio-install-cni-fips-1.19-compat
+    pipeline:
+      - runs: |
+          # See https://github.com/istio/istio/blob/1.19.0/cni/deployments/kubernetes/Dockerfile.install-cni
+          mkdir -p ${{targets.subpkgdir}}/usr/local/bin
+          ln -sf /usr/bin/install-cni ${{targets.subpkgdir}}/usr/local/bin/install-cni
+    dependencies:
+      provides:
+        - istio-install-cni-fips-compat=${{package.full-version}}
+
+update:
+  enabled: true
+  github:
+    identifier: istio/istio
+    tag-filter: 1.19.
+    use-tag: true
