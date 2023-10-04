@@ -25,22 +25,24 @@ pipeline:
       tag: ${{package.version}}
       expected-commit: f566a9f8a840688fb73a30cf43554e8cffb715cb
 
-  - uses: go-fips/build
+  - uses: go/build
     with:
       modroot: .
       packages: ./cmd/bank-vaults
       output: bank-vaults
+      go-package: go-fips
 
   - uses: strip
 
 subpackages:
   - name: bank-vaults-template-fips
     pipeline:
-      - uses: go-fips/build
+      - uses: go/build
         with:
           modroot: .
           packages: ./cmd/template
           output: template
+          go-package: go-fips
           subpackage: true
 
 update:

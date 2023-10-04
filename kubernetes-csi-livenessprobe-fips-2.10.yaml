@@ -24,12 +24,13 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: 6700c0d90283fa4ef11fd6f80b1e73c55f34c6f7
 
-  - uses: go-fips/build
+  - uses: go/build
     with:
       packages: ./cmd/livenessprobe
       ldflags: "-s -w -X main.version=v${{package.version}} -extldflags '-static'"
       vendor: "true"
       output: livenessprobe
+      go-package: go-fips
 
   - uses: strip
 

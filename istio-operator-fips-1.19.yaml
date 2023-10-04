@@ -29,10 +29,11 @@ pipeline:
       tag: ${{package.version}}
       expected-commit: a780cd199d51787fab562748696d531e3d11c7a7
 
-  - uses: go-fips/build
+  - uses: go/build
     with:
       packages: ./operator/cmd/operator
       output: operator
+      go-package: go-fips
 
   - runs: |
       mkdir -p ${{targets.destdir}}/var/lib/istio

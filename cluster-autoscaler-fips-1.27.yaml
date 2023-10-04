@@ -30,7 +30,7 @@ pipeline:
       tag: cluster-autoscaler-${{package.version}}
       expected-commit: ea4976f31c797c1ded86fbe8a3899e59a5ada1b1
 
-  - uses: go-fips/build
+  - uses: go/build
     with:
       modroot: cluster-autoscaler
       packages: .
@@ -38,6 +38,7 @@ pipeline:
       ldflags: -s -w
       deps: github.com/docker/distribution@v2.8.2
       vendor: true
+      go-package: go-fips
 
   - uses: strip
 

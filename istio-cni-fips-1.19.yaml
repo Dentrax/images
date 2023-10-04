@@ -29,11 +29,12 @@ pipeline:
       tag: ${{package.version}}
       expected-commit: a780cd199d51787fab562748696d531e3d11c7a7
 
-  - uses: go-fips/build
+  - uses: go/build
     with:
       packages: ./cni/cmd/istio-cni
       output: istio-cni
       ldflags: -s -w -extldflags '-static'
+      go-package: go-fips
 
   - uses: strip
 
@@ -50,11 +51,12 @@ subpackages:
 
   - name: istio-install-cni-fips-1.19
     pipeline:
-      - uses: go-fips/build
+      - uses: go/build
         with:
           packages: ./cni/cmd/install-cni
           output: install-cni
           ldflags: -s -w -extldflags '-static'
+          go-package: go-fips
           subpackage: true
       - uses: strip
     dependencies:

@@ -18,7 +18,6 @@ environment:
     packages:
       - busybox
       - ca-certificates-bundle
-      - go-fips
   environment:
     CGO_ENABLED: "1"
 
@@ -28,11 +27,12 @@ pipeline:
       uri: https://github.com/sigstore/cosign/archive/v${{package.version}}/cosign-v${{package.version}}.tar.gz
       expected-sha256: eceb7c537211e950f01b712b29a58164ed023ce5369b7e6fcfd7a730abbeab32
 
-  - uses: go-fips/build
+  - uses: go/build
     with:
       packages: ./cmd/cosign
       output: cosign
       ldflags: -s -w -X sigs.k8s.io/release-utils/version.gitVersion=${{package.version}}
+      go-package: go-fips
 
   - uses: strip
 
