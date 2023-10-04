@@ -1,7 +1,7 @@
 package:
   name: cluster-autoscaler-fips-1.28
   version: 1.28.0
-  epoch: 0
+  epoch: 1
   description: Autoscaling components for Kubernetes
   copyright:
     - license: Apache-2.0
@@ -35,7 +35,7 @@ pipeline:
       modroot: cluster-autoscaler
       packages: .
       output: cluster-autoscaler
-      ldflags: -s -w
+      ldflags: -w
       deps: github.com/docker/distribution@v2.8.2
       vendor: true
       go-package: go-fips

@@ -1,7 +1,7 @@
 package:
   name: prometheus-fips-2.38
   version: 2.38.0
-  epoch: 0
+  epoch: 1
   description: The Prometheus monitoring system and time series database.
   copyright:
     - license: Apache-2.0
@@ -27,7 +27,7 @@ pipeline:
       expected-commit: 818d6e60888b2a3ea363aee8a9828c7bafd73699
 
   - runs: |
-      GOLDFLAGS="-s -w -X github.com/prometheus/common/version.Version=${{package.version}}
+      GOLDFLAGS="-w -X github.com/prometheus/common/version.Version=${{package.version}}
         -X github.com/prometheus/common/version.Revision=WolfiLinux
         -X github.com/prometheus/common/version.Branch=master
         -X github.com/prometheus/common/version.BuildUser=$USER@$HOSTNAME
