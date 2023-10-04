@@ -83,7 +83,7 @@ jobs:
       - name: Check sonames
         id: soname
         if: steps.file_check.outputs.exists == 'true'
-        uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:7f57828010d3e32e7457057bc76be3d19d6cb7db73b43ca8136ec2c0a4f70e7c
+        uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:b6aab29b3257966d510c432b3ea4f1b79d5ad925d51db985beda39568dc0ae00
         with:
           entrypoint: wolfictl
           args: check so-name
