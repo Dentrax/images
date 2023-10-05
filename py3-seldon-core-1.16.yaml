@@ -1,0 +1,63 @@
+# Generated from https://pypi.org/project/seldon-core/
+package:
+  name: py3-seldon-core-1.16
+  version: 1.16.0
+  epoch: 0
+  description: Seldon Core client and microservice wrapper
+  copyright:
+    - license: Apache 2.0
+  dependencies:
+    runtime:
+      - py3-flask
+      - py3-jsonschema
+      - py3-flask-cors
+      - py3-requests
+      - numpy
+      - py3-protobuf
+      - py3-grpcio
+      - py3-flask-opentracing
+      - py3-opentracing
+      - py3-jaeger-client
+      - py3-grpcio-opentracing
+      - py3-grpcio-reflection
+      - py3-gunicorn
+      - py3.11-setuptools
+      - py3-prometheus-client
+      - py3-werkzeug
+      - py3-cryptography
+      - py3-pyyaml
+      - py3-click
+      - py3-urllib3
+      - py3-importlib-metadata
+      - python-3.11
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - ca-certificates-bundle
+      - wolfi-base
+      - busybox
+      - build-base
+      - python-3.11
+      - py3.11-setuptools
+
+pipeline:
+  - uses: fetch
+    with:
+      expected-sha256: 73208bfda9b4a28ad53e96ce0440859bae4c8513908b494d55807009a143c10b
+      uri: https://files.pythonhosted.org/packages/95/e7/cf686b42a5b0c69e61596f12387cc1028fc05dbb1eae219505843c6afd3a/seldon-core-${{package.version}}.tar.gz
+
+  - name: Python Build
+    runs: python setup.py build
+
+  - name: Python Install
+    runs: python setup.py install --prefix=/usr --root="${{targets.destdir}}"
+
+  - uses: strip
+
+update:
+  enabled: false
