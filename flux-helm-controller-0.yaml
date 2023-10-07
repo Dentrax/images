@@ -11,7 +11,7 @@ package:
   name: flux-helm-controller-0
   # The version of helm-controller at the time of the last flux v0 (v0.41.2)
   version: 0.31.2
-  epoch: 0
+  epoch: 1
   description: The GitOps Toolkit Helm reconciler, for declarative Helming
   copyright:
     - license: Apache-2.0

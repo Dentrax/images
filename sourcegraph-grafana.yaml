@@ -1,7 +1,7 @@
 package:
   name: sourcegraph-grafana
   version: 5.0.5
-  epoch: 1
+  epoch: 2
   description: Sourcegraph packaged Grafana
   target-architecture:
     - all

@@ -11,7 +11,7 @@ package:
   name: flux-notification-controller-0
   # The version of notification-controller at the time of the last flux v0 (v0.41.2)
   version: 0.33.0
-  epoch: 0
+  epoch: 1
   description: The GitOps Toolkit event forwarded and notification dispatcher
   copyright:
     - license: Apache-2.0
