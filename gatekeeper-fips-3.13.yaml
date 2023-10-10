@@ -1,6 +1,6 @@
 package:
   name: gatekeeper-fips-3.13
-  version: 3.13.0
+  version: 3.13.2
   epoch: 0
   description: Gatekeeper - Policy Controller for Kubernetes
   copyright:
@@ -28,7 +28,7 @@ pipeline:
     with:
       repository: https://github.com/open-policy-agent/gatekeeper
       tag: v${{package.version}}
-      expected-commit: 8e2aea5374813d706898feb217b7626bff2adef7
+      expected-commit: 2741a8ed67284347991c9da59c292d711e1523dd
       destination: gatekeeper
 
   - runs: |
