@@ -166,13 +166,15 @@ jobs:
       - name: 'Upload the repository to the bucket'
         run: |
           for arch in "x86_64" "aarch64"; do
-            # Don't cache the APKINDEX.
+            # Don't cache the APKINDEX, make it public-readable.
             gcloud --quiet storage cp \
                 --cache-control=no-store \
+                --canned-acl=publicRead" \
                 "./packages/${arch}/APKINDEX.tar.gz" "gs://chainguard-enterprise-registry-destination/os/${arch}/"
 
             gcloud --quiet storage cp \
                 --cache-control=no-store \
+                --canned-acl=publicRead" \
                 "./packages/${arch}/APKINDEX.json" "gs://chainguard-enterprise-registry-destination/os/${arch}/"
 
             # Only attempt to sign when *.apk's exist
