@@ -1,4 +1,4 @@
-name: Openssl1
+name: Openssl1 - build
 
 on:
   push:
