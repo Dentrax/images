@@ -50,11 +50,11 @@ jobs:
       # Build with a local key, we'll resign this with the real key later
       - name: 'Generate local signing key'
         run: |
-          make local-melange.rsa
+          make local-melange-enterprise.rsa
 
           # Touch it with the epoch date to convince `make` that we don't need to
           # rebuild the targets that depend on this (all)
-          touch -d @0 local-melange.rsa
+          touch -d @0 local-melange-enterprise.rsa
 
       - name: 'Prepare package repository'
         run: |
