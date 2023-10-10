@@ -163,28 +163,28 @@ jobs:
             fi
           done
 
-      #- name: 'Upload the repository to the bucket'
-      #  run: |
-      #    for arch in "x86_64" "aarch64"; do
-      #      # Don't cache the APKINDEX.
-      #      gcloud --quiet storage cp \
-      #          --cache-control=no-store \
-      #          "./packages/${arch}/APKINDEX.tar.gz" "gs://chainguard-enterprise-registry-destination/os/${arch}/"
-      #
-      #      gcloud --quiet storage cp \
-      #          --cache-control=no-store \
-      #          "./packages/${arch}/APKINDEX.json" "gs://chainguard-enterprise-registry-destination/os/${arch}/"
-      #
-      #      # Only attempt to sign when *.apk's exist
-      #      apks=$(ls ./packages/${arch}/*.apk 2>/dev/null || true)
-      #      if [ -n "$apks" ]; then
-      #        # apks will be cached in CDN for an hour by default.
-      #        # Don't upload the object if it already exists.
-      #        gcloud --quiet storage cp \
-      #            --no-clobber \
-      #            "./packages/${arch}/*.apk" "gs://chainguard-enterprise-registry-destination/os/${arch}/"
-      #      fi
-      #    done
+      - name: 'Upload the repository to the bucket'
+        run: |
+          for arch in "x86_64" "aarch64"; do
+            # Don't cache the APKINDEX.
+            gcloud --quiet storage cp \
+                --cache-control=no-store \
+                "./packages/${arch}/APKINDEX.tar.gz" "gs://chainguard-enterprise-registry-destination/os/${arch}/"
+
+            gcloud --quiet storage cp \
+                --cache-control=no-store \
+                "./packages/${arch}/APKINDEX.json" "gs://chainguard-enterprise-registry-destination/os/${arch}/"
+
+            # Only attempt to sign when *.apk's exist
+            apks=$(ls ./packages/${arch}/*.apk 2>/dev/null || true)
+            if [ -n "$apks" ]; then
+              # apks will be cached in CDN for an hour by default.
+              # Don't upload the object if it already exists.
+              gcloud --quiet storage cp \
+                  --no-clobber \
+                  "./packages/${arch}/*.apk" "gs://chainguard-enterprise-registry-destination/os/${arch}/"
+            fi
+          done
 
   postrun:
     name: Notify Slack
