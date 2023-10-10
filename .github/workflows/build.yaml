@@ -197,5 +197,5 @@ jobs:
         with:
           payload: '{"text": "[build-enterprise-packages] failure: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}'
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
