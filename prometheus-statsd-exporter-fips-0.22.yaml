@@ -1,6 +1,6 @@
 package:
   name: prometheus-statsd-exporter-fips-0.22
-  version: 0.22.7
+  version: 0.22.8
   epoch: 0
   description: StatsD exporter for Prometheus
   copyright:
@@ -22,7 +22,7 @@ pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/prometheus/statsd_exporter
-      expected-commit: c2505cf91ee05b615d5169912ceb5bb5252681a8
+      expected-commit: aecad1a2faf31d4a6c27323a29ca8c7a23d88f6b
       tag: v${{package.version}}
 
   - runs: |
