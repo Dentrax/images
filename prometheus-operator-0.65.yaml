@@ -1,7 +1,7 @@
 package:
   name: prometheus-operator-0.65
   version: 0.65.2
-  epoch: 1
+  epoch: 2
   description: Prometheus Operator creates/configures/manages Prometheus clusters atop Kubernetes
   copyright:
     - license: Apache-2.0
@@ -16,7 +16,7 @@ environment:
       - ca-certificates-bundle
       - busybox
       - bash
-      - go<1.21
+      - go<1.21 # tests fail with go-1.21
       - git
       - build-base
       - openssl
@@ -26,25 +26,36 @@ pipeline:
     with:
       repository: https://github.com/prometheus-operator/prometheus-operator.git
       tag: v${{package.version}}
-      destination: ${{package.name}}
       expected-commit: 3a34881cec7a004dc9dc50b5a51129dee021e7e0
 
-  - working-directory: ${{package.name}}
+  - runs: |
+      # Mitigate GHSA-hqxw-f8mx-cpmw / CVE-2023-2253
+      go get github.com/docker/distribution@v2.8.2-beta.1+incompatible
+      go mod tidy
+
+  - uses: autoconf/make
+    with:
+      opts: operator
+
+  - runs: |
+      mkdir -p "${{targets.contextdir}}/usr/bin"
+      cp ./operator "${{targets.contextdir}}/usr/bin"
+
+  - runs: |
+      # test uses the -race flag which is incompatible with -buildmode=pie
+      unset GOFLAGS
+      make test-unit
+
+subpackages:
+  - name: prometheus-config-reloader-0.65
+    description: Prometheus Operator creates/configures/manages Prometheus clusters atop Kubernetes
     pipeline:
-      - runs: |
-          # Mitigate GHSA-hqxw-f8mx-cpmw / CVE-2023-2253
-          go get github.com/docker/distribution@v2.8.2-beta.1+incompatible
-          go mod tidy
       - uses: autoconf/make
         with:
-          opts: operator
+          opts: prometheus-config-reloader
       - runs: |
-          mkdir -p "${{targets.destdir}}/usr/bin"
-          cp ./operator "${{targets.destdir}}/usr/bin"
-      - runs: |
-          # test uses the -race flag which is incompatible with -buildmode=pie
-          unset GOFLAGS
-          make test-unit
+          mkdir -p "${{targets.contextdir}}/usr/bin"
+          mv ./prometheus-config-reloader "${{targets.contextdir}}/usr/bin"
 
 update:
   enabled: true
