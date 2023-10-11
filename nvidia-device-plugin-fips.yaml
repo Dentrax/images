@@ -1,0 +1,39 @@
+package:
+  name: nvidia-device-plugin-fips
+  version: 0.14.1
+  epoch: 0
+  description: NVIDIA device plugin for Kubernetes
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - build-base
+      - go-fips
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/NVIDIA/k8s-device-plugin
+      tag: v${{package.version}}
+      expected-commit: 7086f91dfcd0cd7b06863be4a315ba873f0b81f9
+
+  - runs: |
+      make
+      mkdir -p ${{targets.destdir}}/usr/bin
+      mv config-manager ${{targets.destdir}}/usr/bin/
+      mv nvidia-device-plugin ${{targets.destdir}}/usr/bin/
+
+update:
+  enabled: true
+  github:
+    identifier: NVIDIA/k8s-device-plugin
+    strip-prefix: v
+    tag-filter: v
