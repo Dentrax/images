@@ -1,0 +1,25 @@
+package:
+  name: jsonnet-bundler
+  version: 0.5.1
+  epoch: 0
+  description: The jsonnet-bundler is a package manager for Jsonnet.
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+
+pipeline:
+  - uses: go/install
+    with:
+      package: github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb@v${{package.version}}
+
+update:
+  enabled: true
+  github:
+    identifier: jsonnet-bundler/jsonnet-bundler
+    strip-prefix: v
