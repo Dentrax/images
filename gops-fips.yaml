@@ -1,14 +1,13 @@
 package:
-  name: hubble-ui-backend
-  version: 0.12.1
+  name: gops-fips
+  version: 0.3.28
   epoch: 0
-  description: "Observability & troubleshooting for Kubernetes services"
+  description: Command to list and diagnose Go processes currently running on your system.
   copyright:
     - license: "Apache-2.0"
   dependencies:
     runtime:
       - ca-certificates-bundle
-      - gops
 
 environment:
   contents:
@@ -20,7 +19,7 @@ environment:
       - wolfi-baselayout
       - busybox
       - build-base
-      - go-1.20
+      - go-fips
       - git
       - ca-certificates-bundle
       - openssl
@@ -29,20 +28,19 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      repository: https://github.com/cilium/hubble-ui
+      repository: https://github.com/google/gops
       tag: v${{package.version}}
-      destination: hubble-ui
-      expected-commit: 66a73845c733c99d195f8c0231463cb4be86e241
+      expected-commit: ac7253a1736413f0a618f28559ce5034c71e61f6
+      destination: gops
 
   - runs: |
-      cd hubble-ui/backend
-      # Override explicit patch version of cilium (1.13.0) in vendor/modules.txt
-      CGO_ENABLED=0 go build -mod=mod -ldflags "-w" -o "${{targets.destdir}}"/usr/bin/backend .
+      cd gops
+      CGO_ENABLED=0 go build -ldflags "-w" -o "${{targets.destdir}}"/usr/bin/gops
 
   - uses: strip
 
 update:
   enabled: true
   github:
-    identifier: cilium/hubble-ui
+    identifier: google/gops
     strip-prefix: v
