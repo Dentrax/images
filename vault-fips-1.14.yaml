@@ -1,6 +1,6 @@
 package:
   name: vault-fips-1.14
-  version: 1.14.2
+  version: 1.14.4
   epoch: 0
   description: Tool for encryption as a service, secrets and privileged access management
   copyright:
@@ -29,7 +29,7 @@ pipeline:
     with:
       repository: https://github.com/hashicorp/vault
       tag: v${{package.version}}
-      expected-commit: 16a7033a0686eca50ee650880d5c55438d274489
+      expected-commit: ccdd48d1f7b95fc99fd11d67fc1c687576b338de
       destination: vault
 
   - runs: |
