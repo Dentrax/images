@@ -1,0 +1,83 @@
+package:
+  name: erlang-fips-26
+  version: 26.1.1
+  epoch: 0
+  description: General-purpose programming language and runtime environment
+  copyright:
+    - license: Apache-2.0
+  dependencies:
+    runtime:
+      # mnesia depends on the ca-certificates bundle
+      - ca-certificates-bundle
+    provides:
+      - erlang-fips=26.999.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - build-base
+      - automake
+      - autoconf
+      - perl-dev
+      - openssl-dev
+      - ncurses-dev
+      - zlib-dev
+
+pipeline:
+  - uses: fetch
+    with:
+      expected-sha256: 30de56e687cef15c73ef2e2e5bc8a94d28f959656e716e0a65092af7d360af57
+      uri: https://github.com/erlang/otp/releases/download/OTP-${{package.version}}/otp_src_${{package.version}}.tar.gz
+
+  - runs: |
+      export CPPFLAGS="-D_BSD_SOURCE $CPPFLAGS"
+
+      ./otp_build autoconf
+      ./configure \
+        --prefix=/usr \
+        --sysconfdir=/etc/erlang \
+        --mandir=/usr/share/man \
+        --infodir=/usr/share/info \
+        --host="$CHOST" \
+        --build="$CBUILD" \
+        --enable-threads \
+        --enable-shared-zlib \
+        --enable-ssl=dynamic-ssl-lib \
+        --enable-jit \
+        --enable-fips
+
+  - uses: autoconf/make
+
+  - uses: autoconf/make-install
+
+  - runs: |
+      mkdir -p "${{targets.destdir}}"/etc/erlang/releases/26
+      install -Dm644 sys.config \
+        "${{targets.destdir}}"/etc/erlang/releases/26/sys.config
+
+  - uses: strip
+
+subpackages:
+  - name: "erlang-fips-26-dev"
+    description: "headers for erlang"
+    pipeline:
+      - uses: split/dev
+    dependencies:
+      runtime:
+        - erlang-fips
+      provides:
+        - erlang-fips-dev=26.999.0
+
+update:
+  enabled: true
+  github:
+    identifier: erlang/otp
+    strip-prefix: OTP-
+    use-tag: true
+    tag-filter: OTP-
