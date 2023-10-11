@@ -1,7 +1,7 @@
 package:
   name: aws-load-balancer-controller-2.4.5
   version: 2.4.5
-  epoch: 3
+  epoch: 4
   description: A Kubernetes controller for Elastic Load Balancers
   copyright:
     - license: Apache-2.0
@@ -17,7 +17,9 @@ environment:
       - busybox
       - bash
       - build-base
-      - go
+      # Something in this program imports go4.org/unsafe/assume-no-moving-gc
+      # to declare that it assumes a non-moving garbage collector.
+      - go-1.20
 
 pipeline:
   - uses: git-checkout
