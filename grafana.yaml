@@ -3,13 +3,8 @@ package:
   version: 7.5.25
   epoch: 1
   description: Open source, feature rich metrics dashboard and graph ed
-  target-architecture:
-    - all
   copyright:
-    - paths:
-        - "*"
-      attestation: TODO
-      license: Apache-2.0
+    - license: Apache-2.0
   dependencies:
     runtime:
       - bash

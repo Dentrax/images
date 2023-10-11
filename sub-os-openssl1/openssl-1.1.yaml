@@ -3,13 +3,8 @@ package:
   version: 1.1.1t
   epoch: 1
   description: "the OpenSSL cryptography suite (legacy 1.1.x branch)"
-  target-architecture:
-    - all
   copyright:
-    - paths:
-      - "*"
-      attestation: TODO
-      license: OpenSSL
+    - license: OpenSSL
   dependencies:
     runtime:
 

@@ -3,13 +3,8 @@ package:
   version: 9.3.16
   epoch: 2
   description: The open and composable observability and data visualization platform.
-  target-architecture:
-    - all
   copyright:
-    - paths:
-        - "*"
-      attestation: TODO
-      license: AGPL-3.0-or-later
+    - license: AGPL-3.0-or-later
   dependencies:
     runtime:
       - bash
