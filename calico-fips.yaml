@@ -1,7 +1,7 @@
 package:
   name: calico-fips
   version: 3.26.3
-  epoch: 0
+  epoch: 1
   description: "Cloud native networking and network security"
   copyright:
     - license: Apache-2.0
@@ -128,6 +128,7 @@ pipeline:
           # make -C ../felix build-bpf ARCH=$(ARCH)
           cp -r ../felix/bpf-gpl/bin/* $_target
           cp -r ../felix/bpf-apache/bin/* $_target
+      - uses: strip
 
 subpackages:
   - name: "calico-fips-node"
@@ -167,7 +168,7 @@ subpackages:
               CGO_LDFLAGS="-L$LIBBPF_CONTAINER_PATH/$_arch -lbpf -lelf -lz"
               CGO_CFLAGS="-I$LIBBPF_CONTAINER_PATH -I$BPFGPL_CONTAINER_PATH"
 
-              LDFLAGS="-s -w"
+              LDFLAGS="-w"
               LDFLAGS="$LDFLAGS -X node/pkg/lifecycle/startup.VERSION=${{package.version}}"
               LDFLAGS="$LDFLAGS -X node/buildinfo.GitVersion=$(git describe --tags --dirty --always --abbrev=12 || echo '<unknown>')"
               LDFLAGS="$LDFLAGS -X node/buildinfo.BuildDate=$(date -u +'%FT%T%z')"
@@ -225,6 +226,7 @@ subpackages:
 
           # TODO: Proper fix for this
           rm -f "${{targets.subpkgdir}}"/etc/nsswitch.conf
+      - uses: strip
 
   # The felix binaries aren't actually shipped, but they contain some useful testing utilities
   - name: "calico-fips-felix"
@@ -246,7 +248,7 @@ subpackages:
           CGO_LDFLAGS="-L$LIBBPF_CONTAINER_PATH/$_arch -lbpf -lelf -lz"
           CGO_CFLAGS="-I$LIBBPF_CONTAINER_PATH -I$BPFGPL_CONTAINER_PATH"
 
-          LDFLAGS="-s -w"
+          LDFLAGS="-w"
           LDFLAGS="$LDFLAGS -X node/buildinfo.GitVersion=$(git describe --tags --dirty --always --abbrev=12 || echo '<unknown>')"
           LDFLAGS="$LDFLAGS -X node/buildinfo.BuildDate=$(date -u +'%FT%T%z')"
           LDFLAGS="$LDFLAGS -X node/buildinfo.GitRevision=$(git rev-parse HEAD || echo '<unknown>')"
@@ -299,6 +301,7 @@ subpackages:
             -ldflags "$LDFLAGS" \
             -o "${{targets.subpkgdir}}"/usr/bin/test-workload \
             ./felix/fv/test-workload
+      - uses: strip
 
   - name: "calico-fips-cni"
     dependencies:
@@ -317,7 +320,7 @@ subpackages:
           # the host, we explicitly statically compile this to ensure it doesn't
           # conflict with the hosts GLIBC, which is often a much more outdated
           # version than what we build with.
-          LDFLAGS="-s -w -extldflags '-static'"
+          LDFLAGS="-w -extldflags '-static'"
           LDFLAGS="$LDFLAGS -X main.VERSION=$(git describe --tags --dirty --always --abbrev=12 || echo '<unknown>')"
           CGO_ENABLED=0 \
             go build -v -buildvcs=false \
@@ -328,6 +331,7 @@ subpackages:
           install -Dm755 cni-plugin/out/calico "${{targets.subpkgdir}}"/usr/bin/calico
           ln -sf /usr/bin/calico "${{targets.subpkgdir}}"/usr/bin/calico-ipam
           ln -sf /usr/bin/calico "${{targets.subpkgdir}}"/usr/bin/install
+      - uses: strip
 
   - name: "calico-fips-apiserver"
     dependencies:
@@ -341,7 +345,7 @@ subpackages:
           packages: ./apiserver/cmd/apiserver
           output: calico-apiserver
           subpackage: "true"
-          ldflags: "-s -w -X github.com/projectcalico/calico/cmd/apiserver/server.VERSION=${{package.version}}) -X github.com/projectcalico/calico/cmd/apiserver/server.BUILD_DATE=$(date -u +'%FT%T%z') -X github.com/projectcalico/calico/cmd/apiserver/server.GIT_DESCRIPTION=$(git describe --tags) -X github.com/projectcalico/calico/cmd/apiserver/server.GIT_REVISION=$(git rev-parse --short HEAD)"
+          ldflags: "-w -X github.com/projectcalico/calico/cmd/apiserver/server.VERSION=${{package.version}}) -X github.com/projectcalico/calico/cmd/apiserver/server.BUILD_DATE=$(date -u +'%FT%T%z') -X github.com/projectcalico/calico/cmd/apiserver/server.GIT_DESCRIPTION=$(git describe --tags) -X github.com/projectcalico/calico/cmd/apiserver/server.GIT_REVISION=$(git rev-parse --short HEAD)"
           tags: fipsstrict
       - uses: go/build
         with:
@@ -350,7 +354,8 @@ subpackages:
           packages: ./apiserver/cmd/filecheck
           output: calico-filecheck
           subpackage: "true"
-          ldflags: "-s -w -X github.com/projectcalico/calico/cmd/apiserver/server.VERSION=${{package.version}}) -X github.com/projectcalico/calico/cmd/apiserver/server.BUILD_DATE=$(date -u +'%FT%T%z') -X github.com/projectcalico/calico/cmd/apiserver/server.GIT_DESCRIPTION=$(git describe --tags) -X github.com/projectcalico/calico/cmd/apiserver/server.GIT_REVISION=$(git rev-parse --short HEAD)"
+          ldflags: "-w -X github.com/projectcalico/calico/cmd/apiserver/server.VERSION=${{package.version}}) -X github.com/projectcalico/calico/cmd/apiserver/server.BUILD_DATE=$(date -u +'%FT%T%z') -X github.com/projectcalico/calico/cmd/apiserver/server.GIT_DESCRIPTION=$(git describe --tags) -X github.com/projectcalico/calico/cmd/apiserver/server.GIT_REVISION=$(git rev-parse --short HEAD)"
+      - uses: strip
 
   - name: "calico-fips-app-policy"
     dependencies:
@@ -364,7 +369,7 @@ subpackages:
           packages: ./app-policy/cmd/dikastes
           output: calico-dikastes
           subpackage: "true"
-          ldflags: "-s -w -X github.com/projectcalico/calico/app-policy/buildinfo.GitVersion=$(git describe --tags --dirty --always --abbrev=12 || echo '<unknown>') -X github.com/projectcalico/calico/app-policy/buildinfo.BuildDate=$(date -u +'%FT%T%z') -X github.com/projectcalico/calico/app-policy/GitRevision=$(git rev-parse HEAD || echo '<unknown>') -B 0x$(git rev-parse HEAD || uuidgen | sed 's/-//g')"
+          ldflags: "-w -X github.com/projectcalico/calico/app-policy/buildinfo.GitVersion=$(git describe --tags --dirty --always --abbrev=12 || echo '<unknown>') -X github.com/projectcalico/calico/app-policy/buildinfo.BuildDate=$(date -u +'%FT%T%z') -X github.com/projectcalico/calico/app-policy/GitRevision=$(git rev-parse HEAD || echo '<unknown>') -B 0x$(git rev-parse HEAD || uuidgen | sed 's/-//g')"
           tags: fipsstrict
       - uses: go/build
         with:
@@ -374,6 +379,7 @@ subpackages:
           output: calico-healthz
           subpackage: "true"
           tags: fipsstrict,osusergo,netgo
+      - uses: strip
 
   - name: "calico-fips-kube-controllers"
     dependencies:
@@ -387,7 +393,7 @@ subpackages:
           packages: ./kube-controllers/cmd/kube-controllers
           output: calico-kube-controllers
           subpackage: "true"
-          ldflags: "-s -w -X main.VERSION=$(git describe --tags --dirty --always --abbrev=12)"
+          ldflags: "-w -X main.VERSION=$(git describe --tags --dirty --always --abbrev=12)"
           tags: fipsstrict
       - uses: go/build
         with:
@@ -396,7 +402,8 @@ subpackages:
           packages: ./kube-controllers/cmd/check-status
           output: check-status # keep naming convention as "check-status" is usually harded to /usr/bin/check-status
           subpackage: "true"
-          ldflags: "-s -w -X main.VERSION=$(git describe --tags --dirty --always --abbrev=12)"
+          ldflags: "-w -X main.VERSION=$(git describe --tags --dirty --always --abbrev=12)"
+      - uses: strip
 
   - name: "calico-fips-pod2daemon"
     description: "The calico pod2daemon components"
@@ -411,7 +418,7 @@ subpackages:
           packages: ./pod2daemon/flexvol
           output: calico-pod2daemon-flexvol
           subpackage: "true"
-          ldflags: "-s -w"
+          ldflags: "-w"
       - uses: go/build
         with:
           go-package: go-fips
@@ -419,7 +426,7 @@ subpackages:
           packages: ./pod2daemon/csidriver
           output: calico-pod2daemon-csidriver
           subpackage: "true"
-          ldflags: "-s -w"
+          ldflags: "-w"
           tags: fipsstrict,osusergo,netgo
       - uses: go/build
         with:
@@ -428,10 +435,11 @@ subpackages:
           packages: ./pod2daemon/nodeagent
           output: calico-pod2daemon-nodeagent
           subpackage: "true"
-          ldflags: "-s -w"
+          ldflags: "-w"
       - runs: |
           mkdir -p "${{targets.subpkgdir}}"/usr/bin
           install -m755 ./pod2daemon/flexvol/docker/flexvol.sh "${{targets.subpkgdir}}"/usr/bin/flexvol.sh
+      - uses: strip
 
   - name: "calicoctl-fips"
     pipeline:
@@ -442,8 +450,9 @@ subpackages:
           packages: ./calicoctl/calicoctl
           output: calicoctl
           subpackage: "true"
-          ldflags: "-s -w -X github.com/projectcalico/calico/calicoctl/commands.VERSION=$(git describe --tags --dirty --always --abbrev=12) -X github.com/projectcalico/calico/calicoctl/commands.GIT_REVISION=$(git rev-parse --short HEAD) -X github.com/projectcalico/calico/calicoctl/commands/common.VERSION=$(git describe --tags --dirty --always --abbrev=12) -X main.VERSION=$(git describe --tags --dirty --always --abbrev=12)"
+          ldflags: "-w -X github.com/projectcalico/calico/calicoctl/commands.VERSION=$(git describe --tags --dirty --always --abbrev=12) -X github.com/projectcalico/calico/calicoctl/commands.GIT_REVISION=$(git rev-parse --short HEAD) -X github.com/projectcalico/calico/calicoctl/commands/common.VERSION=$(git describe --tags --dirty --always --abbrev=12) -X main.VERSION=$(git describe --tags --dirty --always --abbrev=12)"
           tags: fipsstrict,osusergo,netgo
+      - uses: strip
 
   - name: "calico-fips-typhad"
     description: "The calico typha daemon"
@@ -453,7 +462,7 @@ subpackages:
     pipeline:
       # TODO: I'm not sure yet if this actually needs CGO, or is just enabled upstream because of go-fips
       - runs: |
-          LDFLAGS="-s -w"
+          LDFLAGS="-w"
           LDFLAGS="$LDFLAGS -X github.com/projectcalico/calico/typha/pkg/buildinfo.GitVersion=$(git describe --tags --dirty --always --abbrev=12 || echo '<unknown>')"
           LDFLAGS="$LDFLAGS -X github.com/projectcalico/calico/typha/pkg/buildinfo.BuildDate=$(date -u +'%FT%T%z')"
           LDFLAGS="$LDFLAGS -X github.com/projectcalico/calico/typha/pkg/buildinfo.GitRevision=$(git rev-parse HEAD || echo '<unknown>')"
@@ -470,6 +479,7 @@ subpackages:
 
           mkdir -p "${{targets.subpkgdir}}"/licenses
           cp ./typha/LICENSE "${{targets.subpkgdir}}"/licenses
+      - uses: strip
 
   - name: "calico-fips-typha-client"
     description: "The calico typha client"
@@ -479,7 +489,7 @@ subpackages:
     pipeline:
       # TODO: I'm not sure yet if this actually needs CGO, or is just enabled upstream because of go-fips
       - runs: |
-          LDFLAGS="-s -w"
+          LDFLAGS="-w"
           LDFLAGS="$LDFLAGS -X github.com/projectcalico/calico/typha/pkg/buildinfo.GitVersion=$(git describe --tags --dirty --always --abbrev=12 || echo '<unknown>')"
           LDFLAGS="$LDFLAGS -X github.com/projectcalico/calico/typha/pkg/buildinfo.BuildDate=$(date -u +'%FT%T%z')"
           LDFLAGS="$LDFLAGS -X github.com/projectcalico/calico/typha/pkg/buildinfo.GitRevision=$(git rev-parse HEAD || echo '<unknown>')"
@@ -489,6 +499,7 @@ subpackages:
             go build -v -tags fipsstrict,osusergo,netgo,cgo -v -buildvcs=false \
             -o "${{targets.subpkgdir}}"/bin/typha-client \
             ./typha/cmd/typha-client
+      - uses: strip
 
 update:
   enabled: true
