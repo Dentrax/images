@@ -11,7 +11,7 @@ package:
   name: flux-source-controller-0.37
   # The version of source-controller at the time of flux v0.37
   version: 0.32.1
-  epoch: 0
+  epoch: 1
   description: The GitOps Toolkit source management component
   copyright:
     - license: Apache-2.0
@@ -27,8 +27,8 @@ environment:
       - ca-certificates-bundle
       - go
       - gcc
-      - clang-15
-      - llvm-lld
+      - clang-16
+      - llvm-lld-16
       - libgit2-dev-1.5
       - zlib-dev
       - zlib-static
@@ -49,7 +49,7 @@ pipeline:
       # This is the expansion of $(pkg-config --static --libs --cflags libgit2)
       CGO_LDFLAGS="-L /lib -L/usr/lib -L/usr/local/lib -lgit2 -lssh2 -lrt -lssl -ldl -pthread -lpcre2-8 -lz -lcrypto -ldl -pthread"
       CGO_ENABLED=1 CGO_LDFLAGS="$CGO_LDFLAGS -static -fuse-ld=lld" go build \
-        -ldflags "-s -w" \
+        -ldflags "-w" \
         -tags 'netgo,osusergo,static_build' \
         -trimpath -o "${{targets.destdir}}"/usr/bin/source-controller .
 

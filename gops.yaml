@@ -1,7 +1,7 @@
 package:
   name: gops
   version: 0.3.28
-  epoch: 1
+  epoch: 2
   description: Command to list and diagnose Go processes currently running on your system.
   copyright:
     - license: "Apache-2.0"
@@ -35,7 +35,7 @@ pipeline:
 
   - runs: |
       cd gops
-      CGO_ENABLED=0 go build -ldflags "-s -w" -o "${{targets.destdir}}"/usr/bin/gops
+      CGO_ENABLED=0 go build -ldflags "-w" -o "${{targets.destdir}}"/usr/bin/gops
 
   - uses: strip
 

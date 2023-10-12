@@ -2,7 +2,7 @@
 package:
   name: ingress-nginx-controller-fips-1.8
   version: 1.8.2
-  epoch: 1
+  epoch: 2
   description: "Ingress-NGINX Controller for Kubernetes"
   copyright:
     - license: Apache-2.0
@@ -164,21 +164,21 @@ pipeline:
       sed -i "s/go 1\.21\.1/go 1.21/g" go.mod
 
       go build -x -v \
-      -trimpath -ldflags="-buildid= -w -s \
+      -trimpath -ldflags="-buildid= -w  \
       -X ${PKG}/version.RELEASE=controller-v${{package.version}} \
       -X ${PKG}/version.COMMIT=${COMMIT_SHA} \
       -X ${PKG}/version.REPO=${REPO_INFO}" \
       -o "${{targets.destdir}}/usr/bin/nginx-dbg" ${PKG}/cmd/dbg
 
       go build -x -v \
-      -trimpath -ldflags="-buildid= -w -s \
+      -trimpath -ldflags="-buildid= -w  \
       -X ${PKG}/version.RELEASE=controller-v${{package.version}} \
       -X ${PKG}/version.COMMIT=${COMMIT_SHA} \
       -X ${PKG}/version.REPO=${REPO_INFO}" \
       -o "${{targets.destdir}}/usr/bin/waitshutdown" ${PKG}/cmd/waitshutdown
 
       go build -x -v \
-      -trimpath -ldflags="-buildid= -w -s \
+      -trimpath -ldflags="-buildid= -w  \
       -X ${PKG}/version.RELEASE=controller-v${{package.version}} \
       -X ${PKG}/version.COMMIT=${COMMIT_SHA} \
       -X ${PKG}/version.REPO=${REPO_INFO}" \
@@ -257,7 +257,7 @@ pipeline:
       strip-components: 0
 
   - runs: |
-      git clone --depth=1 https://github.com/google/ngx_brotli.git
+      git clone https://github.com/google/ngx_brotli.git
       cd ngx_brotli
       git checkout ${{vars.NGX_BROTLI_SHA}}
       git submodule init
@@ -478,6 +478,8 @@ pipeline:
       rm -rf ${{targets.destdir}}/etc/nginx/owasp-modsecurity-crs/.git
       rm -rf ${{targets.destdir}}/etc/nginx/owasp-modsecurity-crs/util/regression-tests
 
+  - uses: strip
+
 subpackages:
   - name: ingress-nginx-controller-fips-1.8-compat
     description: Compatibility package for ingress-nginx-controller-fips
@@ -511,4 +513,4 @@ update:
     identifier: kubernetes/ingress-nginx
     strip-prefix: controller-v
     use-tag: true
-    tag-filter: "controller-v"
+    tag-filter: "controller-v1.8"

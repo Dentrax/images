@@ -11,7 +11,7 @@ package:
   name: flux-source-controller-0
   # The version of source-controller at the time of the last flux v0 (v0.41.2)
   version: 0.36.1
-  epoch: 0
+  epoch: 1
   description: The GitOps Toolkit source management component
   copyright:
     - license: Apache-2.0
@@ -27,8 +27,8 @@ environment:
       - ca-certificates-bundle
       - go
       - gcc
-      - clang-15
-      - llvm-lld
+      - clang-16
+      - llvm-lld-16
 
 pipeline:
   - uses: git-checkout
@@ -40,7 +40,7 @@ pipeline:
   - runs: |
       mkdir -p "${{targets.destdir}}"/usr/bin
       CGO_ENABLED=1 CGO_LDFLAGS="-static -fuse-ld=lld" go build \
-        -ldflags "-s -w" \
+        -ldflags "-w" \
         -tags 'netgo,osusergo,static_build' \
         -trimpath -o "${{targets.destdir}}"/usr/bin/source-controller .
 
