@@ -2,7 +2,7 @@
 package:
   name: py3-seldon-core-1.16
   version: 1.16.0
-  epoch: 0
+  epoch: 1
   description: Seldon Core client and microservice wrapper
   copyright:
     - license: Apache 2.0
@@ -30,6 +30,9 @@ package:
       - py3-urllib3
       - py3-importlib-metadata
       - python-3.11
+      - kind
+      - kustomize
+      - kubebuilder
 
 environment:
   contents:
@@ -44,20 +47,35 @@ environment:
       - build-base
       - python-3.11
       - py3.11-setuptools
+      - go-fips
 
 pipeline:
-  - uses: fetch
+  - uses: git-checkout
     with:
-      expected-sha256: 73208bfda9b4a28ad53e96ce0440859bae4c8513908b494d55807009a143c10b
-      uri: https://files.pythonhosted.org/packages/95/e7/cf686b42a5b0c69e61596f12387cc1028fc05dbb1eae219505843c6afd3a/seldon-core-${{package.version}}.tar.gz
+      repository: https://github.com/SeldonIO/seldon-core/
+      tag: v${{package.version}}
+      expected-commit: 116fd011badbf0d29811eb819ccea012c98df920
 
-  - name: Python Build
-    runs: python setup.py build
-
-  - name: Python Install
-    runs: python setup.py install --prefix=/usr --root="${{targets.destdir}}"
+  - working-directory: python
+    pipeline:
+      - name: Python Build
+        runs: python setup.py build
+      - name: Python Install
+        runs: |
+          python setup.py install --prefix=/usr --root="${{targets.destdir}}"
+          find ${{targets.destdir}} -name 'tests' -exec rm -rf '{}' +
 
   - uses: strip
+
+subpackages:
+  - name: seldon-core-operator-fips
+    description: ""
+    pipeline:
+      - working-directory: /home/build/operator
+        runs: |
+          mkdir -p ${{targets.subpkgdir}}/usr/bin/
+          go build -o bin/manager main.go
+          install -Dm755 ./bin/manager ${{targets.subpkgdir}}/usr/bin/manager
 
 update:
   enabled: false
