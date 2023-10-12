@@ -1,14 +1,12 @@
 #nolint:valid-pipeline-fetch-digest
 package:
-  name: ingress-nginx-controller-fips-1.8
-  version: 1.8.2
-  epoch: 2
+  name: ingress-nginx-controller-fips
+  version: 1.9.3
+  epoch: 0
   description: "Ingress-NGINX Controller for Kubernetes"
   copyright:
     - license: Apache-2.0
   dependencies:
-    provides:
-      - ingress-nginx-controller-fips=1.8
     runtime:
       - ca-certificates-bundle
       - ca-certificates
@@ -52,62 +50,40 @@ environment:
     keyring:
       - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
     packages:
-      - wolfi-base
-      - busybox
-      - go-fips
+      - autoconf
+      - automake
       - bash
+      - bison
+      - brotli-dev
+      - busybox
+      - ca-certificates
+      - ca-certificates-bundle
+      - clang-15
+      - cmake
       - curl
       - curl-dev
-      - git
-      - openssh-client
-      - libcap-utils
-      - libcap
-      - scanelf
-      - ca-certificates-bundle
-      - brotli-dev
+      - doxygen
+      - findutils
+      - flex
+      - gcc
       - gd-dev
       - geoip-dev
+      - git
+      - go-fips
+      - libaio-dev
+      - libcap
+      - libcap-utils
+      - libedit-dev
       - libmaxminddb-dev
+      - libprotobuf
+      - libsrt
+      - libtool
+      - libxml2
       - libxml2-dev
       - libxslt-dev
-      - pkgconf
-      - zeromq-dev
-      - gcc
-      - clang-15
-      - make
-      - automake
-      - openssl-dev
-      - pcre-dev
-      - zlib-dev
       - linux-headers
-      - perl-dev
-      - libedit-dev
-      - mercurial
-      - findutils
-      - ca-certificates
-      - patch
-      - libaio-dev
-      - openssl
-      - cmake
-      - util-linux
-      - lmdb-tools
-      - wget
-      - libprotobuf
-      - flex
-      - bison
-      - doxygen
-      - yajl-dev
       - lmdb-dev
-      - libtool
-      - autoconf
-      - libxml2
-      - python3
-      - libsrt
-      - msgpack
-      - yaml-cpp
-      - ssdeep
-      - luajit
-      - luajit-dev
+      - lmdb-tools
       - lua-cjson
       - lua-resty-balancer
       - lua-resty-cache
@@ -122,30 +98,52 @@ environment:
       - lua-resty-redis
       - lua-resty-string
       - lua-resty-upload
-      - modsecurity
+      - luajit
+      - luajit-dev
+      - make
+      - mercurial
       - mimalloc
+      - modsecurity
+      - msgpack
+      - openssh-client
+      - openssl
+      - openssl-dev
+      - patch
+      - pcre-dev
+      - perl-dev
+      - pkgconf
+      - python3
+      - scanelf
+      - ssdeep
+      - util-linux
+      - wget
+      - wolfi-base
+      - yajl-dev
+      - yaml-cpp
+      - zeromq-dev
+      - zlib-dev
 
 vars:
-  NGINX_VERSION: "1.21.6"
-  NDK_VERSION: "0.3.1"
+  NGINX_VERSION: "1.25.2"
+  NDK_VERSION: "0.3.2"
   SETMISC_VERSION: "0.33"
-  MORE_HEADERS_VERSION: "0.33"
+  MORE_HEADERS_VERSION: "0.34"
   NGINX_DIGEST_AUTH: "1.0.0"
-  NGINX_SUBSTITUTIONS: "b8a71eacc7f986ba091282ab8b1bbbc6ae1807e0"
+  NGINX_SUBSTITUTIONS: "e12e965ac1837ca709709f9a26f572a54d83430e"
   MODSECURITY_NGINX_VERSION: "1.0.3"
-  OWASP_MODSECURITY_CRS_VERSION: "v3.3.2"
+  OWASP_MODSECURITY_CRS_VERSION: "v3.3.5"
   LUA_NGX_VERSION: "0.10.25"
   LUA_STREAM_NGX_VERSION: "0.0.13"
-  LUA_UPSTREAM_VERSION: "8aa93ead98ba2060d4efd594ae33a35d153589bf"
-  GEOIP2_VERSION: "a26c6beed77e81553686852dceb6c7fdacc5970d"
-  NGX_BROTLI_SHA: 63ca02abdcf79c9e788d2eedcc388d2335902e52
+  LUA_UPSTREAM_VERSION: "dba0beaaeb0eaed758af3f4dc0c0464adeaedb1c"
+  GEOIP2_VERSION: "a607a41a8115fecfc05b5c283c81532a3d605425"
+  NGX_BROTLI_SHA: a71f9312c2deb28875acc7bacfdd5695a111aa53
 
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/kubernetes/ingress-nginx
       tag: controller-v${{package.version}}
-      expected-commit: da9c5730f669d4bcad5c7146a644796cb7c24ee5
+      expected-commit: 895bb1511d34cb1331e1a32055199f964338ece5
 
   - name: Build ingress-nginx controller from source
     runs: |
@@ -157,28 +155,22 @@ pipeline:
 
       export CGO_ENABLED=0
 
-      # Remove patch version in go.mod.
-      #
-      # Go 1.21 puts the patch version in go.mod, making
-      # the go.mod file not compatible with older Go versions.
-      sed -i "s/go 1\.21\.1/go 1.21/g" go.mod
-
       go build -x -v \
-      -trimpath -ldflags="-buildid= -w  \
+      -trimpath -ldflags="-buildid= -w \
       -X ${PKG}/version.RELEASE=controller-v${{package.version}} \
       -X ${PKG}/version.COMMIT=${COMMIT_SHA} \
       -X ${PKG}/version.REPO=${REPO_INFO}" \
       -o "${{targets.destdir}}/usr/bin/nginx-dbg" ${PKG}/cmd/dbg
 
       go build -x -v \
-      -trimpath -ldflags="-buildid= -w  \
+      -trimpath -ldflags="-buildid= -w \
       -X ${PKG}/version.RELEASE=controller-v${{package.version}} \
       -X ${PKG}/version.COMMIT=${COMMIT_SHA} \
       -X ${PKG}/version.REPO=${REPO_INFO}" \
       -o "${{targets.destdir}}/usr/bin/waitshutdown" ${PKG}/cmd/waitshutdown
 
       go build -x -v \
-      -trimpath -ldflags="-buildid= -w  \
+      -trimpath -ldflags="-buildid= -w \
       -X ${PKG}/version.RELEASE=controller-v${{package.version}} \
       -X ${PKG}/version.COMMIT=${COMMIT_SHA} \
       -X ${PKG}/version.REPO=${REPO_INFO}" \
@@ -187,16 +179,18 @@ pipeline:
       setcap cap_net_bind_service=+ep ${{targets.destdir}}/usr/bin/nginx-ingress-controller \
       && setcap -v cap_net_bind_service=+ep ${{targets.destdir}}/usr/bin/nginx-ingress-controller
 
+      getcap ${{targets.destdir}}/usr/bin/nginx-ingress-controller
+
   - uses: fetch
     with:
       uri: https://nginx.org/download/nginx-${{vars.NGINX_VERSION}}.tar.gz
-      expected-sha256: 66dc7081488811e9f925719e34d1b4504c2801c81dee2920e5452a86b11405ae
+      expected-sha256: 05dd6d9356d66a74e61035f2a42162f8c754c97cf1ba64e7a801ba158d6c0711
       strip-components: 0
 
   - uses: fetch
     with:
       uri: https://github.com/simpl/ngx_devel_kit/archive/v${{vars.NDK_VERSION}}.tar.gz
-      expected-sha256: 0e971105e210d272a497567fa2e2c256f4e39b845a5ba80d373e26ba1abfbd85
+      expected-sha256: aa961eafb8317e0eb8da37eb6e2c9ff42267edd18b56947384e719b85188f58b
       strip-components: 0
 
   - uses: fetch
@@ -211,13 +205,13 @@ pipeline:
   - uses: fetch
     with:
       uri: https://github.com/openresty/headers-more-nginx-module/archive/v${{vars.MORE_HEADERS_VERSION}}.tar.gz
-      expected-sha256: a3dcbab117a9c103bc1ea5200fc00a7b7d2af97ff7fd525f16f8ac2632e30fbf
+      expected-sha256: 0c0d2ced2ce895b3f45eb2b230cd90508ab2a773299f153de14a43e44c1209b3
       strip-components: 0
 
   - uses: fetch
     with:
       uri: https://github.com/yaoweibin/ngx_http_substitutions_filter_module/archive/${{vars.NGINX_SUBSTITUTIONS}}.tar.gz
-      expected-sha256: a98b48947359166326d58700ccdc27256d2648218072da138ab6b47de47fbd8f
+      expected-sha256: da2a26aa75884e1216941c7291b6e8b7fc4dd7163700a04191b92060b61fabb3
       strip-components: 0
 
   - uses: fetch
@@ -235,7 +229,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://github.com/openresty/lua-upstream-nginx-module/archive/${{vars.LUA_UPSTREAM_VERSION}}.tar.gz
-      expected-sha256: a92c9ee6682567605ece55d4eed5d1d54446ba6fba748cff0a2482aea5713d5f
+      expected-sha256: e0baff472e1e8820d355701890f0c075ea0f0ba4ba6ca975f896912ae3b815c2
       strip-components: 0
 
   - uses: fetch
@@ -253,7 +247,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://github.com/leev/ngx_http_geoip2_module/archive/${{vars.GEOIP2_VERSION}}.tar.gz
-      expected-sha256: 4c1933434572226942c65b2f2b26c8a536ab76aa771a3c7f6c2629faa764976b
+      expected-sha256: b6c9c09fd43eb34a71e706ad780b2ead26549a9a9f59280fe558f5b7b980b7c6
       strip-components: 0
 
   - runs: |
@@ -342,15 +336,6 @@ pipeline:
       echo "::::::::::::::::::::::::::::::::::::::"
 
       cd "$BUILD_PATH/nginx-${{vars.NGINX_VERSION}}"
-      # apply nginx patches
-      for PATCH in `ls $BUILD_PATH/patches`;do
-        echo "Patch: $PATCH"
-        if [[ "$PATCH" == *.txt ]]; then
-          patch -p0 < $BUILD_PATH/patches/$PATCH
-        else
-          patch -p1 < $BUILD_PATH/patches/$PATCH
-        fi
-      done
 
       WITH_FLAGS="--with-debug \
       --with-compat \
@@ -455,10 +440,12 @@ pipeline:
       echo "::::::::::::::::::::::::::::::::::::::::::"
       echo ":::: SETCAP NGINX                     ::::"
       echo "::::::::::::::::::::::::::::::::::::::::::"
+
       mkdir -p ${{targets.destdir}}/usr/bin
       mv ${{targets.destdir}}/usr/sbin/nginx ${{targets.destdir}}/usr/bin/
       rm -rf ${{targets.destdir}}/usr/html
       rm -rf ${{targets.destdir}}/usr/sbin
+
       setcap cap_net_bind_service=+ep ${{targets.destdir}}/usr/bin/nginx \
         && setcap -v cap_net_bind_service=+ep ${{targets.destdir}}/usr/bin/nginx
 
@@ -481,11 +468,9 @@ pipeline:
   - uses: strip
 
 subpackages:
-  - name: ingress-nginx-controller-fips-1.8-compat
+  - name: ingress-nginx-controller-fips-compat
     description: Compatibility package for ingress-nginx-controller-fips
     dependencies:
-      provides:
-        - ingress-nginx-controller-fips-compat=1.8
       runtime:
         - modsecurity-config
     pipeline:
@@ -507,10 +492,15 @@ subpackages:
           ln -sf /dev/stdout ${{targets.subpkgdir}}/var/log/nginx/access.log
           ln -sf /dev/stderr ${{targets.subpkgdir}}/var/log/nginx/error.log
 
+          # symlink to satisfy hard coded path to mimalloc
+          # https://github.com/kubernetes/ingress-nginx/blob/8f54b538d9b32649411d9e507ca38fbee55ce51c/charts/ingress-nginx/templates/controller-daemonset.yaml#L99-L100
+          mkdir -p ${{targets.subpkgdir}}/usr/local/lib
+          ln -s /usr/lib/libmimalloc.so.1 ${{targets.subpkgdir}}/usr/local/lib/libmimalloc.so
+
 update:
   enabled: true
   github:
     identifier: kubernetes/ingress-nginx
     strip-prefix: controller-v
     use-tag: true
-    tag-filter: "controller-v1.8"
+    tag-filter: "controller-v"
