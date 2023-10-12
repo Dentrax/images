@@ -2,7 +2,7 @@
 package:
   name: py3-seldon-core-1.16
   version: 1.16.0
-  epoch: 1
+  epoch: 2
   description: Seldon Core client and microservice wrapper
   copyright:
     - license: Apache 2.0
@@ -76,6 +76,15 @@ subpackages:
           mkdir -p ${{targets.subpkgdir}}/usr/bin/
           go build -o bin/manager main.go
           install -Dm755 ./bin/manager ${{targets.subpkgdir}}/usr/bin/manager
+
+  - name: seldon-core-operator-compat
+    description: "Compatibility package to place binaries in the location expected by upstream helm charts"
+    pipeline:
+      - runs: |
+          # The helm chart expects the binary to be in / instead of /usr/bin
+          mkdir -p "${{targets.subpkgdir}}"
+          ln -sf /usr/bin/manager ${{targets.subpkgdir}}/manager
+      - uses: strip
 
 update:
   enabled: false
