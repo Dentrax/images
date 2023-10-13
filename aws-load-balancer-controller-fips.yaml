@@ -1,7 +1,7 @@
 package:
   name: aws-load-balancer-controller-fips
   version: 2.6.1
-  epoch: 1
+  epoch: 2
   description: A Kubernetes controller for Elastic Load Balancers
   copyright:
     - license: Apache-2.0
@@ -27,6 +27,10 @@ pipeline:
       expected-commit: 5a5885bfbd3c7237ac190859fe0f20e96c95f1f2
 
   - runs: |
+      # Mitigate CVE-2023-39325, CVE-2023-3978
+      go get golang.org/x/net@v0.17.0
+      go mod tidy
+
       # https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/Dockerfile#L18-L27
       VERSION_PKG=sigs.k8s.io/aws-load-balancer-controller/pkg/version
       GIT_VERSION=$(git describe --tags --dirty --always) && \
