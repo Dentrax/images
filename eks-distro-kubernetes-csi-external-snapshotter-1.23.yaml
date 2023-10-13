@@ -2,7 +2,7 @@ package:
   name: eks-distro-kubernetes-csi-external-snapshotter-1.23
   # -distro/kubernetes-csi/external-snapshotter/csi-snapshotter:v6.2.1-eks-1-23-21
   version: 1.23.28
-  epoch: 1
+  epoch: 2
   description: Sidecar container that watches Kubernetes Snapshot CRD objects and triggers CreateSnapshot/DeleteSnapshot against a CSI endpoint.
   copyright:
     - license: Apache-2.0
@@ -39,6 +39,10 @@ pipeline:
       expected-commit: 812b1f578c7fab972604fa4d5796da5213e6e7ca
 
   - runs: |
+      # Mitigate CVE-2023-39325, CVE-2023-3978
+      go get golang.org/x/net@v0.17.0
+      go mod tidy
+
       make makes-binaries-kubernetes-csi_external-snapshotter
       mkdir -p "${{targets.destdir}}"/usr/bin
       ARCH=$(go env GOARCH)

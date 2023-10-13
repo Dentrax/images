@@ -1,7 +1,7 @@
 package:
   name: eks-distro-kubernetes-csi-external-attacher-1.25
   version: 1.25.14
-  epoch: 1
+  epoch: 2
   description: Sidecar container that watches Kubernetes VolumeAttachment objects and triggers ControllerPublish/Unpublish against a CSI endpoint
   copyright:
     - license: Apache-2.0
@@ -38,6 +38,10 @@ pipeline:
       expected-commit: 5d743708a94b702dd19e1c623b8bdc38b78d3659
 
   - runs: |
+      # Mitigate CVE-2023-39325, CVE-2023-3978
+      go get golang.org/x/net@v0.17.0
+      go mod tidy
+
       make makes-binaries-kubernetes-csi_external-attacher
       mkdir -p "${{targets.destdir}}"/usr/bin
       ARCH=$(go env GOARCH)
