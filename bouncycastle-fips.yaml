@@ -1,0 +1,37 @@
+package:
+  name: bouncycastle-fips
+  version: 1.0.2.4
+  epoch: 0
+  description: BouncyCastle FIPS APIs
+  copyright:
+    - license: MIT
+  dependencies:
+    runtime:
+      - bouncycastle-pkix-fips
+      - bouncycastle-tls-fips
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://downloads.bouncycastle.org/fips-java/bc-fips-${{package.version}}.jar
+      expected-sha512: 59df1c42aa208db7d1fa703cb8a98e0929363e117045e0972bf0f0c1983a6f961669a18d51e8e91712d1572050fd480948c60c751deb72c16358495433f0846d
+      extract: false
+
+  - runs: |
+      mkdir -p ${{targets.destdir}}/usr/share/java/bouncycastle-fips
+      cp bc-fips-${{package.version}}.jar ${{targets.destdir}}/usr/share/java/bouncycastle-fips/bc-fips.jar
+
+# We don't build these packages from source due to signing and licensing issues.
+# Therefore, we cannot automatically upgrade them based on GitHub tags/releases
+# and/or release-monitoring.org
+update:
+  enabled: false

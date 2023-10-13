@@ -1,0 +1,33 @@
+package:
+  name: bouncycastle-pkix-fips
+  version: 1.0.6
+  epoch: 0
+  description: BouncyCastle FIPS PKIX APIs
+  copyright:
+    - license: MIT
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://downloads.bouncycastle.org/fips-java/bcpkix-fips-${{package.version}}.jar
+      expected-sha512: 564fa4ad08eb33534b53d29f7abf5ef5e2b9d20a33015bd618f7d80e46b6d16ac6b5a0b975ddd4fa87f2287dd47a5ec35aedd4b58bcbc138ead0d4a77beeda11
+      extract: false
+
+  - runs: |
+      mkdir -p ${{targets.destdir}}/usr/share/java/bouncycastle-fips
+      cp bcpkix-fips-${{package.version}}.jar ${{targets.destdir}}/usr/share/java/bouncycastle-fips/bcpkix-fips.jar
+
+# We don't build these packages from source due to signing and licensing issues.
+# Therefore, we cannot automatically upgrade them based on GitHub tags/releases
+# and/or release-monitoring.org
+update:
+  enabled: false
