@@ -1,7 +1,7 @@
 package:
   name: kube-logging-logging-operator-3.17
   version: 3.17.11
-  epoch: 2
+  epoch: 3
   description: Logging operator for Kubernetes
   copyright:
     - license: Apache-2.0
@@ -32,6 +32,9 @@ pipeline:
 
       # Address GHSA-3vm4-22fp-5rfm, GHSA-gwc9-m7rh-j2ww and GHSA-8c26-wmh5-6g9v
       go get golang.org/x/crypto@1baeb1ce4c0b
+
+      # CVE-2023-39325 and CVE-2023-3978
+      go get golang.org/x/net@v0.17.0
 
       go mod tidy -compat=1.17
 
