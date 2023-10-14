@@ -1,8 +1,8 @@
 package:
   name: eks-distro-kubernetes-csi-external-snapshotter-1.23
   # -distro/kubernetes-csi/external-snapshotter/csi-snapshotter:v6.2.1-eks-1-23-21
-  version: 1.23.28
-  epoch: 2
+  version: 1.23.32
+  epoch: 0
   description: Sidecar container that watches Kubernetes Snapshot CRD objects and triggers CreateSnapshot/DeleteSnapshot against a CSI endpoint.
   copyright:
     - license: Apache-2.0
@@ -10,15 +10,14 @@ package:
     provides:
       - eks-distro-kubernetes-csi-external-snapshotter=1.23
 
+vars:
+  eks-project: kubernetes-csi/external-snapshotter
+
 var-transforms:
   - from: ${{package.version}}
-    match: \.(\d+)$
-    replace: -eks-$1
-    to: with-eks-package-version
-  - from: ${{vars.with-eks-package-version}}
-    match: \.
-    replace: '-'
-    to: mangled-package-version
+    match: ^(\d+)\.(\d+)\.(\d+)$
+    replace: $1-$2-eks-$3
+    to: eks-package-version
 
 environment:
   contents:
@@ -26,53 +25,59 @@ environment:
       - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
     repositories:
       - https://packages.wolfi.dev/os
-    packages:
-      - ca-certificates-bundle
-      - busybox
-      - go
 
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/aws/eks-distro
-      tag: v${{vars.mangled-package-version}}
-      expected-commit: 812b1f578c7fab972604fa4d5796da5213e6e7ca
+      tag: v${{vars.eks-package-version}}
+      expected-commit: 82cd6d02fb88fb6bd06e2ec78386974e3bebc44b
 
-  - runs: |
-      # Mitigate CVE-2023-39325, CVE-2023-3978
-      go get golang.org/x/net@v0.17.0
-      go mod tidy
+  - uses: eks-distro/build
+    with:
+      eks-project: ${{vars.eks-project}}
+      eks-package-version: ${{vars.eks-package-version}}
+      # # Mitigate CVE-2023-39325
+      deps: golang.org/x/net@v0.17.0
 
-      make makes-binaries-kubernetes-csi_external-snapshotter
-      mkdir -p "${{targets.destdir}}"/usr/bin
-      ARCH=$(go env GOARCH)
-      OS=$(go env GOOS)
-      cp ./projects/kubernetes-csi/external-snapshotter/_output/1-27/bin/external-snapshotter/${OS}-${ARCH}/csi-snapshotter "${{targets.destdir}}"/usr/bin/csi-snapshotter
+  - uses: eks-distro/install
+    with:
+      eks-project: ${{vars.eks-project}}
+      eks-package-version: ${{vars.eks-package-version}}
+      binary-target: csi-snapshotter
 
   - uses: strip
 
 subpackages:
   - name: eks-distro-kubernetes-csi-external-snapshot-controller-1.23
     pipeline:
-      - runs: |
-          mkdir -p ${{targets.subpkgdir}}/usr/bin
-          ARCH=$(go env GOARCH)
-          OS=$(go env GOOS)
-          cp ./projects/kubernetes-csi/external-snapshotter/_output/1-27/bin/external-snapshotter/${OS}-${ARCH}/snapshot-controller "${{targets.subpkgdir}}"/usr/bin/snapshot-controller
+      - uses: eks-distro/install
+        with:
+          eks-project: ${{vars.eks-project}}
+          eks-package-version: ${{vars.eks-package-version}}
+          binary-target: snapshot-controller
     dependencies:
       provides:
         - eks-distro-kubernetes-csi-external-snapshot-controller=1.23
 
   - name: eks-distro-kubernetes-csi-external-snapshot-validation-webhook-1.23
     pipeline:
-      - runs: |
-          mkdir -p ${{targets.subpkgdir}}/usr/bin
-          ARCH=$(go env GOARCH)
-          OS=$(go env GOOS)
-          cp ./projects/kubernetes-csi/external-snapshotter/_output/1-27/bin/external-snapshotter/${OS}-${ARCH}/snapshot-validation-webhook "${{targets.subpkgdir}}"/usr/bin/snapshot-validation-webhook
+      - uses: eks-distro/install
+        with:
+          eks-project: ${{vars.eks-project}}
+          eks-package-version: ${{vars.eks-package-version}}
+          binary-target: snapshot-validation-webhook
     dependencies:
       provides:
         - eks-distro-kubernetes-csi-external-snapshot-validation-webhook=1.23
 
 update:
-  manual: true # we need to manually update because melange bump doesn't yet handle pipeline mutations for var transforms
+  enabled: true
+  version-transform:
+    - match: (\d+)-(\d+)-eks-(\d+)
+      replace: $1.$2.$3
+  github:
+    identifier: aws/eks-distro
+    strip-prefix: v
+    tag-filter: v1-23
+    use-tag: true

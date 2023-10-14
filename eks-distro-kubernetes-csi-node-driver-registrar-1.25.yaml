@@ -1,7 +1,7 @@
 package:
   name: eks-distro-kubernetes-csi-node-driver-registrar-1.25
-  version: 1.25.14
-  epoch: 2
+  version: 1.25.23
+  epoch: 0
   description: Sidecar container that registers a CSI driver with the kubelet using the kubelet plugin registration mechanism.
   copyright:
     - license: Apache-2.0
@@ -9,15 +9,14 @@ package:
     provides:
       - eks-distro-kubernetes-csi-node-driver-registrar=1.25
 
+vars:
+  eks-project: kubernetes-csi/node-driver-registrar
+
 var-transforms:
   - from: ${{package.version}}
-    match: \.(\d+)$
-    replace: -eks-$1
-    to: with-eks-package-version
-  - from: ${{vars.with-eks-package-version}}
-    match: \.
-    replace: '-'
-    to: mangled-package-version
+    match: ^(\d+)\.(\d+)\.(\d+)$
+    replace: $1-$2-eks-$3
+    to: eks-package-version
 
 environment:
   contents:
@@ -25,30 +24,36 @@ environment:
       - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
     repositories:
       - https://packages.wolfi.dev/os
-    packages:
-      - ca-certificates-bundle
-      - busybox
-      - go
 
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/aws/eks-distro
-      tag: v${{vars.mangled-package-version}}
-      expected-commit: 5d743708a94b702dd19e1c623b8bdc38b78d3659
+      tag: v${{vars.eks-package-version}}
+      expected-commit: cb398316fd4c0fc610940fd855578f4f3d7b0212
 
-  - runs: |
-      # Mitigate CVE-2023-39325, CVE-2023-3978
-      go get golang.org/x/net@v0.17.0
-      go mod tidy
+  - uses: eks-distro/build
+    with:
+      eks-project: ${{vars.eks-project}}
+      eks-package-version: ${{vars.eks-package-version}}
+      # Mitigate CVE-2023-39325
+      deps: golang.org/x/net@v0.17.0
 
-      make makes-binaries-kubernetes-csi_node-driver-registrar
-      mkdir -p "${{targets.destdir}}"/usr/bin
-      ARCH=$(go env GOARCH)
-      OS=$(go env GOOS)
-      cp ./projects/kubernetes-csi/node-driver-registrar/_output/1-26/bin/node-driver-registrar/${OS}-${ARCH}/csi-node-driver-registrar "${{targets.destdir}}"/usr/bin/csi-node-driver-registrar
+  - uses: eks-distro/install
+    with:
+      eks-project: ${{vars.eks-project}}
+      eks-package-version: ${{vars.eks-package-version}}
+      binary-target: csi-node-driver-registrar
 
   - uses: strip
 
 update:
-  manual: true # we need to manually update because melange bump doesn't yet handle pipeline mutations for var transforms
+  enabled: true
+  version-transform:
+    - match: (\d+)-(\d+)-eks-(\d+)
+      replace: $1.$2.$3
+  github:
+    identifier: aws/eks-distro
+    strip-prefix: v
+    tag-filter: v1-25
+    use-tag: true
