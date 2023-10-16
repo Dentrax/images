@@ -1,7 +1,7 @@
 package:
   name: elasticsearch-8
   version: 8.10.3
-  epoch: 0
+  epoch: 1
   description:
   copyright:
     - license: SSPL
@@ -9,6 +9,8 @@ package:
     runtime:
       - bash # some helper scripts use bashw
       - elasticsearch-config
+      - openjdk-17-jre
+      - openjdk-17-default-jvm
     provides:
       - elasticsearch=${{package.full-version}}
 
@@ -53,7 +55,6 @@ pipeline:
       mv distribution/archives/${BUILD_DIR}/build/install/elasticsearch-${{package.version}}-SNAPSHOT/config ${{targets.destdir}}/usr/share/elasticsearch
       mv distribution/archives/${BUILD_DIR}/build/install/elasticsearch-${{package.version}}-SNAPSHOT/modules ${{targets.destdir}}/usr/share/elasticsearch
       mv distribution/archives/${BUILD_DIR}/build/install/elasticsearch-${{package.version}}-SNAPSHOT/plugins ${{targets.destdir}}/usr/share/elasticsearch
-      mv distribution/archives/${BUILD_DIR}/build/install/elasticsearch-${{package.version}}-SNAPSHOT/jdk ${{targets.destdir}}/usr/share/elasticsearch
 
       # Grab the docker entrypoint from the source tree
       mv ./distribution/docker/src/docker/bin/docker-entrypoint.sh  ${{targets.destdir}}/usr/share/elasticsearch/bin
