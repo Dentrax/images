@@ -1,6 +1,6 @@
 package:
-  name: elasticsearch
-  version: 8.10.3
+  name: elasticsearch-7
+  version: "7.17.14"
   epoch: 0
   description:
   copyright:
@@ -8,6 +8,9 @@ package:
   dependencies:
     runtime:
       - bash # some helper scripts use bashw
+      - elasticsearch-config
+    provides:
+      - elasticsearch=${{package.full-version}}
 
 environment:
   contents:
@@ -27,7 +30,7 @@ pipeline:
     with:
       repository: https://github.com/elastic/elasticsearch
       tag: v${{package.version}}
-      expected-commit: c63272efed16b5a1c25f3ce500715b7fddf9a9fb
+      expected-commit: 774e3bfa4d52e2834e4d9d8d669d77e4e5c1017f
 
   - runs: |
       export LANG=en_US.UTF-8
@@ -63,6 +66,9 @@ pipeline:
         ln -sf /usr/share/elasticsearch/bin/$name ${{targets.destdir}}/usr/bin/$name
       done
 
+      # We get this from elasticsearch-config
+      mv ${{targets.destdir}}/usr/share/elasticsearch/config/elasticsearch.yml ${{targets.destdir}}/usr/share/elasticsearch/config/elasticsearch.example.yml
+
       # Manually set this to docker: https://github.com/elastic/elasticsearch/blob/58f45eabb116b245a0e607dbd900173ecfd46a0f/distribution/docker/src/docker/Dockerfile#L105
       sed -i -e 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/'  ${{targets.destdir}}/usr/share/elasticsearch/bin/elasticsearch-env
 
@@ -71,3 +77,4 @@ update:
   github:
     identifier: elastic/elasticsearch
     strip-prefix: v
+    tag-filter: v7.
