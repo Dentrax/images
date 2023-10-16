@@ -28,7 +28,7 @@ jobs:
     - name: Check
       id: check
       if: ${{ steps.files.outputs.all_changed_files != '' }}
-      uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:e367609d116f9bdc9f17f66c9d366cb0d19ad0d8d6701a8a875aa18d870a06b7
+      uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:b725fb7c467afff4144134ba739981cd0cfc660cfae1d836ebebee72f9024dca
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
