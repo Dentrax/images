@@ -12,11 +12,11 @@ jobs:
   build:
     name: Test building of packages
     runs-on:
-      group: cgi-builder-spot-${{ matrix.arch }}
+      group: cgi-builder-${{ matrix.arch }}
 
     strategy:
       matrix:
-        arch: [ "x86_64", "aarch64" ]
+        arch: ["x86_64", "aarch64"]
       fail-fast: false
 
     container:
@@ -38,10 +38,10 @@ jobs:
       - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          submodules: 'recursive'
+          submodules: "recursive"
           token: ${{ secrets.ENTERPRISE_GRAFANA_REPO_ACCESS }}
 
-      - name: 'Trust the github workspace'
+      - name: "Trust the github workspace"
         run: |
           # This is to avoid fatal errors about "dubious ownership" because we are
           # running inside of a container action with the workspace mounted in.
@@ -82,12 +82,12 @@ jobs:
         with:
           project_id: ${{ env.PROJECT }}
 
-      - name: 'Generate local signing key'
+      - name: "Generate local signing key"
         if: steps.changes.outputs.change == 'true'
         run: |
           make MELANGE="melange" local-melange-enterprise.rsa
 
-      - name: 'Sync public package repository'
+      - name: "Sync public package repository"
         if: steps.changes.outputs.change == 'true'
         run: |
           mkdir -p "./packages/${{ matrix.arch }}"
@@ -98,7 +98,7 @@ jobs:
 
           gsutil cp gs://chainguard-enterprise-registry-destination/os/chainguard-enterprise.rsa.pub "./packages/"
 
-      - name: 'Build Enterprise packages'
+      - name: "Build Enterprise packages"
         if: steps.changes.outputs.change == 'true'
         run: |
           make --debug MELANGE_EXTRA_OPTS="--create-build-log --keyring-append ./packages/chainguard-enterprise.rsa.pub" REPO="./packages" -j1 all
