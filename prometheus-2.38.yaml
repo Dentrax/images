@@ -84,6 +84,25 @@ pipeline:
 
   - uses: strip
 
+subpackages:
+  - name: ${{package.name}}-bitnami-compat
+    description: "compat package with bitnami/prometheus image"
+    pipeline:
+      - uses: bitnami/compat
+        with:
+          image: prometheus
+          version-path: 2/debian-11
+      - runs: |
+          mkdir -p ${{targets.subpkgdir}}/opt/bitnami/prometheus/bin/
+          mkdir -p ${{targets.subpkgdir}}/opt/bitnami/prometheus/conf
+
+          chmod g+rwX ${{targets.subpkgdir}}/opt/bitnami
+
+          cp ${{targets.destdir}}/usr/bin/prometheus ${{targets.subpkgdir}}/opt/bitnami/prometheus/bin/prometheus
+          cp ${{targets.destdir}}/usr/bin/promtool ${{targets.subpkgdir}}/opt/bitnami/prometheus/bin/promtool
+          cp -r ${{targets.destdir}}/etc/prometheus/* ${{targets.subpkgdir}}/opt/bitnami/prometheus/conf/
+          cp -r ${{targets.destdir}}/var/lib/prometheus/data ${{targets.subpkgdir}}/opt/bitnami/prometheus/data
+
 update:
   enabled: true
   github:
