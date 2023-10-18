@@ -1,0 +1,59 @@
+package:
+  name: openjdk-17-bcfips
+  version: 17.0.9.7 # same version as our public one
+  epoch: 0
+  description: FIPS version of the OpenJDK package using BouncyCastle crypto APIs
+  copyright:
+    - license: GPL-2.0-only
+    - license: MIT # BouncyCastle is licensed under the BouncyCastle License but their license state it is to be read as MIT: https://www.bouncycastle.org/license.html
+  dependencies:
+    runtime:
+      - openjdk-17
+      - openjdk-17-default-jvm
+      - bouncycastle-fips
+    provides:
+      - jdk-fips=${{package.full-version}}
+
+var-transforms:
+  - from: ${{package.version}}
+    match: ^(\d+).*
+    replace: $1
+    to: major-version
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - bash
+      - openjdk-17
+      - openjdk-17-default-jvm
+      - bouncycastle-fips
+
+pipeline:
+  - name: Create the FIPS configuration
+    runs: |
+      DESTDIR="${{targets.destdir}}" ./create-config.sh
+
+  - name: Test the overall setup
+    runs: |
+      DESTDIR="${{targets.destdir}}" VERSION="${{vars.major-version}}" ./test.sh
+
+subpackages:
+  - name: openjdk-17-jre-bcfips
+    description: FIPS version of OpenJDK 17 Java Runtime Environment with BouncyCastle crypto APIs
+    dependencies:
+      runtime:
+        - openjdk-17-jre
+        - bouncycastle-fips
+      provides:
+        - jre-fips=${{package.full-version}}
+    pipeline:
+      - runs: |
+          DESTDIR="${{targets.destdir}}" ./create-config.sh
+
+update:
+  enabled: false
