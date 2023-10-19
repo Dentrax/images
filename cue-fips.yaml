@@ -1,0 +1,80 @@
+package:
+  name: cue-fips
+  version: 0.6.0
+  epoch: 0
+  description: The home of the CUE language! Validate and define text-based and dynamic configuration
+  copyright:
+    - license: Apache-2.0
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - go-fips
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://github.com/cue-lang/cue/archive/v${{package.version}}/v${{package.version}}.tar.gz
+      expected-sha256: 8e884d9cf6138e05136ba7110ddd5ec20a312ed0d75868dc0a2fdb235e69f5e1
+
+  - runs: |
+      # Mitigate CVE-2023-3978, CVE-2023-39325 and CVE-2023-44487
+      go get golang.org/x/net@v0.17.0
+
+      CGO_ENABLED=0 go build \
+        -trimpath -ldflags "-w -buildid= -X cuelang.org/go/cmd/cue/cmd.version=${{package.version}}" \
+        -o "${{targets.destdir}}/usr/bin/cue" ./cmd/cue
+      mkdir -p ${{targets.destdir}}/usr/share/bash-completion/completions
+      mkdir -p ${{targets.destdir}}/usr/share/zsh/site-functions
+      mkdir -p ${{targets.destdir}}/usr/share/fish/vendor_completions.d
+
+  - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: cue-lang/cue
+    strip-prefix: v
+
+subpackages:
+  - name: cue-bash-completion-fips
+    description: bash completion for cue
+    pipeline:
+      - runs: |
+          set -x
+          mkdir -p "${{targets.subpkgdir}}/usr/share/bash-completion/completions"
+          ${{targets.destdir}}/usr/bin/cue completion bash > ${{targets.subpkgdir}}/usr/share/bash-completion/completions/cue
+    dependencies:
+      runtime:
+        - cue-fips
+
+  - name: cue-zsh-completion-fips
+    description: zsh completion for cue
+    pipeline:
+      - runs: |
+          set -x
+          mkdir -p "${{targets.subpkgdir}}/usr/share/zsh/site-functions"
+          ${{targets.destdir}}/usr/bin/cue completion zsh > ${{targets.subpkgdir}}/usr/share/zsh/site-functions/_cue
+    dependencies:
+      runtime:
+        - cue-fips
+
+  - name: cue-fish-completion-fips
+    description: fish completion for cue
+    pipeline:
+      - runs: |
+          set -x
+          mkdir -p "${{targets.subpkgdir}}/usr/share/fish/vendor_completions.d"
+          ${{targets.destdir}}/usr/bin/cue completion fish > ${{targets.subpkgdir}}/usr/share/fish/vendor_completions.d/cue.fish
+    dependencies:
+      runtime:
+        - cue-fips
