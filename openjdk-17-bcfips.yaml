@@ -53,7 +53,7 @@ subpackages:
         - jre-fips=${{package.full-version}}
     pipeline:
       - runs: |
-          DESTDIR="${{targets.destdir}}" ./create-config.sh
+          DESTDIR="${{targets.subpkgdir}}" ./create-config.sh
 
 update:
   enabled: false
