@@ -8,6 +8,9 @@ on:
         description: Do not actually remove package
         default: false
 
+# Don't withdraw during builds, to prevent out of sync signatures.
+concurrency: build
+
 env:
   PROJECT: prod-images-c6e5
   FQ_SERVICE_ACCOUNT: prod-images-ci@prod-images-c6e5.iam.gserviceaccount.com

@@ -10,8 +10,7 @@ on:
   workflow_dispatch:
 
 # Only run one build at a time to prevent out of sync signatures
-concurrency:
-  group: build-${{ github.ref }}
+concurrency: build
 
 jobs:
   build:
