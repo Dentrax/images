@@ -1,7 +1,7 @@
 package:
   name: gpu-operator
-  version: 23.6.1
-  epoch: 1
+  version: 23.9.0
+  epoch: 0
   description: NVIDIA GPU Operator creates/configures/manages GPUs atop Kubernetes
   copyright:
     - license: Apache-2.0
@@ -28,7 +28,7 @@ pipeline:
     with:
       repository: https://github.com/NVIDIA/gpu-operator
       tag: v${{package.version}}
-      expected-commit: dd2fe9c9be315f61ab7012041d44b7a571a2bd4c
+      expected-commit: 762213f236cf6884b1ec29561b3db39ebe300625
 
   - runs: |
       mkdir -p ${{targets.destdir}}/usr/bin
