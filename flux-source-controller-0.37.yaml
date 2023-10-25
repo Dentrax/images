@@ -11,7 +11,7 @@ package:
   name: flux-source-controller-0.37
   # The version of source-controller at the time of flux v0.37
   version: 0.32.1
-  epoch: 1
+  epoch: 2
   description: The GitOps Toolkit source management component
   copyright:
     - license: Apache-2.0
@@ -45,6 +45,9 @@ pipeline:
       expected-commit: b2eb601ba73d08c8fe6406fff95e9621da755bc7
 
   - runs: |
+      # CVE-2023-39325 and CVE-2023-3978
+      go get golang.org/x/net@v0.17.0
+      go mod tidy
       mkdir -p "${{targets.destdir}}"/usr/bin
       # This is the expansion of $(pkg-config --static --libs --cflags libgit2)
       CGO_LDFLAGS="-L /lib -L/usr/lib -L/usr/local/lib -lgit2 -lssh2 -lrt -lssl -ldl -pthread -lpcre2-8 -lz -lcrypto -ldl -pthread"

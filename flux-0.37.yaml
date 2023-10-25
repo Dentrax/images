@@ -9,7 +9,7 @@
 package:
   name: flux-0.37
   version: 0.37.0
-  epoch: 1
+  epoch: 2
   description: Open and extensible continuous delivery solution for Kubernetes. Powered by GitOps Toolkit.
   copyright:
     - license: Apache-2.0
@@ -38,6 +38,9 @@ pipeline:
       expected-commit: 8674f31874b23ec1d03fc51efde27d1280d116db
 
   - runs: |
+      # CVE-2023-39325 and CVE-2023-3978
+      go get golang.org/x/net@v0.17.0
+      go mod tidy
       mkdir -p "${{targets.destdir}}"/usr/bin
       VERSION=${{package.version}} make build
       install -Dm755 bin/flux ${{targets.destdir}}/usr/bin/flux
