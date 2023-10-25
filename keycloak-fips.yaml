@@ -1,6 +1,6 @@
 package:
   name: keycloak-fips
-  version: 22.0.4
+  version: 22.0.5
   epoch: 0
   description: Open Source Identity and Access Management For Modern Applications and Services
   copyright:
@@ -34,7 +34,7 @@ pipeline:
     with:
       repository: https://github.com/keycloak/keycloak
       tag: ${{package.version}}
-      expected-commit: 24d07bd84be0a61ff94e0bc9e81ed1f34ee661d1
+      expected-commit: 8da7a52969f5dfa1235227646ffb07d6fcee8ef3
 
   - runs: |
       mkdir -p ${{targets.destdir}}/usr/share/java
