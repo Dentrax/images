@@ -1,6 +1,6 @@
 package:
   name: nvidia-device-plugin-fips
-  version: 0.14.1
+  version: 0.14.2
   epoch: 0
   description: NVIDIA device plugin for Kubernetes
   copyright:
@@ -23,7 +23,7 @@ pipeline:
     with:
       repository: https://github.com/NVIDIA/k8s-device-plugin
       tag: v${{package.version}}
-      expected-commit: 7086f91dfcd0cd7b06863be4a315ba873f0b81f9
+      expected-commit: 310542179780f3fccc7a87ae7609dc03936b0ab8
 
   - runs: |
       make
