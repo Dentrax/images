@@ -34,12 +34,15 @@ jobs:
       PROJECT: prod-images-c6e5
       FQ_SERVICE_ACCOUNT: prod-images-ci@prod-images-c6e5.iam.gserviceaccount.com
 
+    outputs:
+      packages_were_built: ${{ steps.file_check.outputs.exists }}
+
     steps:
       - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           submodules: "recursive"
-          token: ${{ secrets.ENTERPRISE_GRAFANA_REPO_ACCESS }}
+          token: ${{ secrets.ENTERPRISE_GRAFANA_ADVISORY_ACCESS }}
 
       - name: "Trust the github workspace"
         run: |
@@ -98,10 +101,26 @@ jobs:
 
           gsutil cp gs://chainguard-enterprise-registry-destination/os/chainguard-enterprise.rsa.pub "./packages/"
 
+          # Create reference file for cutoff time, so we can tell which packages were created after this point
+          touch -d "$(date +'%Y-%m-%d %H:%M:%S')" build_cutoff_time_reference
+
       - name: "Build Enterprise packages"
         if: steps.changes.outputs.change == 'true'
         run: |
           make --debug MELANGE_EXTRA_OPTS="--create-build-log --keyring-append ./packages/chainguard-enterprise.rsa.pub" REPO="./packages" -j1 all
+
+      - name: Identify newly built packages
+        id: list_built_packages
+        run: |
+          {
+            echo 'files_to_upload<<EOF'
+
+            if [[ -e build_cutoff_time_reference ]]; then
+              find ./packages -type f -newer build_cutoff_time_reference -name '*.apk'
+            fi
+
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
 
       - name: Check for file
         if: steps.changes.outputs.change == 'true'
@@ -134,3 +153,69 @@ jobs:
           else
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
+
+      - name: 'Upload built packages to GitHub artifacts'
+        uses: actions/upload-artifact@v3
+        with:
+          path: |
+            ${{ steps.list_built_packages.outputs.files_to_upload }}
+            ./packages.log
+          name: packages-${{ matrix.arch }}
+          retention-days: 1
+          if-no-files-found: warn
+
+  scan:
+    name: "Scan packages for CVEs"
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/wolfi-dev/sdk:latest@sha256:24f764649829f811cde1fe914431a2b949a0a9a69a317fb7eb31ca165df914fa
+    needs: build
+    if: needs.build.outputs.packages_were_built == 'true'
+
+    steps:
+      - name: 'Retrieve x86_64 packages'
+        uses: actions/download-artifact@v3
+        with:
+          name: packages-x86_64
+          path: /tmp/artifacts-1/
+
+      - name: 'Retrieve aarch64 packages'
+        uses: actions/download-artifact@v3
+        with:
+          name: packages-aarch64
+          path: /tmp/artifacts-2/
+
+      - name: 'Collect packages from all architectures into one place'
+        run: |
+          cd /tmp/artifacts-1
+
+          # Put the packages into one place
+          mv /tmp/artifacts-2/packages/* ./packages/
+
+          # Merge the build log ("packages.log") files
+          cat /tmp/artifacts-2/packages.log >> ./packages.log
+
+      - name: 'Retrieve Wolfi advisory data'
+        uses: actions/checkout@v4
+        with:
+          repository: 'wolfi-dev/advisories'
+          path: 'data/wolfi-advisories'
+
+      - name: 'Retrieve enterprise advisory data'
+        uses: actions/checkout@v4
+        with:
+          repository: 'chainguard-dev/enterprise-advisories'
+          path: 'data/enterprise-advisories'
+          ref: 'main'
+          token: ${{ secrets.ENTERPRISE_GRAFANA_ADVISORY_ACCESS }}
+
+      - name: Scan for CVEs
+        run: |
+          wolfictl scan \
+            --build-log \
+            --advisories-repo-dir 'data/wolfi-advisories' \
+            --advisories-repo-dir 'data/enterprise-advisories' \
+            --advisory-filter 'all' \
+            --require-zero \
+            /tmp/artifacts-1 \
+            2> /dev/null # The error message renders strangely on GitHub Actions, and the important information is already being sent to stdout.

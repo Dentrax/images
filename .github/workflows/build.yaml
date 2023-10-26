@@ -38,7 +38,7 @@ jobs:
       - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
         with:
           submodules: 'recursive'
-          token: ${{ secrets.ENTERPRISE_GRAFANA_REPO_ACCESS }}
+          token: ${{ secrets.ENTERPRISE_GRAFANA_ADVISORY_ACCESS }}
 
       - name: 'Trust the github workspace'
         run: |
