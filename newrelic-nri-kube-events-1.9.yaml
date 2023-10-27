@@ -1,0 +1,39 @@
+package:
+  name: newrelic-nri-kube-events-1.9
+  version: 1.9.3
+  epoch: 0
+  description: New Relic integration that forwards Kubernetes events to New Relic
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/newrelic/nri-kube-events
+      tag: v${{package.version}}
+      expected-commit: c43c971e2361614ac8321e7acb69e79ce32c338a
+
+  - uses: go/build
+    with:
+      packages: ./cmd/nri-kube-events
+      ldflags: -w -X main.integrationVersion=v${{ package.version }}
+      output: nri-kube-events
+      # Mitigate CVE-2023-3978, CVE-2023-39325 and CVE-2023-44487
+      deps: golang.org/x/net@v0.17.0
+
+  - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: newrelic/nri-kube-events
+    strip-prefix: v
+    use-tag: true
+    tag-filter: v1.9.
