@@ -1,13 +1,13 @@
 package:
   name: prometheus-postgres-exporter-0.10
   version: 0.10.1
-  epoch: 5
+  epoch: 6
   description: Prometheus Exporter for Postgres server metrics
   copyright:
     - license: Apache-2.0
   dependencies:
     provides:
-      - 'prometheus-postgres-exporter=0.10.1'
+      - prometheus-postgres-exporter=${{package.full-version}}
 
 environment:
   contents:
@@ -43,10 +43,13 @@ pipeline:
       # Mitigate CVE-2022-27664 / GHSA-69cg-p879-7622
       go get golang.org/x/net@v0.0.0-20220906165146-f3363e06e74c
       # Mitigate CVE-2022-41723 / GHSA-vvpx-j8f3-3w6h
-      go get golang.org/x/net@v0.7.0
+      # Mitigate CVE-2023-3978 / GHSA-2wrh-6pvc-2jm9
+      # Mitigate CVE-2023-39325 / GHSA-4374-p667-p6c8
+      # Mitigate CVE-2023-44487 / GHSA-qppj-fm5r-hxr3
+      go get golang.org/x/net@v0.17.0
+      go mod tidy
 
   - runs: |
-      go mod tidy
       make build
 
   - runs: |
