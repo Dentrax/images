@@ -1,0 +1,51 @@
+# This is a custom package built and kept up to date for Snowflake
+# https://github.com/chainguard-dev/image-requests/issues/532
+package:
+  name: external-dns-0.13.5
+  version: 0.13.5
+  epoch: 4 # Supercedes 0.13.5-r3 previously built
+  description: Configure external DNS servers (AWS Route53, Google CloudDNS and others) for Kubernetes Ingresses and Services.
+  copyright:
+    - license: Apache-2.0
+  dependencies:
+    provides:
+      - external-dns=${{package.full-version}}
+
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - build-base
+      - go
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/kubernetes-sigs/external-dns
+      tag: v${{package.version}}
+      expected-commit: 1f6340a95c0f5a96cc5888196eb767943f96bea4
+
+  - runs: |
+      # Mitigate CVE-2023-39325 and CVE-2023-3978
+      go get golang.org/x/net@v0.17.0
+
+      # Mitigate GHSA-m425-mq94-257g
+      go get google.golang.org/grpc@v1.56.3
+
+      go mod tidy
+
+      # Our global LDFLAGS conflict with a Makefile parameter
+      unset LDFLAGS
+      make build
+      mkdir -p ${{targets.destdir}}/usr/bin
+      mv build/external-dns ${{targets.destdir}}/usr/bin/
+
+  - uses: strip
+
+update:
+  enabled: false
