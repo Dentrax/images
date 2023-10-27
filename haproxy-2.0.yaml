@@ -1,13 +1,14 @@
 package:
   name: haproxy-2.0
   version: 2.0.31
-  epoch: 2
+  epoch: 3
   description: "A TCP/HTTP reverse proxy for high availability environments"
   copyright:
     - license: (GPL-2.0-or-later AND GPL-2.1-or-later) WITH OpenSSL-Exception
   dependencies:
     runtime:
       - libatomic
+      - libgcc
 
 # creates a new var that contains only the major and minor version to be used in the fetch URL
 # e.g. 2.6.11 will create a new var mangled-package-version=2.6
