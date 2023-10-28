@@ -1,11 +1,13 @@
 package:
-  name: grafana
-  version: 7.5.25
-  epoch: 1
+  name: grafana-7
+  version: 7.5.27
+  epoch: 0
   description: Open source, feature rich metrics dashboard and graph ed
   copyright:
     - license: Apache-2.0
   dependencies:
+    provides:
+      - grafana=${{package.full-version}}
     runtime:
       - bash
 
@@ -24,6 +26,7 @@ environment:
       - yarn
       - posix-libc-utils
       - nodejs-14
+      - npm=9.8.1
 
 pipeline:
   - name: frontend
