@@ -1,14 +1,14 @@
 package:
   name: sourcegraph-grafana
   version: 5.2.1
-  epoch: 0
+  epoch: 1
   description: Sourcegraph packaged Grafana
   copyright:
     - license: Apache-2.0
   dependencies:
     runtime:
-      - grafana
-      - grafana-dashboards
+      - grafana-7
+      - grafana-7-dashboards
       - krb5
       - apk-tools
       - libssl3
