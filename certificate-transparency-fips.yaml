@@ -1,6 +1,6 @@
 package:
   name: certificate-transparency-fips
-  version: 1.1.6
+  version: 1.1.7
   epoch: 0
   description: Auditing for TLS certificates
   target-architecture:
@@ -37,7 +37,7 @@ pipeline:
     with:
       repository: https://github.com/google/certificate-transparency-go
       tag: v${{package.version}}
-      expected-commit: 55b99fcbf9a9409ae11c1158fa6f0cb02d0290f5
+      expected-commit: 42c8cffbba7cf5d166fc58f820fea022b471515e
 
 subpackages:
   - range: components
