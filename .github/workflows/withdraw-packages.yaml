@@ -18,18 +18,12 @@ env:
 jobs:
   withdraw:
     name: Withdraw packages
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16-core
 
     permissions:
       id-token: write
       packages: write
       contents: read
-
-    strategy:
-      matrix:
-        BUCKET:
-          - chainguard-enterprise-registry-destination/os
-          - chainguard-enterprise-registry-destination/os/sub-os-openssl1
 
     steps:
       - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
@@ -62,10 +56,10 @@ jobs:
           for arch in x86_64 aarch64; do
             for pkg in $(grep -v '\#' withdrawn-packages.txt); do
               echo "=> $pkg"
-              if [[ "${{ matrix.dryrun }}" != "" ]]; then
-                echo "DRY RUN: gsutil -m rm -f gs://${{ matrix.BUCKET }}/$arch/$pkg"
+              if [[ "${{ inputs.dryrun }}" != "" ]]; then
+                echo "DRY RUN: gsutil -m rm -f gs://chainguard-enterprise-registry-destination/os/$arch/$pkg"
               else
-                gsutil -m rm -f gs://${{ matrix.BUCKET }}/$arch/$pkg || true
+                gsutil -m rm -f gs://chainguard-enterprise-registry-destination/os/$arch/$pkg || true
               fi
             done
           done
@@ -73,7 +67,7 @@ jobs:
       - name: 'Sync public package repository'
         run: |
           mkdir "${{ github.workspace }}/packages"
-          gsutil -m rsync -r gs://${{ matrix.BUCKET }}/ "${{ github.workspace }}/packages/"
+          gsutil -m rsync -r gs://chainguard-enterprise-registry-destination/os/ "${{ github.workspace }}/packages/"
           find "${{ github.workspace }}/packages" -print -exec touch \{} \;
 
       - name: 'Reconcile Enterprise index'
@@ -82,17 +76,12 @@ jobs:
             pushd "${{ github.workspace }}/packages/"$arch
               melange index -o APKINDEX.tar.gz -a $arch *.apk
               melange sign-index --signing-key="${{ github.workspace }}/chainguard-enterprise.rsa" APKINDEX.tar.gz
-              gsutil -h "Cache-Control:no-store" cp -a "public-read" "${{ github.workspace }}/packages/${arch}/APKINDEX.tar.gz" gs://${{ matrix.BUCKET }}/${arch}/APKINDEX.tar.gz
+              gsutil -h "Cache-Control:no-store" cp -a "public-read" "${{ github.workspace }}/packages/${arch}/APKINDEX.tar.gz" gs://chainguard-enterprise-registry-destination/os/${arch}/APKINDEX.tar.gz
             popd
           done
 
-  postrun:
-    name: Post Withdraw Enterprise Package
-    runs-on: ubuntu-latest
-    needs: [withdraw]
-    if: failure()
-    steps:
       - uses: rtCamp/action-slack-notify@v2.2.1
+        if: failure()
         env:
           SLACK_ICON: http://github.com/chainguard-dev.png?size=48
           SLACK_USERNAME: guardian
