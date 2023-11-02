@@ -25,3 +25,8 @@ configmap-reload-fips-0.11.1-r3.apk
 configmap-reload-fips-1.11-0.11.1-r0.apk
 tigera-operator-1.28-1.28.5-r2.apk
 tigera-operator-1.29-1.29.7-r1.apk
+cmctl-1.12-1.12.5-r0.apk
+cmctl-1.12-1.12.6-r0.apk
+cmctl-1.13-1.13.1-r0.apk
+cmctl-1.13-1.13.1-r1.apk
+cmctl-1.13-1.13.2-r0.apk
