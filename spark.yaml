@@ -1,0 +1,62 @@
+package:
+  name: spark
+  version: 3.5.0
+  epoch: 0
+  description: Unified engine for large-scale data analytics
+  copyright:
+    - license: Apache-2.0
+  dependencies:
+    runtime:
+      - openjdk-17-jre
+      - bash
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - curl
+      - maven
+      - openjdk-17
+      - openjdk-17-default-jvm
+      - bash
+      - wolfi-base
+      - wolfi-baselayout
+      - procps
+      - yaml-dev
+      - R
+      - R-dev
+      - glibc-iconv
+      - perl-utils
+      - python-3.11
+      - py3.11-pip
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/apache/spark
+      tag: v${{package.version}}
+      expected-commit: ce5ddad990373636e94071e7cef2f31021add07b
+
+  - uses: patch
+    with:
+      patches: make-distribution.patch
+
+  - runs: |
+      export LANG=en_US.UTF-8
+      export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+      ./dev/make-distribution.sh --name custom-spark --pip -Psparkr -Phive -Phive-thriftserver -Pmesos -Pyarn -Pkubernetes
+
+      mkdir -p ${{targets.destdir}}/usr/lib/spark
+      mv dist ${{targets.destdir}}/usr/lib/spark/3.5.0
+
+update:
+  enabled: true
+  github:
+    identifier: apache/spark
+    use-tag: true
+    strip-prefix: v
