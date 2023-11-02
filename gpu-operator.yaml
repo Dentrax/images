@@ -1,7 +1,7 @@
 package:
   name: gpu-operator
   version: 23.9.0
-  epoch: 0
+  epoch: 1
   description: NVIDIA GPU Operator creates/configures/manages GPUs atop Kubernetes
   copyright:
     - license: Apache-2.0
@@ -30,19 +30,28 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: 762213f236cf6884b1ec29561b3db39ebe300625
 
+  - uses: go/build
+    with:
+      modroot: .
+      packages: .
+      output: gpu-operator
+      ldflags: -s -w -X github.com/NVIDIA/gpu-operator/internal/info.gitCommit=$(git rev-list -1 HEAD) -X github.com/NVIDIA/gpu-operator/internal/info.version=v${{package.version}}
+      # CVE-2023-39325, GHSA-4374-p667-p6c8, CVE-2023-44487 and GHSA-qppj-fm5r-hxr3
+      deps: golang.org/x/net@v0.17.0
+      vendor: true
+
   - runs: |
-      mkdir -p ${{targets.destdir}}/usr/bin
       mkdir -p ${{targets.destdir}}/opt/${{package.name}}
+      mkdir -p ${{targets.destdir}}/opt/${{package.name}}/manifests
       mkdir -p ${{targets.destdir}}/licenses
 
-      CGO_ENABLED=0 GOOS=$(go env GOOS) GOARCH=$(go env GOARCH) GO111MODULE=on \
-      go build -a -o ${{targets.destdir}}/usr/bin/gpu-operator main.go
-
       cp -r ./assets/* ${{targets.destdir}}/opt/${{package.name}}
+      cp -r ./manifests/* ${{targets.destdir}}/opt/${{package.name}}/manifests
       cp hack/must-gather.sh ${{targets.destdir}}/usr/bin/gather
 
       cp deployments/gpu-operator/crds/nvidia.com_clusterpolicies_crd.yaml ${{targets.destdir}}/opt/${{package.name}}/nvidia.com_clusterpolicies_crd.yaml
       cp deployments/gpu-operator/charts/node-feature-discovery/crds/nfd-api-crds.yaml ${{targets.destdir}}/opt/${{package.name}}/nfd-api-crds.yaml
+      cp deployments/gpu-operator/crds/nvidia.com_nvidiadrivers.yaml ${{targets.destdir}}/opt/${{package.name}}/nvidia.com_nvidiadrivers.yaml
 
   - uses: strip
 
