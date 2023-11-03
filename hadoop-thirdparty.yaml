@@ -1,0 +1,53 @@
+package:
+  name: hadoop-thirdparty
+  version: 1.1.1
+  epoch: 0
+  description: Apache Hadoop Thirdparty
+  copyright:
+    - license: Apache-2.0
+  dependencies:
+    runtime:
+      - openjdk-17-jre
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - curl
+      - maven
+      - openjdk-17
+      - openjdk-17-default-jvm
+      - bash
+      - wolfi-base
+      - wolfi-baselayout
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/apache/hadoop-thirdparty
+      tag: rel/release-${{package.version}}
+      expected-commit: e4932839436412d04a90a7cc2ef21a39e9d1dad9
+
+  - uses: patch
+    with:
+      patches: pom.xml.patch
+
+  - runs: |
+      export LANG=en_US.UTF-8
+      export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+      mkdir -p ${{targets.destdir}}/usr/share/java
+      mvn clean package -Pdist -DskipTests -Dtar -Dmaven.javadoc.skip=true
+      mv hadoop-shaded-guava/target/hadoop-shaded-guava-${{package.version}}.jar ${{targets.destdir}}/usr/share/java/
+      mv hadoop-shaded-protobuf_3_7/target/hadoop-shaded-protobuf_3_7-${{package.version}}.jar ${{targets.destdir}}/usr/share/java/
+
+update:
+  enabled: true
+  github:
+    identifier: apache/hadoop-thirdparty
+    use-tag: true
+    strip-prefix: rel/release-
