@@ -1,0 +1,59 @@
+package:
+  name: hadoop-client-modules
+  version: 3.3.6
+  epoch: 0
+  description: Apache Hadoop
+  copyright:
+    - license: Apache-2.0
+  dependencies:
+    runtime:
+      - openjdk-17-jre
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - curl
+      - maven
+      - openjdk-17
+      - openjdk-17-default-jvm
+      - bash
+      - wolfi-base
+      - wolfi-baselayout
+      - hadoop-thirdparty
+  environment:
+    LANG: en_US.UTF-8
+    JAVA_HOME: /usr/lib/jvm/java-17-openjdk
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/apache/hadoop
+      tag: rel/release-${{package.version}}
+      expected-commit: 1be78238728da9266a4f88195058f08fd012bf9c
+
+  - uses: patch
+    with:
+      patches: pom.xml.patch
+
+  - runs: |
+      for f in $(ls /usr/share/java/hadoop*.jar); do
+        mvn -T$(grep -c processor /proc/cpuinfo) org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile="$f"
+      done
+
+  - runs: |
+      mkdir -p ${{targets.destdir}}/usr/share/java
+
+      cd hadoop-client-modules
+      mvn clean package -Pdist -DskipTests -Dtar -Dmaven.javadoc.skip=true --projects hadoop-client-api,hadoop-client-runtime
+
+      mv hadoop-client-api/target/hadoop-client-api-${{package.version}}.jar ${{targets.destdir}}/usr/share/java/
+      mv hadoop-client-runtime/target/hadoop-client-runtime-${{package.version}}.jar ${{targets.destdir}}/usr/share/java/
+
+update:
+  enabled: false
