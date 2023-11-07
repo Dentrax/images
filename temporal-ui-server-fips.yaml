@@ -1,0 +1,41 @@
+package:
+  name: temporal-ui-server-fips
+  version: 2.21.0
+  epoch: 0
+  description: Golang Server for https://github.com/temporalio/ui
+  copyright:
+    - license: MIT License
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - ca-certificates-bundle
+      - busybox
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/temporalio/ui-server
+      tag: v${{package.version}}
+      expected-commit: fe27d743272a90123ae7014d8d2335ac30526a54
+
+  - uses: go/build
+    with:
+      packages: ./cmd/server
+      output: ui-server
+      ldflags: -w
+      go-package: go-fips
+
+  - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: temporalio/ui-server
+    strip-prefix: v
+    use-tag: true
+    tag-filter: v
