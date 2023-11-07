@@ -5,13 +5,13 @@
  if [ "$SPARK_MODE" == "master" ]; then
      # Master constants
 -    EXEC=$(command -v start-master.sh)
-+    EXEC=$(/opt/bitnami/spark/sbin/start-master.sh)
++    EXEC="$SPARK_BASE_DIR/sbin/start-master.sh"
      ARGS=()
      info "** Starting Spark in master mode **"
  else
      # Worker constants
 -    EXEC=$(command -v start-worker.sh)
-+    EXEC=$(/opt/bitnami/spark/sbin/start-worker.sh)
++    EXEC="$SPARK_BASE_DIR/sbin/start-worker.sh"
      ARGS=("$SPARK_MASTER_URL")
      info "** Starting Spark in worker mode **"
  fi
