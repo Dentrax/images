@@ -1,7 +1,7 @@
 package:
   name: newrelic-infrastructure-agent-1.43
   version: 1.43.2
-  epoch: 0
+  epoch: 1
   description: New Relic Infrastructure Agent
   copyright:
     - license: Apache-2.0
@@ -35,6 +35,9 @@ pipeline:
 
       # Mitigate GHSA-m425-mq94-257g
       go get google.golang.org/grpc@v1.56.3
+
+      # Mitigate GHSA-jq35-85cj-fj4p
+      go get github.com/docker/docker@v24.0.7
 
       go mod tidy
 
