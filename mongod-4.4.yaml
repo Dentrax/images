@@ -1,10 +1,13 @@
 package:
   name: mongod-4.4
   version: 4.4.25
-  epoch: 0
+  epoch: 1
   description: "The MongoDB Database"
   copyright:
     - license: "SSPL"
+  dependencies:
+    provides:
+      - mongod=${{package.full-version}}
 
 environment:
   contents:
@@ -19,9 +22,9 @@ environment:
       - curl-dev
       - ld-linux
       - openssl-dev
-      - py3-pip
-      - python3
-      - python3-dev
+      - py3.11-pip
+      - python-3.11
+      - python-3.11-dev
       - wolfi-base
       - xz-dev
       - zlib-dev
@@ -56,15 +59,21 @@ pipeline:
   - uses: strip
 
 subpackages:
-  - name: "mongos"
+  - name: "mongos-4.4"
     description: "mongo sharding"
+    dependencies:
+      provides:
+        - mongos=${{package.full-version}}
     pipeline:
       - runs: |
           mkdir -p "${{targets.subpkgdir}}"/usr/bin
           mv build/install/bin/mongos ${{targets.subpkgdir}}/usr/bin
 
-  - name: "mongo"
+  - name: "mongo-4.4"
     description: "mongo shell"
+    dependencies:
+      provides:
+        - mongo=${{package.full-version}}
     pipeline:
       - runs: |
           mkdir -p "${{targets.subpkgdir}}"/usr/bin

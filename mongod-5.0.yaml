@@ -1,0 +1,131 @@
+package:
+  name: mongod-5.0
+  version: 5.0.22
+  epoch: 0
+  description: "The MongoDB Database"
+  copyright:
+    - license: "SSPL"
+  dependencies:
+    provides:
+      - mongod=${{package.full-version}}
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - build-base
+      - busybox
+      - ca-certificates-bundle
+      - curl-dev
+      - ld-linux
+      - openssl-dev
+      - openssl
+      - py3.11-pip
+      - python-3.11
+      - python-3.11-dev
+      - wolfi-base
+      - xz-dev
+      - zlib-dev
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/mongodb/mongo
+      tag: r${{package.version}}
+      expected-commit: 302c19437ae65b7d459360e18c5ac5086f494989
+
+  - uses: patch
+    with:
+      patches: optional.patch disable-fips-cli-arg.patch disablewerror.patch
+
+  - runs: |
+      python3 -m pip install scons
+      # PyYAML 6.0.0 or older don't install with newer python interpreters
+      sed -r -e 's/^PyYAML(.+)$/PyYAML >= 6.0.0/g' -i etc/pip/components/core.req
+      python3 -m pip install -r etc/pip/compile-requirements.txt
+      # fix build object cache hash calcuation in a fips-enabled environment
+      sed 's/hashlib.md5()/hashlib.sha256()/g' -i site_scons/mongo/generators.py
+      scons \
+        VERBOSE=1 \
+        --config=force \
+        CXXFLAGS="--param destructive-interference-size=64" \
+        --ssl \
+        --separate-debug=on \
+        --disable-warnings-as-errors \
+        install-devcore
+      mkdir -p ${{targets.destdir}}/usr/bin
+      mv build/install/bin/mongod ${{targets.destdir}}/usr/bin
+
+  - uses: strip
+
+subpackages:
+  - name: "mongos-5.0"
+    description: "mongo sharding"
+    dependencies:
+      provides:
+        - mongos=${{package.full-version}}
+    pipeline:
+      - runs: |
+          mkdir -p "${{targets.subpkgdir}}"/usr/bin
+          mv build/install/bin/mongos ${{targets.subpkgdir}}/usr/bin
+
+  - name: "mongo-5.0"
+    description: "mongo shell"
+    dependencies:
+      provides:
+        - mongo=${{package.full-version}}
+    pipeline:
+      - runs: |
+          mkdir -p "${{targets.subpkgdir}}"/usr/bin
+          mv build/install/bin/mongo ${{targets.subpkgdir}}/usr/bin
+
+  - name: "mongod-5.0-bitnami-compat"
+    description: "mongod bitnami compat"
+    dependencies:
+      runtime:
+        # Required by startup scripts
+        - busybox
+        - bash
+        - coreutils
+        - posix-libc-utils
+    pipeline:
+      - uses: bitnami/compat
+        with:
+          image: mongodb
+          version-path: 5.0/debian-11
+      - runs: |
+          mkdir -p "${{targets.destdir}}"/opt/bitnami
+          mkdir -p "${{targets.destdir}}"/opt/bitnami/licenses
+          mkdir -p "${{targets.destdir}}"/opt/bitnami/scripts
+          mkdir -p "${{targets.destdir}}"/opt/bitnami/etc
+          mkdir -p "${{targets.destdir}}"/opt/bitnami/common/bin
+          mkdir -p "${{targets.destdir}}"/opt/bitnami/mongodb/bin
+          mkdir -p "${{targets.destdir}}"/opt/bitnami/mongodb/logs
+          mkdir -p "${{targets.destdir}}"/opt/bitnami/mongodb/tmp
+          mkdir -p "${{targets.destdir}}"/bitnami/mongodb/conf
+          mkdir -p "${{targets.destdir}}"/bitnami/mongodb/data/db
+
+          ln -sf /usr/bin/gosu "${{targets.destdir}}"/opt/bitnami/common/bin/gosu
+          ln -sf /usr/bin/render-template "${{targets.destdir}}"/opt/bitnami/common/bin/render-template
+          ln -sf /usr/bin/wait-for-port "${{targets.destdir}}"/opt/bitnami/common/bin/wait-for-port
+          ln -sf /usr/bin/yq "${{targets.destdir}}"/opt/bitnami/common/bin/yq
+      - runs: |
+          ln -sf /usr/bin/mongo* "${{targets.destdir}}"/opt/bitnami/mongodb/bin/
+      - runs: |
+          # touch/mkdir these empty files and directories to quiet various startup messages per upstream
+          touch "${{targets.destdir}}"/.dbshell
+          touch "${{targets.destdir}}"/.mongorc.js
+          touch "${{targets.destdir}}"/.mongoshrc.js
+          mkdir "${{targets.destdir}}"/.mongodb
+          mkdir "${{targets.destdir}}"/docker-entrypoint-initdb.d
+
+update:
+  enabled: true
+  github:
+    identifier: mongodb/mongo
+    strip-prefix: r
+    use-tag: true
+    tag-filter: r5.0.
