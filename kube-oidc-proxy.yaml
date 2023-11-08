@@ -1,7 +1,7 @@
 package:
   name: kube-oidc-proxy
-  version: 1.0.4
-  epoch: 3
+  version: 1.0.5
+  epoch: 0
   description: OIDC to Kubernetes API servers where OIDC authentication is unavailable
   copyright:
     - license: Apache 2.0
@@ -30,7 +30,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://github.com/TremoloSecurity/kube-oidc-proxy/archive/refs/tags/v${{package.version}}.tar.gz
-      expected-sha256: 3adee9fbfe3376e5a01c06c33dbf1728c5ee31b7ab576af01822d90ca0d067b4
+      expected-sha256: 5b61f6bf71b40b523bca246504f8e0a2b573cbceb7a863110e101a9aebb19754
 
   - runs: |
       # CVE-2023-39325 and CVE-2023-3978
