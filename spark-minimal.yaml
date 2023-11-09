@@ -1,5 +1,5 @@
 package:
-  name: spark
+  name: spark-minimal
   version: 3.5.0
   epoch: 0
   description: Minimal version of Spark
