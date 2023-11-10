@@ -21,8 +21,9 @@ jobs:
 
     container:
       image: ghcr.io/wolfi-dev/sdk:latest@sha256:fe85df7dc646f29552dab0ebd7e6e6e1cc6f4a5ce83e724693cf0fece5b8f8ac
+      # TODO: Deprivilege
       options: |
-        --cap-add NET_ADMIN --cap-add SYS_ADMIN --security-opt seccomp=unconfined --security-opt apparmor:unconfined
+        --cap-add NET_ADMIN --cap-add SYS_ADMIN --device /dev/fuse --security-opt seccomp=unconfined --security-opt apparmor:unconfined
 
     permissions:
       packages: read
@@ -50,19 +51,7 @@ jobs:
           # running inside of a container action with the workspace mounted in.
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-      - name: check changes
-        uses: dorny/paths-filter@4512585405083f25c027a35db413c2b3b9006d50 # v2.11.1
-        id: changes
-        with:
-          filters: |
-            change:
-              - "*.yaml"
-              - "*.env"
-              - "Makefile"
-              - ".github/workflows/dag-push-enterprise.yaml"
-
       - name: Generate snapshot date
-        if: steps.changes.outputs.change == 'true'
         id: snapshot-date
         run: |
           echo "date=$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
@@ -70,44 +59,42 @@ jobs:
         shell: bash
 
       - uses: google-github-actions/auth@35b0e87d162680511bf346c299f71c9c5c379033 # v1.1.1
-        if: steps.changes.outputs.change == 'true'
         with:
           workload_identity_provider: "projects/618116202522/locations/global/workloadIdentityPools/prod-shared-e350/providers/prod-shared-gha"
           service_account: ${{ env.FQ_SERVICE_ACCOUNT }}
 
-      - if: steps.changes.outputs.change == 'true'
-        run: |
-          # TODO: Replace this with a wolfi image :(
-          apk add google-cloud-sdk
-
-      - uses: google-github-actions/setup-gcloud@e30db14379863a8c79331b04a9969f4c1e225e0b # v1.1.1
-        if: steps.changes.outputs.change == 'true'
-        with:
-          project_id: ${{ env.PROJECT }}
-
       - name: "Generate local signing key"
-        if: steps.changes.outputs.change == 'true'
         run: |
           make MELANGE="melange" local-melange-enterprise.rsa
 
-      - name: "Sync public package repository"
-        if: steps.changes.outputs.change == 'true'
+          # Touch it with the epoch date to convince `make` that we don't need to
+          # rebuild the targets that depend on this (all)
+          touch -d @0 local-melange-enterprise.rsa
+
+      - name: 'Prepare package repository'
         run: |
-          mkdir -p "./packages/${{ matrix.arch }}"
-          gsutil -m rsync -r gs://chainguard-enterprise-registry-destination/os/${{ matrix.arch }}/ "./packages/${{ matrix.arch }}/"
+          # yay wolfi!
+          apk add gcsfuse
 
-          # hack to ensure our make targets are dependent appropriately
-          find "./packages" -print -exec touch \{} \;
+          # Set up a gcsfuse RO mount to the public bucket. This is a cheap and
+          # cheerful way to recreate the make targets (class A HEADs) locally
+          # without syncing the whole bucket (class A+B).
+          mkdir -p /gcsfuse/enterprise-registry
+          gcsfuse -o ro --implicit-dirs --only-dir os chainguard-enterprise-registry-destination /gcsfuse/enterprise-registry
 
-          gsutil cp gs://chainguard-enterprise-registry-destination/os/chainguard-enterprise.rsa.pub "./packages/"
+          mkdir -p ./packages/${{ matrix.arch }}
+          # Symlink the gcsfuse mount to ./packages/ and the pub key to workaround the Makefile CWD assumptions
+          ln -s /gcsfuse/enterprise-registry/${{ matrix.arch }}/*.apk ./packages/${{ matrix.arch }}/
 
-          # Create reference file for cutoff time, so we can tell which packages were created after this point
-          touch -d "$(date +'%Y-%m-%d %H:%M:%S')" build_cutoff_time_reference
+          # Make a copy of the APKINDEX.* since we'll need to write to it on package builds
+          cp /gcsfuse/enterprise-registry/${{ matrix.arch }}/APKINDEX.* ./packages/${{ matrix.arch }}/
 
-      - name: "Build Enterprise packages"
-        if: steps.changes.outputs.change == 'true'
+      - name: 'Build Enterprise Packages'
         run: |
-          make --debug MELANGE_EXTRA_OPTS="--create-build-log --keyring-append ./packages/chainguard-enterprise.rsa.pub" REPO="./packages" -j1 all
+          make \
+            ARCH=${{ matrix.arch }} \
+            MELANGE_EXTRA_OPTS="--create-build-log --keyring-append=/gcsfuse/enterprise-registry/chainguard-enterprise.rsa.pub REPO=./packages" \
+            all -j1
 
       - name: Identify newly built packages
         id: list_built_packages
@@ -123,7 +110,6 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Check for file
-        if: steps.changes.outputs.change == 'true'
         id: file_check
         run: |
           if test -f "packages.log"; then
@@ -133,12 +119,12 @@ jobs:
           fi
 
       - name: Check sonames
-        if: ${{ steps.file_check.outputs.exists == 'true' && steps.changes.outputs.change == 'true'}}
+        if: ${{ steps.file_check.outputs.exists == 'true'}}
         run: |
           wolfictl check so-name
 
       - name: Check diff
-        if: ${{ steps.file_check.outputs.exists == 'true' && steps.changes.outputs.change == 'true'}}
+        if: ${{ steps.file_check.outputs.exists == 'true'}}
         # Let's not fail the whole job if this step fails as it is for improved UX rather than an enforced check
         continue-on-error: true
         run: |
