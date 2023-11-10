@@ -3,6 +3,7 @@
 packages/
 .idea/
 packages.log
+*.iml
 
 # macOS
 .DS_Store
