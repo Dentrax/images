@@ -60,3 +60,4 @@ update:
   github:
     identifier: tigera/operator
     tag-filter: v1.29.
+    strip-prefix: v

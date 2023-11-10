@@ -64,3 +64,4 @@ update:
     identifier: tigera/operator
     use-tag: true
     tag-filter: v1.29.
+    strip-prefix: v
