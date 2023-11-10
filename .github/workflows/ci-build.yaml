@@ -102,9 +102,7 @@ jobs:
           {
             echo 'files_to_upload<<EOF'
 
-            if [[ -e build_cutoff_time_reference ]]; then
-              find ./packages -type f -newer build_cutoff_time_reference -name '*.apk'
-            fi
+            awk -F'|' '{ printf "./packages/%s/%s-%s.apk\n", $1, $3, $4}' < packages.log
 
             echo EOF
           } >> "$GITHUB_OUTPUT"
