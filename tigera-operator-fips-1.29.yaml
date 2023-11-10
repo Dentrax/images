@@ -59,5 +59,4 @@ update:
   enabled: true
   github:
     identifier: tigera/operator
-    strip-prefix: v1.29.7
-    tag-filter: v
+    tag-filter: v1.29.
