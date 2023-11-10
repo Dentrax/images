@@ -12,10 +12,6 @@ package:
 
 environment:
   contents:
-    repositories:
-      - https://packages.wolfi.dev/os
-    keyring:
-      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
     packages:
       # We don't use automake/autoconf directly, but the Bazel rule uses them
       - autoconf

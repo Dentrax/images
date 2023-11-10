@@ -18,13 +18,6 @@ var-transforms:
     replace: $1-$2-eks-$3
     to: eks-package-version
 
-environment:
-  contents:
-    keyring:
-      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
-    repositories:
-      - https://packages.wolfi.dev/os
-
 pipeline:
   - uses: git-checkout
     with:
