@@ -1,8 +1,8 @@
 package:
   # Supported versions policy: https://kubernetes-csi.github.io/docs/node-driver-registrar.html
   name: kubernetes-csi-node-driver-registrar-fips-2.9
-  version: 2.9.0
-  epoch: 3
+  version: 2.9.1
+  epoch: 0
   description: Sidecar container that registers a CSI driver with the kubelet using the kubelet plugin registration mechanism.
   copyright:
     - license: Apache-2.0
@@ -26,7 +26,7 @@ pipeline:
     with:
       repository: https://github.com/kubernetes-csi/node-driver-registrar
       tag: v${{package.version}}
-      expected-commit: deed783528cd828baedc5493a866a0217f7b08fe
+      expected-commit: 26e5f228801acf70db8962d64d34904aa9986ed1
 
   - uses: go/build
     with:
@@ -35,8 +35,6 @@ pipeline:
       vendor: "true"
       output: csi-node-driver-registrar
       go-package: go-fips
-      # CVE-2023-39325 and CVE-2023-3978
-      deps: golang.org/x/net@v0.17.0
 
   - uses: strip
 
