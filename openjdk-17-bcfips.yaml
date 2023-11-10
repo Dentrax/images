@@ -1,15 +1,17 @@
 package:
   name: openjdk-17-bcfips
-  version: 17.0.9.7 # same version as our public one
-  epoch: 1
+  version: 17.0.9.9 # same version as our GA public one
+  epoch: 0
   description: FIPS version of the OpenJDK package using BouncyCastle crypto APIs
   copyright:
     - license: GPL-2.0-only
     - license: MIT # BouncyCastle is licensed under the BouncyCastle License but their license state it is to be read as MIT: https://www.bouncycastle.org/license.html
   dependencies:
     runtime:
-      - openjdk-17
-      - openjdk-17-default-jvm
+      - openjdk-17-jre-base~${{package.version}} # lock to the public GA version
+      - openjdk-17-jre~${{package.version}} # lock to the public GA version
+      - openjdk-17~${{package.version}} # lock to the public GA version
+      - openjdk-17-default-jvm~${{package.version}} # lock to the public GA version
       - bouncycastle-fips
     provides:
       - jdk-fips=${{package.full-version}}
@@ -25,8 +27,8 @@ environment:
     packages:
       - busybox
       - bash
-      - openjdk-17
-      - openjdk-17-default-jvm
+      - openjdk-17~17.0.9.9 # lock to the public GA version
+      - openjdk-17-default-jvm~17.0.9.9 # lock to the public GA version
       - bouncycastle-fips
 
 pipeline:
@@ -43,7 +45,8 @@ subpackages:
     description: FIPS version of OpenJDK 17 Java Runtime Environment with BouncyCastle crypto APIs
     dependencies:
       runtime:
-        - openjdk-17-jre
+        - openjdk-17-jre-base~${{package.version}}
+        - openjdk-17-jre~${{package.version}} # lock to the public GA version
         - bouncycastle-fips
       provides:
         - jre-fips=${{package.full-version}}
