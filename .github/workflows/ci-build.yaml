@@ -96,17 +96,6 @@ jobs:
             MELANGE_EXTRA_OPTS="--create-build-log --keyring-append=/gcsfuse/enterprise-registry/chainguard-enterprise.rsa.pub REPO=./packages" \
             all -j1
 
-      - name: Identify newly built packages
-        id: list_built_packages
-        run: |
-          {
-            echo 'files_to_upload<<EOF'
-
-            awk -F'|' '{ printf "./packages/%s/%s-%s.apk\n", $1, $3, $4}' < packages.log
-
-            echo EOF
-          } >> "$GITHUB_OUTPUT"
-
       - name: Check for file
         id: file_check
         run: |
@@ -115,6 +104,18 @@ jobs:
           else
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
+
+      - name: Identify newly built packages
+        id: list_built_packages
+        if: ${{ steps.file_check.outputs.exists == 'true'}}
+        run: |
+          {
+            echo 'files_to_upload<<EOF'
+
+            awk -F'|' '{ printf "./packages/%s/%s-%s.apk\n", $1, $3, $4}' < packages.log
+
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
 
       - name: Check sonames
         if: ${{ steps.file_check.outputs.exists == 'true'}}
@@ -127,16 +128,6 @@ jobs:
         continue-on-error: true
         run: |
           wolfictl check diff
-
-      - name: Check for diff file
-        if: steps.changes.outputs.change == 'true'
-        id: diff_file_check
-        run: |
-          if test -f "diff.log"; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-          fi
 
       - name: 'Upload built packages to GitHub artifacts'
         uses: actions/upload-artifact@v3
