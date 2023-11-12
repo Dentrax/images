@@ -1,7 +1,7 @@
 package:
   name: mongod-5.0
   version: 5.0.22
-  epoch: 1
+  epoch: 2
   description: "The MongoDB Database"
   copyright:
     - license: "SSPL"
@@ -26,7 +26,12 @@ environment:
       - xz-dev
       - zlib-dev
       - bash
+      - gosu
+      - mongo-tools
+      - mongosh
       - render-template
+      - wait-for-port
+      - yq
 
 pipeline:
   - uses: git-checkout
@@ -89,6 +94,14 @@ subpackages:
         - bash
         - coreutils
         - posix-libc-utils
+        - gosu
+        - mongo-5.0
+        - mongo-tools
+        - mongod-5.0
+        - mongosh
+        - render-template
+        - wait-for-port
+        - yq
     pipeline:
       - uses: bitnami/compat
         with:
@@ -123,7 +136,24 @@ subpackages:
           # un-sed everything back to absolute /opt/bitnami prefix
           find ${{targets.subpkgdir}}/opt/bitnami -type f -exec sed 's#${{targets.subpkgdir}}##g' -i {} \;
       - runs: |
-          ln -sf /usr/bin/mongo* "${{targets.subpkgdir}}"/opt/bitnami/mongodb/bin/
+          # Set the target directory for the symbolic links
+          target_dir="${{targets.subpkgdir}}/opt/bitnami/mongodb/bin/"
+
+          # Loop through the binaries in /usr/bin/
+          for binary_path in /usr/bin/mongo*; do
+              # Check if the path is a file and not a directory
+              if [ -f "$binary_path" ]; then
+                  # Extract the binary name from the path
+                  binary_name=$(basename "$binary_path")
+
+                  # Create the symbolic link
+                  ln -sf "$binary_path" "$target_dir$binary_name"
+
+                  echo "Created symbolic link for $binary_name"
+              fi
+          done
+          ln -sf /usr/bin/mongo "${{targets.subpkgdir}}"/opt/bitnami/mongodb/bin/mongo
+          ln -sf /usr/bin/mongod "${{targets.subpkgdir}}"/opt/bitnami/mongodb/bin/mongod
       - runs: |
           # touch/mkdir these empty files and directories to quiet various startup messages per upstream
           touch "${{targets.subpkgdir}}"/.dbshell
