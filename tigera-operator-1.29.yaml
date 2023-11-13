@@ -1,7 +1,7 @@
 package:
   name: tigera-operator-1.29
   version: 1.29.7
-  epoch: 0 # NB: When bumping epoch for 1.29.7, bump to 2
+  epoch: 1
   description: Kubernetes operator for installing Calico and Calico Enterprise
   copyright:
     - license: Apache-2.0
@@ -26,9 +26,6 @@ pipeline:
       expected-commit: 433f22c3c46967149d6e7ce6c1ccdf62fe6ca508
 
   - runs: |
-      # Mitigate GHSA-69ch-w2m2-3vjp
-      go mod edit -replace golang.org/x/text=golang.org/x/text@v0.3.8
-
       # GHSA-vvpx-j8f3-3w6h
       go get golang.org/x/net@v0.7.0
 
