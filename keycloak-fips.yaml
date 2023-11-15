@@ -1,7 +1,7 @@
 package:
   name: keycloak-fips
   version: 22.0.5
-  epoch: 1
+  epoch: 2
   description: Open Source Identity and Access Management For Modern Applications and Services
   copyright:
     - license: Apache-2.0
@@ -37,6 +37,13 @@ pipeline:
     with:
       # Update xmlsec from 2.2.3 to 2.2.6 to fix GHSA-xfrj-6vvc-3xm2
       patches: bump-xmlsec.patch
+
+  - uses: patch
+    with:
+      # Disables a redundant FIPS host check in Keycloak which expects the
+      # underlying host to be RHEL and running a RHEL patched version of JDK.
+      # We use vanilla JDK with bcfips, so this is not applicable.
+      patches: disable-rhel-fips-check.patch
 
   - runs: |
       mkdir -p ${{targets.destdir}}/usr/share/java
