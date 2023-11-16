@@ -28,7 +28,7 @@ login.configuration.provider=sun.security.provider.ConfigFile
 
 policy.provider=sun.security.provider.PolicyFile
 policy.url.1=file:${java.home}/conf/security/java.policy
-policy.url.2=file:/usr/lib/jvm/openjdk-11-fips/java.policy
+policy.url.2=file:/usr/lib/jvm/jdk-fips-config/java.policy
 policy.expandProperties=true
 policy.allowSystemProperty=true
 policy.ignoreIdentityScope=false
