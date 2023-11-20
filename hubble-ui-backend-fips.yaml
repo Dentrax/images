@@ -1,6 +1,6 @@
 package:
   name: hubble-ui-backend-fips
-  version: 0.12.1
+  version: 0.12.2
   epoch: 0
   description: "Observability & troubleshooting for Kubernetes services"
   copyright:
@@ -28,7 +28,7 @@ pipeline:
       repository: https://github.com/cilium/hubble-ui
       tag: v${{package.version}}
       destination: hubble-ui
-      expected-commit: 66a73845c733c99d195f8c0231463cb4be86e241
+      expected-commit: 4fad5cd69b4298e24fff362c18646c24fd75eb57
 
   - runs: |
       cd hubble-ui/backend
