@@ -1,7 +1,7 @@
 package:
   name: mongod-4.4
-  version: 4.4.25
-  epoch: 1
+  version: 4.4.26
+  epoch: 0
   description: "The MongoDB Database"
   copyright:
     - license: "SSPL"
@@ -30,7 +30,7 @@ pipeline:
     with:
       repository: https://github.com/mongodb/mongo
       tag: r${{package.version}}
-      expected-commit: 3e18c4c56048ddf22a6872edc111b542521ad1d5
+      expected-commit: acdc463fe60bdc85aeced25297041b4051a0fc33
 
   - uses: patch
     with:
