@@ -170,12 +170,6 @@ jobs:
           # Merge the build log ("packages.log") files
           cat /tmp/artifacts-2/packages.log >> ./packages.log
 
-      - name: 'Retrieve Wolfi advisory data'
-        uses: actions/checkout@v4
-        with:
-          repository: 'wolfi-dev/advisories'
-          path: 'data/wolfi-advisories'
-
       - name: 'Retrieve enterprise advisory data'
         uses: actions/checkout@v4
         with:
@@ -188,7 +182,6 @@ jobs:
         run: |
           wolfictl scan \
             --build-log \
-            --advisories-repo-dir 'data/wolfi-advisories' \
             --advisories-repo-dir 'data/enterprise-advisories' \
             --advisory-filter 'all' \
             --require-zero \
