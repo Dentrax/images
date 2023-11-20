@@ -1,7 +1,7 @@
 package:
   name: mongod-5.0
-  version: 5.0.22
-  epoch: 2
+  version: 5.0.23
+  epoch: 0
   description: "The MongoDB Database"
   copyright:
     - license: "SSPL"
@@ -38,7 +38,7 @@ pipeline:
     with:
       repository: https://github.com/mongodb/mongo
       tag: r${{package.version}}
-      expected-commit: 302c19437ae65b7d459360e18c5ac5086f494989
+      expected-commit: 3367195a14d0ba2734d2ba2719294fb974ad0834
 
   - uses: patch
     with:
