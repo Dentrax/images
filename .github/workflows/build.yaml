@@ -239,10 +239,12 @@ jobs:
             # Don't cache the APKINDEX.
             gcloud --quiet storage cp \
                 --cache-control=no-store \
+                --canned-acl="publicRead" \
                 "./packages/${arch}/APKINDEX.tar.gz" "gs://chainguard-enterprise-registry-destination/os/${arch}/"
 
             gcloud --quiet storage cp \
                 --cache-control=no-store \
+                --canned-acl="publicRead" \
                 "./packages/${arch}/APKINDEX.json" "gs://chainguard-enterprise-registry-destination/os/${arch}/"
           done
 
