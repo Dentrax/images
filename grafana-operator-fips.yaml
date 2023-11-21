@@ -1,0 +1,37 @@
+package:
+  name: grafana-operator-fips
+  version: 5.4.2
+  epoch: 0
+  description: An operator for Grafana that installs and manages Grafana instances, Dashboards and Datasources through Kubernetes/OpenShift CRs
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - build-base
+      - go-fips
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/grafana-operator/grafana-operator
+      tag: v${{package.version}}
+      expected-commit: 0507a8f6746269f86b67ee3a713308ada437c1b4
+
+  - uses: go/build
+    with:
+      modroot: .
+      packages: .
+      output: grafana-operator
+      go-package: go-fips
+
+  - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: grafana-operator/grafana-operator
+    strip-prefix: v
