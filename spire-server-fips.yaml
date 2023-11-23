@@ -1,7 +1,7 @@
 package:
   name: spire-server-fips
   version: 1.8.5
-  epoch: 0
+  epoch: 1
   description: The SPIFFE Runtime Environment (SPIRE) server
   copyright:
     - license: Apache-2.0
@@ -49,6 +49,9 @@ pipeline:
 
       # GHSA-2c7c-3mj9-8fqh
       go get github.com/go-jose/go-jose/v3@v3.0.1
+
+      # Mitigate GHSA-jq35-85cj-fj4p
+      go mod edit -replace=github.com/docker/docker=github.com/docker/docker@v24.0.7+incompatible
       go mod tidy
 
       make bin/spire-agent
