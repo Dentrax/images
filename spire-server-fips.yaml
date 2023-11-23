@@ -1,6 +1,6 @@
 package:
   name: spire-server-fips
-  version: 1.8.4
+  version: 1.8.5
   epoch: 0
   description: The SPIFFE Runtime Environment (SPIRE) server
   copyright:
@@ -24,7 +24,7 @@ pipeline:
     with:
       repository: https://github.com/spiffe/spire
       tag: v${{package.version}}
-      expected-commit: f99ecac9d6b5df48b558a8f4937867aec888937d
+      expected-commit: ae8cfd39d4e68d7af43fa8bc49266047eef5dbf6
       destination: spire
 
   - runs: |
@@ -46,6 +46,10 @@ pipeline:
       esac
       echo ${goversion} > .go-version
       cat .go-version
+
+      # GHSA-2c7c-3mj9-8fqh
+      go get github.com/go-jose/go-jose/v3@v3.0.1
+      go mod tidy
 
       make bin/spire-agent
       make bin/spire-server

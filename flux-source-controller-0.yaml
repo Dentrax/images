@@ -11,7 +11,7 @@ package:
   name: flux-source-controller-0
   # The version of source-controller at the time of the last flux v0 (v0.41.2)
   version: 0.36.1
-  epoch: 2
+  epoch: 3
   description: The GitOps Toolkit source management component
   copyright:
     - license: Apache-2.0
@@ -36,6 +36,8 @@ pipeline:
   - runs: |
       # CVE-2023-39325 and CVE-2023-3978
       go get golang.org/x/net@v0.17.0
+      # GHSA-2c7c-3mj9-8fqh
+      go get github.com/go-jose/go-jose/v3@v3.0.1
       go mod tidy
       mkdir -p "${{targets.destdir}}"/usr/bin
       CGO_ENABLED=1 CGO_LDFLAGS="-static -fuse-ld=lld" go build \
