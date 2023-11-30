@@ -1,7 +1,7 @@
 package:
   name: keycloak-fips
   version: 23.0.1
-  epoch: 0
+  epoch: 1
   description: Open Source Identity and Access Management For Modern Applications and Services
   copyright:
     - license: Apache-2.0
@@ -9,7 +9,7 @@ package:
     runtime:
       - bash # Keycloak helper scripts require bash, aren't compatible with busybox.
       - openjdk-17-jre-bcfips
-      - openjdk-17-default-jvm
+      - openjdk-17-default-jvm-bcfips
 
 environment:
   contents:
@@ -18,10 +18,11 @@ environment:
       - busybox
       - ca-certificates-bundle
       - nodejs-18
-      - openjdk-17-bcfips
+      - openjdk-17
       - openjdk-17-default-jvm
       - wolfi-base
       - wolfi-baselayout
+      - bouncycastle-fips
   environment:
     LANG: en_US.UTF-8
     JAVA_HOME: /usr/lib/jvm/java-17-openjdk
