@@ -1,7 +1,7 @@
 package:
   name: kube-oidc-proxy
-  version: 1.0.5
-  epoch: 2
+  version: 1.0.6
+  epoch: 0
   description: OIDC to Kubernetes API servers where OIDC authentication is unavailable
   copyright:
     - license: Apache 2.0
@@ -26,18 +26,9 @@ pipeline:
   - uses: fetch
     with:
       uri: https://github.com/TremoloSecurity/kube-oidc-proxy/archive/refs/tags/v${{package.version}}.tar.gz
-      expected-sha256: 5b61f6bf71b40b523bca246504f8e0a2b573cbceb7a863110e101a9aebb19754
+      expected-sha256: 2758ed565b463ae8b0fa088e344951fbdb20bf8e6da3ef29bd36515f0ffdc742
 
   - runs: |
-      # CVE-2023-39325 and CVE-2023-3978
-      go get golang.org/x/net@v0.17.0
-      # CVE-2023-47108
-      go get go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc@v0.46.1
-      go get go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp@v0.46.1
-      go get go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc@v1.21.0
-      go get go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp@v1.21.0
-      go mod tidy
-
       CGO_ENABLED=0 go build \
         -trimpath -ldflags "-w -X=main.version=${{package.version}}" \
         -o ${{targets.destdir}}/usr/bin/kube-oidc-proxy ./cmd/.
