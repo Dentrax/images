@@ -1,13 +1,14 @@
 package:
   name: spark
   version: 3.5.0
-  epoch: 0
+  epoch: 1
   description: Unified engine for large-scale data analytics
   copyright:
     - license: Apache-2.0
   dependencies:
     runtime:
-      - openjdk-17-jre
+      - openjdk-8-jre
+      - openjdk-8-default-jvm
       - bash
 
 environment:
@@ -17,8 +18,8 @@ environment:
       - ca-certificates-bundle
       - curl
       - maven
-      - openjdk-17
-      - openjdk-17-default-jvm
+      - openjdk-8
+      - openjdk-8-default-jvm
       - bash
       - wolfi-base
       - wolfi-baselayout
@@ -30,6 +31,8 @@ environment:
       - perl-utils
       - python-3.11
       - py3.11-pip
+      - glibc-locale-en
+      - grep
 
 pipeline:
   - uses: git-checkout
@@ -38,13 +41,9 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: ce5ddad990373636e94071e7cef2f31021add07b
 
-  - uses: patch
-    with:
-      patches: make-distribution.patch
-
   - runs: |
       export LANG=en_US.UTF-8
-      export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+      export JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk
       ./dev/make-distribution.sh --name custom-spark --pip -Psparkr -Phive -Phive-thriftserver -Pmesos -Pyarn -Pkubernetes
 
       mkdir -p ${{targets.destdir}}/usr/lib/spark
