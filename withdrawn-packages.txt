@@ -30,3 +30,4 @@ cmctl-1.12-1.12.6-r0.apk
 cmctl-1.13-1.13.1-r0.apk
 cmctl-1.13-1.13.1-r1.apk
 cmctl-1.13-1.13.2-r0.apk
+hubble-ui-backend-0.12.2-r0.apk
