@@ -1,7 +1,7 @@
 package:
   name: tigera-operator-fips-1.29
-  version: 1.29.7
-  epoch: 1
+  version: 1.29.8
+  epoch: 0
   description: Kubernetes operator for installing Calico and Calico Enterprise
   copyright:
     - license: Apache-2.0
@@ -20,15 +20,9 @@ pipeline:
     with:
       repository: https://github.com/tigera/operator
       tag: v${{package.version}}
-      expected-commit: 433f22c3c46967149d6e7ce6c1ccdf62fe6ca508
+      expected-commit: c7865358f5dc98b210ac759c7495137fdbc37b02
 
   - runs: |
-      # GHSA-vvpx-j8f3-3w6h
-      go get golang.org/x/net@v0.7.0
-
-      # Mitigate GHSA-r48q-9g5r-8q2h
-      go get github.com/emicklei/go-restful@v2.16.0
-
       # Mitigate GHSA-vfp4-xx6m-7vf6
       go get github.com/elastic/cloud-on-k8s/v2@2.4.0
 
