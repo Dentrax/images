@@ -1,6 +1,6 @@
 package:
   name: elasticsearch-8
-  version: 8.10.4
+  version: 8.11.1
   epoch: 0
   description:
   copyright:
@@ -28,7 +28,7 @@ pipeline:
     with:
       repository: https://github.com/elastic/elasticsearch
       tag: v${{package.version}}
-      expected-commit: b4a62ac808e886ff032700c391f45f1408b2538c
+      expected-commit: 6f9ff581fbcde658e6f69d6ce03050f060d1fd0c
 
   - runs: |
       export LANG=en_US.UTF-8
