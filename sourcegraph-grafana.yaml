@@ -1,6 +1,6 @@
 package:
   name: sourcegraph-grafana
-  version: 5.2.3
+  version: 5.2.4
   epoch: 0
   description: Sourcegraph packaged Grafana
   copyright:
@@ -30,7 +30,7 @@ pipeline:
       repository: https://github.com/sourcegraph/sourcegraph
       destination: sourcegraph
       tag: v${{package.version}}
-      expected-commit: e10060c4cfa5d6d8879a071bc5e39576b5601509
+      expected-commit: 1e4e3bac7b23cb95d096593663afc2d8b2bb7416
 
   - runs: |
       cd sourcegraph/monitoring
