@@ -11,7 +11,7 @@ package:
   name: flux-image-automation-controller-0
   # The version of image-automation-controller at the time of the last flux v0 (v0.41.2)
   version: 0.31.0
-  epoch: 1
+  epoch: 2
   description: GitOps Toolkit controller that patches container image tags in Git
   copyright:
     - license: Apache-2.0
