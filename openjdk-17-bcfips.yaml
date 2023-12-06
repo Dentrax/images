@@ -1,7 +1,7 @@
 package:
   name: openjdk-17-bcfips
-  version: 17.0.9 # same version as our GA public one
-  epoch: 2
+  version: 17.0.9.9 # to be changed when 17.0.10 is released
+  epoch: 3
   description: FIPS version of the OpenJDK package using BouncyCastle crypto APIs
   copyright:
     - license: GPL-2.0-only
@@ -21,6 +21,10 @@ var-transforms:
     match: ^(\d+).*
     replace: $1
     to: major-version
+  - from: ${{package.version}} # remove this when 17.0.10 is released
+    match: (\.\d+)$
+    replace: ""
+    to: ga-version
 
 environment:
   contents:
@@ -50,13 +54,13 @@ environment:
       - lcms2-dev
       - openjdk-16-default-jvm
       - openjdk-16
-      - bouncycastle-fips
+      - bouncycastle-fips # used only for testing purposes, the real dependency is the runtime dependency
 
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/openjdk/jdk17u.git
-      tag: jdk-${{package.version}}-ga
+      tag: jdk-${{vars.ga-version}}-ga # use ${{package.version}} when next GA gets released
       expected-commit: 9c16e89d275654cee98f5374434bea2097dda91e
 
   - working-directory: /home/build/googletest
@@ -162,7 +166,8 @@ subpackages:
         - freetype
         - libfontconfig1
         - openjdk-17-jre-base-bcfips
-        - bouncycastle-fips
+      provides:
+        - jre-fips=${{package.fullversion}}
     pipeline:
       - runs: |
           _java_home="usr/lib/jvm/java-17-openjdk"
@@ -183,6 +188,7 @@ subpackages:
       runtime:
         - java-common
         - java-cacerts
+        - bouncycastle-fips
     pipeline:
       - runs: |
           _java_home="usr/lib/jvm/java-17-openjdk"
@@ -268,7 +274,7 @@ subpackages:
 # 3. Patch releases are tagged with a tag like jdk-17.0.10+2
 # 4. The jdk-17.0.10-ga tag is updated to point to the new patch release commit
 update:
-  enabled: true
+  enabled: false # enable back when version gets bumped
   shared: true
   github:
     identifier: openjdk/jdk17u
