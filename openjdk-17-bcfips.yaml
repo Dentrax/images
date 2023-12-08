@@ -1,7 +1,7 @@
 package:
   name: openjdk-17-bcfips
   version: 17.0.9.9 # to be changed when 17.0.10 is released
-  epoch: 3
+  epoch: 4
   description: FIPS version of the OpenJDK package using BouncyCastle crypto APIs
   copyright:
     - license: GPL-2.0-only
@@ -221,6 +221,9 @@ subpackages:
 
           # symlink for `java-common` to work (which expects jre in $_java_home/jre)
           ln -sf . "${{targets.subpkgdir}}/$_java_home/jre"
+
+          mkdir -p "${{targets.subpkgdir}}/usr/lib/jvm/jdk-fips-config"
+          cp java.policy "${{targets.subpkgdir}}/usr/lib/jvm/jdk-fips-config"
 
   - name: "openjdk-17-jmods-bcfips"
     description: "OpenJDK 17 jmods"
