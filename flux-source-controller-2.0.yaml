@@ -1,0 +1,68 @@
+# Flux contains multiple components that are released together as a package of
+# individually versioned components with no logical mapping between them.
+# The versioning stream suffixed to this package name (-2.0) indicates the
+# flux version of this component. The component versions can be found here:
+# Ref: https://github.com/fluxcd/flux2/releases/tag/v2.0.1
+#
+# This package exists as a commitment to JAMF to support their upgrade path,
+# and should never be updated. It is only kept around long enough to fulfill
+# said upgrade path we agreed to.
+package:
+  name: flux-source-controller-2.0
+  # The version of source-controller at the time of flux v2.0.1
+  version: 1.0.1
+  epoch: 0
+  description: The GitOps Toolkit source management component
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - go
+      - gcc
+      - clang-16
+      - llvm-lld-16
+      - libgit2-dev-1.5
+      - zlib-dev
+      - zlib-static
+      - openssl-dev
+      - libssh2-dev
+      - pcre2-dev
+      - pkgconf
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/fluxcd/source-controller
+      tag: v${{package.version}}
+      expected-commit: 73406ece58c2e015aaf38e24c1056a84814c00da
+
+  - runs: |
+      # CVE-2023-39325 and CVE-2023-3978
+      go get golang.org/x/net@v0.17.0
+      # Mitigate GHSA-6xv5-86q9-7xr8
+      go get github.com/cyphar/filepath-securejoin@v0.2.4
+      # Mitigate GHSA-m425-mq94-257g
+      go get google.golang.org/grpc@v1.56.3
+      # GHSA-2c7c-3mj9-8fqh
+      go get github.com/go-jose/go-jose/v3@v3.0.1
+      # Mitigate GHSA-jq35-85cj-fj4p
+      go get github.com/docker/docker@v24.0.7
+      # Mitigate CVE-2023-46737 GHSA-vfp6-jrw2-99g9
+      # go get github.com/sigstore/cosign/v2@v2.2.1
+      go mod tidy
+      mkdir -p "${{targets.destdir}}"/usr/bin
+      # This is the expansion of $(pkg-config --static --libs --cflags libgit2)
+      CGO_LDFLAGS="-L /lib -L/usr/lib -L/usr/local/lib -lgit2 -lssh2 -lrt -lssl -ldl -pthread -lpcre2-8 -lz -lcrypto -ldl -pthread"
+      CGO_ENABLED=1 CGO_LDFLAGS="$CGO_LDFLAGS -static -fuse-ld=lld" go build \
+        -ldflags "-w" \
+        -tags 'netgo,osusergo,static_build' \
+        -trimpath -o "${{targets.destdir}}"/usr/bin/source-controller .
+
+  - uses: strip
+
+update:
+  enabled: false
