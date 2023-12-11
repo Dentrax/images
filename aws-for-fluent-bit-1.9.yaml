@@ -1,6 +1,6 @@
 package:
   name: aws-for-fluent-bit-1.9
-  version: 2.32.0.20231031
+  version: 2.32.0.20231205
   epoch: 0
   description: AWS provides a Fluent Bit image with plugins for both CloudWatch Logs and Kinesis Data Firehose.
   copyright:
@@ -30,7 +30,7 @@ pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/aws/aws-for-fluent-bit
-      expected-commit: 898d15ac2d4667440006f52273ac32c4d8d5088e
+      expected-commit: ec61cb129eae84dd9a0179a412ce77ed575be87a
       tag: v${{package.version}}
 
   - runs: |
