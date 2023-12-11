@@ -11,7 +11,7 @@ package:
   name: flux-source-controller-2.0
   # The version of source-controller at the time of flux v2.0.1
   version: 1.0.1
-  epoch: 0
+  epoch: 1
   description: The GitOps Toolkit source management component
   copyright:
     - license: Apache-2.0
@@ -50,9 +50,12 @@ pipeline:
       # GHSA-2c7c-3mj9-8fqh
       go get github.com/go-jose/go-jose/v3@v3.0.1
       # Mitigate GHSA-jq35-85cj-fj4p
-      go get github.com/docker/docker@v24.0.7
+      go get github.com/docker/cli@v24.0.7+incompatible
+      go get oras.land/oras-go@v1.2.4
+      go mod edit -replace=github.com/docker/docker=github.com/docker/docker@v24.0.7+incompatible
       # Mitigate CVE-2023-46737 GHSA-vfp6-jrw2-99g9
-      # go get github.com/sigstore/cosign/v2@v2.2.1
+      go get k8s.io/kubectl@v0.28.4
+      go get github.com/sigstore/cosign/v2@v2.2.1
       go mod tidy
       mkdir -p "${{targets.destdir}}"/usr/bin
       # This is the expansion of $(pkg-config --static --libs --cflags libgit2)
