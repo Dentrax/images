@@ -1,7 +1,7 @@
 package:
   name: nri-kubernetes-2.13
   version: 2.13.11
-  epoch: 1
+  epoch: 2
   description: New Relic integration for Kubernetes
   copyright:
     - license: Apache-2.0
@@ -27,11 +27,22 @@ pipeline:
       # Mitigate CVE-2023-39325, CVE-2023-3978
       go get golang.org/x/net@v0.17.0
       go mod tidy
+
       make compile
-      mkdir -p ${{targets.destdir}}/usr/bin
-      mv bin/nri-kubernetes ${{targets.destdir}}/usr/bin/nri-kubernetes
+      mkdir -p ${{targets.contextdir}}/usr/bin
+      mv bin/nri-kubernetes ${{targets.contextdir}}/usr/bin/nri-kubernetes
 
   - uses: strip
+
+subpackages:
+  - name: ${{package.name}}-compat
+    description: "Compatibility package to place binaries in the location expected by newrelic-infrastructure-k8s"
+    pipeline:
+      - runs: |
+          mkdir -p ${{targets.contextdir}}/var/db/newrelic-infra/newrelic-integrations/bin
+          ln -sf /usr/bin/nri-kubernetes ${{targets.contextdir}}/var/db/newrelic-infra/newrelic-integrations/bin/nri-kubernetes
+          install -Dm644 ./nri-kubernetes-definition.yml ${{targets.contextdir}}/var/db/newrelic-infra/newrelic-integrations/nri-kubernetes-definition.yml
+          install -Dm644 ./nri-kubernetes-config.yml.sample ${{targets.contextdir}}/var/db/newrelic-infra/integrations.d/nri-kubernetes-config.yml
 
 update:
   enabled: true
@@ -39,3 +50,4 @@ update:
     identifier: newrelic/nri-kubernetes
     strip-prefix: v
     tag-filter: v2.13.
+    use-tag: true
