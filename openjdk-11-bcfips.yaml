@@ -1,7 +1,7 @@
 package:
   name: openjdk-11-bcfips
   version: 11.0.21.9 # to be changed when 11.0.22 is released
-  epoch: 4
+  epoch: 5
   description: FIPS version of the OpenJDK package using BouncyCastle crypto APIs
   copyright:
     - license: GPL-2.0-only
@@ -117,21 +117,6 @@ pipeline:
 
       mkdir -p "${{targets.destdir}}/usr/lib/jvm/jdk-fips-config"
       cp java.policy "${{targets.destdir}}/usr/lib/jvm/jdk-fips-config"
-
-  - name: Convert keystore to BCFKS
-    runs: |
-      _java_home="${{targets.destdir}}/usr/lib/jvm/java-${{vars.major-version}}-openjdk"
-
-      "$_java_home/bin/keytool" -v \
-        -importkeystore \
-        -srckeystore "$_java_home/lib/security/cacerts" \
-        -srcstoretype JKS \
-        -srcstorepass changeit \
-        -destkeystore "$_java_home/lib/security/cacerts.bcfks" \
-        -deststoretype bcfks \
-        -deststorepass changeit \
-        -providerclass org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider \
-        -providerpath /usr/share/java/bouncycastle-fips/bc-fips.jar
 
   - name: Test the overall setup
     runs: |
