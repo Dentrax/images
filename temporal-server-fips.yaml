@@ -1,7 +1,7 @@
 package:
   name: temporal-server-fips
   version: 1.22.3
-  epoch: 0
+  epoch: 1
   description: Temporal server executes units of application logic, Workflows, in a resilient manner that automatically handles intermittent failures, and retries failed operations
   copyright:
     - license: MIT License
@@ -119,7 +119,7 @@ subpackages:
     pipeline:
       - runs: |
           mkdir -p ${{targets.subpkgdir}}/etc/temporal/schema
-          cp -r schema ${{targets.subpkgdir}}/etc/temporal/schema
+          cp -r schema ${{targets.subpkgdir}}/etc/temporal/
 
 update:
   enabled: true
