@@ -2,7 +2,7 @@
 package:
   name: eks-distro-kubernetes-csi-external-resizer-1.25
   version: 1.25.28
-  epoch: 0
+  epoch: 1
   description: Sidecar container that watches Kubernetes PersistentVolumeClaims objects and triggers controller side expansion operation against a CSI endpoint
   copyright:
     - license: Apache-2.0
