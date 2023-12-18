@@ -1,6 +1,6 @@
 package:
   name: sigstore-scaffolding-fips
-  version: 0.6.12
+  version: 0.6.13
   epoch: 0
   description: Software Supply Chain Transparency Log
   target-architecture:
@@ -42,7 +42,7 @@ pipeline:
     with:
       repository: https://github.com/sigstore/scaffolding
       tag: v${{package.version}}
-      expected-commit: 9e5583eaf47855103a9acd6eaa2b1da85f28e28e
+      expected-commit: a6e9b1a7a45f10449bbb677c31ce4c1389edd08b
 
 subpackages:
   - range: components
