@@ -1,7 +1,7 @@
 package:
   name: azure-aad-pod-identity-mic
   version: 1.8.17
-  epoch: 3
+  epoch: 4
   description: Assign Azure Active Directory Identities to Kubernetes applications.
   copyright:
     - license: MIT
@@ -22,11 +22,11 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: d17ea6a41aed5284fda895d6d48f50cc5f9f175f
 
-  - runs: |
-      # Mitigate CVE-2023-39325, CVE-2023-3978
-      go get golang.org/x/net@v0.17.0
-      go mod tidy
+  - uses: go/bump
+    with:
+      deps: golang.org/x/net@v0.17.0 golang.org/x/crypto@v0.17.0
 
+  - runs: |
       unset LDFLAGS
       make build ARCH=$(go env GOARCH) IMAGE_VERSION=${{package.version}}
       install -Dm755 bin/aad-pod-identity/mic "${{targets.destdir}}"/usr/bin/mic
