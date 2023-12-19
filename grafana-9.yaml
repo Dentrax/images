@@ -1,14 +1,7 @@
-# TODO: This grafana version is EOL. The only customer this was shared with was
-# JAMF. We're checking with them to see if they can go to v9.5 (or 10.x), both
-# of which are supported and we're also building.
-#
-# Pending feedback from JAMF, we'd expect to remove this package, in favour of
-# 'grafana-9.yaml', which will always build the latest 9.x release. Leaving in
-# place for now until we hear back from JAMF.
 package:
-  name: grafana-9.3
-  version: 9.3.16
-  epoch: 5
+  name: grafana-9
+  version: 9.5.14
+  epoch: 0
   description: The open and composable observability and data visualization platform.
   copyright:
     - license: AGPL-3.0-or-later
@@ -36,20 +29,13 @@ pipeline:
     with:
       repository: https://github.com/grafana/grafana
       tag: v${{package.version}}
-      expected-commit: 07b83b72be8497c2060810a6d242d180781459ce
+      expected-commit: 7725977eefc06188f38f324be4431e9c9c8a3840
+
+  - uses: go/bump
+    with:
+      deps: golang.org/x/crypto@v0.17.0 github.com/elazarl/goproxy@v0.0.0-20231117061959-7cc037d33fb5 github.com/go-jose/go-jose/v3@v3.0.1 go.opentelemetry.io/otel@v1.21.0 go.opentelemetry.io/otel/trace@v1.21.0 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc@v0.46.0 go.opentelemetry.io/otel/sdk@v1.21.0
 
   - runs: |
-      # GHSA-m425-mq94-257g
-      go mod edit -dropreplace=google.golang.org/grpc
-      go mod edit -replace=github.com/sercand/kuberesolver=github.com/sercand/kuberesolver/v5@v5.1.1
-      go get github.com/weaveworks/common@v0.0.0-20230728070032-dd9e68f319d5
-      go get google.golang.org/grpc@v1.56.3
-
-      # Mititage CVE-2022-41723 / GHSA-vvpx-j8f3-3w6h
-      # Mitigate CVE-2023-39325, CVE-2023-3978, CVE-2023-44487
-      go mod edit -replace golang.org/x/net=golang.org/x/net@v0.17.0
-      go mod tidy
-
       yarn install
       yarn run build
       yarn run plugins:build-bundled
@@ -70,11 +56,20 @@ pipeline:
       mv ./public ${{targets.destdir}}/usr/share/grafana/
       mv ./scripts/*.sh ${{targets.destdir}}/usr/share/grafana/scripts/
 
-      mkdir -p ${{targets.destdir}}/opt/grafana
-      mv ./packaging/docker/run.sh ${{targets.destdir}}/opt/grafana/
-
       mkdir -p ${{targets.destdir}}/etc/grafana/
       cp ${{targets.destdir}}/usr/share/grafana/conf/sample.ini ${{targets.destdir}}/etc/grafana/grafana.ini
 
+subpackages:
+  - name: grafana-oci-compat-9
+    pipeline:
+      - runs: |
+          mkdir -p ${{targets.subpkgdir}}/opt/grafana
+          mv ./packaging/docker/run.sh ${{targets.subpkgdir}}/opt/grafana/
+
 update:
-  enabled: false # since the 9.3.16 is the latest version of the 9.3.x series, we won't be able to need updates for this package
+  enabled: true
+  github:
+    use-tag: true
+    identifier: grafana/grafana
+    tag-filter-prefix: v9.
+    strip-prefix: v
