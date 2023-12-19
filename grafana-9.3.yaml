@@ -8,7 +8,7 @@
 package:
   name: grafana-9.3
   version: 9.3.16
-  epoch: 5
+  epoch: 6
   description: The open and composable observability and data visualization platform.
   copyright:
     - license: AGPL-3.0-or-later
@@ -38,18 +38,12 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: 07b83b72be8497c2060810a6d242d180781459ce
 
+  - uses: go/bump
+    with:
+      deps: github.com/weaveworks/common@v0.0.0-20230728070032-dd9e68f319d5 google.golang.org/grpc@v1.56.3 golang.org/x/crypto@v0.17.0
+      replaces: golang.org/x/net=golang.org/x/net@v0.17.0 github.com/sercand/kuberesolver=github.com/sercand/kuberesolver/v5@v5.1.1
+
   - runs: |
-      # GHSA-m425-mq94-257g
-      go mod edit -dropreplace=google.golang.org/grpc
-      go mod edit -replace=github.com/sercand/kuberesolver=github.com/sercand/kuberesolver/v5@v5.1.1
-      go get github.com/weaveworks/common@v0.0.0-20230728070032-dd9e68f319d5
-      go get google.golang.org/grpc@v1.56.3
-
-      # Mititage CVE-2022-41723 / GHSA-vvpx-j8f3-3w6h
-      # Mitigate CVE-2023-39325, CVE-2023-3978, CVE-2023-44487
-      go mod edit -replace golang.org/x/net=golang.org/x/net@v0.17.0
-      go mod tidy
-
       yarn install
       yarn run build
       yarn run plugins:build-bundled
