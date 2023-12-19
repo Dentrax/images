@@ -11,7 +11,7 @@ package:
   name: flux-image-reflector-controller-0
   # The version of image-reflector-controller at the time of the last flux v0 (v0.41.2)
   version: 0.26.1
-  epoch: 2
+  epoch: 3
   description: GitOps Toolkit controller that scans container registries
   copyright:
     - license: Apache-2.0
@@ -30,6 +30,10 @@ pipeline:
       repository: https://github.com/fluxcd/image-reflector-controller
       tag: v${{package.version}}
       expected-commit: 7b8e6bac22b3889859bb7b0e36ba004b07e3ab16
+
+  - uses: go/bump
+    with:
+      deps: github.com/docker/distribution@v2.8.2-beta.1 github.com/docker/docker@v24.0.7 golang.org/x/net@v0.17.0 golang.org/x/crypto@v0.17.0
 
   - uses: go/build
     with:

@@ -11,7 +11,7 @@ package:
   name: flux-kustomize-controller-0
   # The version of kustomize-controller at the time of the last flux v0 (v0.41.2)
   version: 0.35.1
-  epoch: 5
+  epoch: 6
   description: The GitOps Toolkit Kustomize reconciler
   copyright:
     - license: Apache-2.0
@@ -46,13 +46,15 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: 31534d9df07b311a86d7ea704074868176dd995f
 
+  - uses: go/bump
+    with:
+      deps: github.com/cyphar/filepath-securejoin@v0.2.4 golang.org/x/net@v0.17.0 google.golang.org/grpc@v1.56.3 golang.org/x/crypto@v0.17.0
+
   - uses: go/build
     with:
       packages: .
       output: kustomize-controller
       ldflags: -s -w
-      # CVE-2023-39325 and CVE-2023-3978 / GHSA-m425-mq94-257g
-      deps: golang.org/x/net@v0.17.0 google.golang.org/grpc@v1.56.3
 
   - uses: strip
 

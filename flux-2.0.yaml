@@ -9,7 +9,7 @@
 package:
   name: flux-2.0
   version: 2.0.1
-  epoch: 0
+  epoch: 1
   description: Open and extensible continuous delivery solution for Kubernetes. Powered by GitOps Toolkit.
   copyright:
     - license: Apache-2.0
@@ -33,14 +33,11 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: 9b3162495ce1b99b1fcdf137c553f543eafe3ec7
 
+  - uses: go/bump
+    with:
+      deps: golang.org/x/net@v0.17.0 github.com/docker/docker@v24.0.7 github.com/cyphar/filepath-securejoin@v0.2.4 golang.org/x/crypto@v0.17.0
+
   - runs: |
-      # CVE-2023-39325 and CVE-2023-3978
-      go get golang.org/x/net@v0.17.0
-      # Mitigate GHSA-jq35-85cj-fj4p
-      go get github.com/docker/docker@v24.0.7
-      # Mitigate GHSA-6xv5-86q9-7xr8
-      go get github.com/cyphar/filepath-securejoin@v0.2.4
-      go mod tidy
       mkdir -p "${{targets.destdir}}"/usr/bin
       VERSION=${{package.version}} make build
       install -Dm755 bin/flux ${{targets.destdir}}/usr/bin/flux

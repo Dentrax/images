@@ -11,7 +11,7 @@ package:
   name: flux-helm-controller-0.37
   # The version of helm-controller at the time of flux v0.37
   version: 0.27.0
-  epoch: 4
+  epoch: 6
   description: The GitOps Toolkit Helm reconciler, for declarative Helming
   copyright:
     - license: Apache-2.0
@@ -32,13 +32,15 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: 3a13ca2da0c2e5cfa851be8f18d6a231b202a743
 
+  - uses: go/bump
+    with:
+      deps: github.com/cyphar/filepath-securejoin@v0.2.4 golang.org/x/net@v0.17.0 google.golang.org/grpc@v1.56.3 golang.org/x/crypto@v0.17.0
+
   - uses: go/build
     with:
       packages: .
       output: helm-controller
       ldflags: -s -w
-      # CVE-2023-39325 and CVE-2023-3978 / GHSA-m425-mq94-257g
-      deps: golang.org/x/net@v0.17.0 google.golang.org/grpc@v1.56.3
 
   - uses: strip
 
