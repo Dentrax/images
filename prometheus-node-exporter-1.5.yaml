@@ -1,7 +1,7 @@
 package:
   name: prometheus-node-exporter-1.5
   version: 1.5.0
-  epoch: 4
+  epoch: 5
   description: Prometheus Exporter for machine metrics
   copyright:
     - license: Apache-2.0
@@ -23,13 +23,11 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: 1b48970ffcf5630534fb00bb0687d73c66d1c959
 
+  - uses: go/bump
+    with:
+      deps: golang.org/x/crypto@v0.17.0 golang.org/x/net@v0.17.0
+
   - runs: |
-      # Mitigate GHSA-vvpx-j8f3-3w6h
-      # Mitigate CVE-2023-39325 and CVE-2023-3978
-      go get golang.org/x/net@v0.17.0
-
-      go mod tidy
-
       make build
 
   - runs: |
