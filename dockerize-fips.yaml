@@ -1,7 +1,7 @@
 package:
   name: dockerize-fips
   version: 0.7.0
-  epoch: 1
+  epoch: 2
   description: Utility to simplify running applications in docker containers
   copyright:
     - license: MIT License
@@ -20,6 +20,10 @@ pipeline:
       repository: https://github.com/jwilder/dockerize
       tag: v${{package.version}}
       expected-commit: c489c4f42d15df111d02d80fce5816bb024278f4
+
+  - uses: go/bump
+    with:
+      deps: golang.org/x/crypto@v0.17.0
 
   - runs: |
       # Fix some CVEs.
