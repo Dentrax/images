@@ -1,7 +1,7 @@
 package:
   name: kiam
   version: 4.2
-  epoch: 5
+  epoch: 6
   description: Integrate AWS IAM with Kubernetes
   copyright:
     - license: Apache-2.0
@@ -27,25 +27,12 @@ pipeline:
     with:
       patches: GHSA-m425-mq94-257g.patch
 
+  - uses: go/bump
+    with:
+      deps: github.com/gogo/protobuf@v1.3.2 github.com/prometheus/client_golang@v1.11.1 google.golang.org/grpc@v1.56.3 golang.org/x/net@v0.17.0 golang.org/x/crypto@v0.17.0
+      go-version: "1.21"
+
   - runs: |
-      # Mitigate GHSA-c3h9-896r-86jm
-      go get github.com/gogo/protobuf@v1.3.2
-
-      # Mitigate GHSA-cg3q-j54f-5p7p
-      # Mitigate CVE-2022-21698
-      go get github.com/prometheus/client_golang@v1.11.1
-
-      # CVE-2023-44487, GHSA-m425-mq94-257g
-      go get google.golang.org/grpc@v1.56.3
-
-      # Mitigate GHSA-h86h-8ppg-mxmh
-      # Mitigate GHSA-83g2-8m93-v3w7
-      # Mitigate GHSA-69cg-p879-7622
-      # Mitigate GHSA-vvpx-j8f3-3w6h
-      go get golang.org/x/net@v0.17.0
-
-      go mod tidy
-
       go build -o ${{targets.destdir}}/usr/bin/kiam ./cmd/kiam
 
   - uses: strip
