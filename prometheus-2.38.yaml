@@ -1,7 +1,7 @@
 package:
   name: prometheus-2.38
   version: 2.38.0
-  epoch: 3
+  epoch: 4
   description: The Prometheus monitoring system and time series database.
   copyright:
     - license: Apache-2.0
@@ -22,6 +22,10 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: 818d6e60888b2a3ea363aee8a9828c7bafd73699
 
+  - uses: go/bump
+    with:
+      deps: golang.org/x/net@v0.17.0 golang.org/x/crypto@v0.17.0 go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp@v0.44.0 go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc@v1.19.0 go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp@v1.19.0 google.golang.org/grpc@v1.58.3
+
   - runs: |
       GOLDFLAGS="-w -X github.com/prometheus/common/version.Version=${{package.version}}
         -X github.com/prometheus/common/version.Revision=WolfiLinux
@@ -33,17 +37,6 @@ pipeline:
         # LDFLAGS (and only LDFLAGS) should be passed to -extldflags.
         GOLDFLAGS="$GOLDFLAGS -extldflags '$LDFLAGS'"
       fi
-
-      # Mitigate CVE-2023-39325 and CVE-2023-3978
-      go get golang.org/x/net@v0.17.0
-      # Remediate CVE-2023-45142
-      go get go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp@v0.44.0
-      go mod edit -droprequire=go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc
-      go get go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc@v1.19.0
-      go get go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp@v1.19.0
-      # Remediate GHSA-m425-mq94-257g, GHSA-qppj-fm5r-hxr3
-      go get google.golang.org/grpc@v1.58.3
-      go mod tidy -compat=1.17
 
       # set -j1 to run things in the correct order in makefile
       # actual go building is still parallel
