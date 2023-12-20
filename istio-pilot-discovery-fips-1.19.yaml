@@ -1,7 +1,7 @@
 package:
   name: istio-pilot-discovery-fips-1.19
   version: 1.19.5
-  epoch: 0
+  epoch: 1
   description: Istio controller
   copyright:
     - license: Apache-2.0
@@ -25,12 +25,16 @@ pipeline:
       tag: ${{package.version}}
       expected-commit: a61a751512256f27bc3b1ff9bc9c38119c6e978c
 
+  - uses: go/bump
+    with:
+      deps: github.com/go-jose/go-jose/v3@v3.0.1 golang.org/x/crypto@v0.17.0
+      go-version: "1.21"
+
   - uses: go/build
     with:
       packages: ./pilot/cmd/pilot-discovery
       output: pilot-discovery
       go-package: go-fips
-      deps: github.com/go-jose/go-jose/v3@v3.0.1
 
   - runs: |
       mkdir -p ${{targets.destdir}}/var/lib/istio/envoy
