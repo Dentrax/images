@@ -1,7 +1,7 @@
 package:
   name: wavefront-collector-for-kubernetes-1.12
   version: 1.12.1
-  epoch: 5
+  epoch: 6
   description: Monitoring Kubernetes Clusters using Wavefront
   copyright:
     - license: Apache-2.0
@@ -25,17 +25,10 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: 946dbf43c8cb15dee95bdf0a6a54eca51a44a0a2
 
-  - runs: |
-      # Mitigate CVE-2022-32149 / GHSA-69ch-w2m2-3vjp
-      go mod edit -replace golang.org/x/text=golang.org/x/text@v0.3.8
-
-      # Mitigate CVE-2022-41723 / GHSA-vvpx-j8f3-3w6h
-      # Mitigate CVE-2022-41721 / GHSA-fxg5-wq6x-vr4w
-      # Mitigate CVE-2023-39325 and CVE-2023-3978
-      go get golang.org/x/net@v0.17.0
-
-      go mod tidy
-      go mod vendor
+  - uses: go/bump
+    with:
+      deps: golang.org/x/crypto@v0.17.0 golang.org/x/net@v0.17.0
+      replaces: golang.org/x/text=golang.org/x/text@v0.3.8
 
   - uses: go/build
     with:
