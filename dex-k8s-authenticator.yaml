@@ -1,14 +1,10 @@
 package:
   name: dex-k8s-authenticator
   version: 1.4.0
-  epoch: 5
+  epoch: 6
   description: Pluggable web app using Dex Identity services
-  target-architecture:
-    - all
   copyright:
     - license: MIT
-      paths:
-        - "*"
 
 environment:
   contents:
