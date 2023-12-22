@@ -22,6 +22,16 @@ MELANGE_OPTS += --env-file build-${ARCH}.env
 MELANGE_OPTS += --namespace chainguard
 MELANGE_OPTS += ${MELANGE_EXTRA_OPTS}
 
+# These are separate from MELANGE_OPTS because for building we need additional
+# ones that are not defined for tests.
+MELANGE_TEST_OPTS += --repository-append ${REPO}
+MELANGE_TEST_OPTS += --keyring-append ${KEY}.pub
+MELANGE_TEST_OPTS += --arch ${ARCH}
+MELANGE_TEST_OPTS += --pipeline-dirs ./pipelines/
+MELANGE_TEST_OPTS += --repository-append https://packages.wolfi.dev/os
+MELANGE_TEST_OPTS += --keyring-append https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+MELANGE_TEST_OPTS += ${MELANGE_EXTRA_OPTS}
+
 # The list of packages to be built. The order matters.
 # wolfictl determines the list and order
 # set only to be called when needed, so make can be instant to run
@@ -69,6 +79,12 @@ packages/$(ARCH)/%.apk: $(KEY)
 	@mkdir -p ./$(pkgname)/
 	$(eval SOURCE_DATE_EPOCH ?= $(shell git log -1 --pretty=%ct --follow $(yamlfile)))
 	@SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH) $(MELANGE) build $(yamlfile) $(MELANGE_OPTS) --source-dir ./$(pkgname)/ --log-policy builtin:stderr,$(TARGETDIR)/buildlogs/$*.log
+
+test/%:
+	$(eval yamlfile := $(shell find . -type f \( -name "$*.yaml" -o -path "*/$*/$*.melange.yaml" \) | head -n 1))
+	$(eval pkgver := $(shell $(MELANGE) package-version $(yamlfile)))
+	@printf "Testing package $* with version $(pkgver) from file $(yamlfile)\n"
+	$(MELANGE) test $(yamlfile) --source-dir ./$*/ $(MELANGE_TEST_OPTS) --log-policy builtin:stderr
 
 dev-container:
 	docker run --privileged --rm -it \
