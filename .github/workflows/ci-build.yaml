@@ -130,7 +130,7 @@ jobs:
           wolfictl check diff
 
       - name: 'Upload built packages to GitHub artifacts'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           path: |
             ${{ steps.list_built_packages.outputs.files_to_upload }}
