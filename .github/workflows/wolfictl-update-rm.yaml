@@ -25,7 +25,7 @@ jobs:
     steps:
     - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
 
-    - uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:ef58db775e9830f28dab689c060348df67f750216dd20ec31a6ae3949cc118dc
+    - uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:7204b053dd5e341b479fa0b23ed7434f5359ca9d0f5f3f3473aa5ea727f95cae
       with:
         entrypoint: wolfictl
         args: update https://github.com/${{github.repository}} --github-release-query=false --use-gitsign --github-labels request-version-update --github-labels "automated pr"
