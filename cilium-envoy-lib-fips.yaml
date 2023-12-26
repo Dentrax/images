@@ -3,7 +3,7 @@ package:
   # cilium/proxy is refered by the build in cilium/cilium using
   # digest. the project itself does not have any tag nor release.
   version: "1.25_git20231010"
-  epoch: 1
+  epoch: 2
   description: proxylib is a Go implemtation of L7 access control parsers that are compiled into a shared library. This shared library is loaded at runtime by the Cilium network layer Envoy filter.
   copyright:
     - license: Apache-2.0
@@ -27,12 +27,11 @@ pipeline:
       expected-sha256: e5be89bcc51a94bc8e962ddd37bb42372e1441fc37f1948a59ee2e19db5efa1a
       uri: https://github.com/cilium/proxy/archive/${{vars.CILIUM_PROXY_COMMIT}}.tar.gz
 
-  - runs: |
-      # Handle CVE-2022-41723 CVE-2023-39325 and CVE-2023-3978
-      go get golang.org/x/net@v0.17.0
-      go mod tidy
-      go mod vendor
+  - uses: go/bump
+    with:
+      deps: google.golang.org/grpc@v1.56.3 golang.org/x/net@v0.17.0
 
+  - runs: |
       cd /home/build/proxylib
       make
       mkdir -p ${{targets.destdir}}/usr/lib
