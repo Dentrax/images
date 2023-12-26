@@ -1,11 +1,13 @@
 package:
   name: grafana-9
   version: 9.5.15
-  epoch: 0
+  epoch: 1
   description: The open and composable observability and data visualization platform.
   copyright:
     - license: AGPL-3.0-or-later
   dependencies:
+    provides:
+      - grafana=${{package.full-version}}
     runtime:
       - bash
 
