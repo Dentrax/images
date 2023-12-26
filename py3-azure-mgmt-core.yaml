@@ -1,0 +1,43 @@
+# Generated from https://pypi.org/project/azure-mgmt-core/
+package:
+  name: py3-azure-mgmt-core
+  version: 1.4.0
+  epoch: 0
+  description: Microsoft Azure Management Core Library for Python
+  copyright:
+    - license: MIT
+  dependencies:
+    runtime:
+      - python-3
+
+environment:
+  contents:
+    packages:
+      - ca-certificates-bundle
+      - wolfi-base
+      - busybox
+      - build-base
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: fa77a41bf294c9d965ce25f31b46edfdd9398355
+      repository: https://github.com/Azure/azure-sdk-for-python
+      tag: azure-mgmt-core_${{package.version}}
+      destination: ./azure-sdk-for-python
+
+  - runs: |
+      mv ./azure-sdk-for-python/sdk/core/azure-mgmt-core/* .
+
+  - name: Python Build
+    uses: python/build-wheel
+
+  - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: Azure/azure-sdk-for-python
+    tag-filter-contains: azure-mgmt-core_
+    strip-prefix: azure-mgmt-core_
+    use-tag: true
