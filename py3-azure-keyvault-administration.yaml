@@ -38,13 +38,14 @@ pipeline:
 
   - uses: strip
 
-# TODO: Enable this repo, once
-# https://github.com/chainguard-dev/melange/issues/904 is addressed.
-#  enabled: true
-#  github:
-#    identifier: Azure/azure-sdk-for-python
-#    tag-filter-contains: azure-keyvault-administration_
-#    strip-prefix: azure-keyvault-administration_
-#    use-tag: true
 update:
-  enabled: false
+  # The azure repo has some tags that have a bN suffix, which
+  # is not a valid version, so ignore those.
+  ignore-regex-patterns:
+    - b
+  enabled: true
+  github:
+    identifier: Azure/azure-sdk-for-python
+    tag-filter-contains: azure-keyvault-administration_
+    strip-prefix: azure-keyvault-administration_
+    use-tag: true
