@@ -11,7 +11,7 @@ package:
   name: flux-source-controller-0
   # The version of source-controller at the time of the last flux v0 (v0.41.2)
   version: 0.36.1
-  epoch: 5
+  epoch: 6
   description: The GitOps Toolkit source management component
   copyright:
     - license: Apache-2.0
@@ -33,16 +33,22 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: 82dc24c667d5da4c0c832bee6088c668b9d1180c
 
+  # etcd is downgraded purposefully. The version in this package has a newer semver (v3.6.0-alpha.0), but is actually older than 3.5.11
+  - runs: go get go.etcd.io/etcd/pkg/v3@v3.5.11 go.etcd.io/etcd/api/v3@v3.5.11 go.etcd.io/etcd/client/pkg/v3@v3.5.11
+
   - uses: go/bump
     with:
-      deps: github.com/go-jose/go-jose/v3@v3.0.1 golang.org/x/net@v0.17.0 golang.org/x/crypto@v0.17.0
+      deps: github.com/go-jose/go-jose/v3@v3.0.1 github.com/cloudflare/circl@v1.3.3 github.com/cyphar/filepath-securejoin@v0.2.4 oras.land/oras-go@v1.2.4 github.com/docker/docker@v24.0.7 github.com/containerd/containerd@v1.7.11 github.com/sigstore/cosign@v1.13.2 golang.org/x/net@v0.17.0 golang.org/x/crypto@v0.17.0
 
-  - runs: |
-      mkdir -p "${{targets.destdir}}"/usr/bin
-      CGO_ENABLED=1 CGO_LDFLAGS="-static -fuse-ld=lld" go build \
-        -ldflags "-w" \
-        -tags 'netgo,osusergo,static_build' \
-        -trimpath -o "${{targets.destdir}}"/usr/bin/source-controller .
+  - uses: go/build
+    environment:
+      CGO_ENABLED: 1
+      CGO_LDFLAGS: -static -fuse-ld=lld
+    with:
+      packages: .
+      output: source-controller
+      ldflags: -w
+      tags: netgo,osusergo,static_build
 
   - uses: strip
 
