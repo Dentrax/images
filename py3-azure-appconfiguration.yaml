@@ -1,0 +1,58 @@
+# Generated from https://pypi.org/project/azure-appconfiguration/
+package:
+  name: py3-azure-appconfiguration
+  version: 1.5.0
+  epoch: 0
+  description: Microsoft App Configuration Data Library for Python
+  copyright:
+    - license: MIT License
+  dependencies:
+    runtime:
+      - py3-azure-core
+      - py3-isodate
+      - python-3
+
+environment:
+  contents:
+    packages:
+      - build-base
+      - busybox
+      - ca-certificates-bundle
+      - wolfi-base
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 6a51fbd8e3c32c4d2bf318f36cab817d668f6fcb
+      repository: https://github.com/Azure/azure-sdk-for-python
+      tag: azure-appconfiguration_${{package.version}}
+      destination: ./azure-sdk-for-python
+
+  - runs: |
+      mv ./azure-sdk-for-python/sdk/appconfiguration/azure-appconfiguration/* .
+
+  - name: Python Build
+    uses: python/build-wheel
+
+  - uses: strip
+
+update:
+  # The azure repo has some tags that have a bN suffix, which
+  # is not a valid version, so ignore those.
+  ignore-regex-patterns:
+    - b
+  enabled: true
+  github:
+    identifier: Azure/azure-sdk-for-python
+    tag-filter-contains: azure-appconfiguration_
+    strip-prefix: azure-appconfiguration_
+    use-tag: true
+
+test:
+  environment:
+    contents:
+      packages:
+        - wolfi-base
+  pipeline:
+    - runs: |
+        python ./import-test.py
