@@ -1,14 +1,15 @@
-# Generated from https://pypi.org/project/azure-mgmt-core/
 package:
-  name: py3-azure-mgmt-core
-  version: 1.4.0
-  epoch: 1
-  description: Microsoft Azure Management Core Library for Python
+  name: py3-azure-mgmt-cognitiveservices
+  version: 13.5.0
+  epoch: 0
+  description: Microsoft Azure App Configuration Management Client Library for Python
   copyright:
     - license: MIT
   dependencies:
     runtime:
-      - py3-azure-core
+      - py3-azure-common
+      - py3-azure-mgmt-core
+      - py3-msrest
       - python-3
 
 environment:
@@ -22,13 +23,13 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: fa77a41bf294c9d965ce25f31b46edfdd9398355
+      expected-commit: 243f8c824f3935bc05bd515091b4a1a840d26ad4
       repository: https://github.com/Azure/azure-sdk-for-python
-      tag: azure-mgmt-core_${{package.version}}
+      tag: azure-mgmt-cognitiveservices_${{package.version}}
       destination: ./azure-sdk-for-python
 
   - runs: |
-      mv ./azure-sdk-for-python/sdk/core/azure-mgmt-core/* .
+      mv ./azure-sdk-for-python/sdk/cognitiveservices/azure-mgmt-cognitiveservices/* .
 
   - name: Python Build
     uses: python/build-wheel
@@ -43,8 +44,8 @@ update:
   enabled: true
   github:
     identifier: Azure/azure-sdk-for-python
-    tag-filter-contains: azure-mgmt-core_
-    strip-prefix: azure-mgmt-core_
+    tag-filter-contains: azure-mgmt-cognitiveservices_
+    strip-prefix: azure-mgmt-cognitiveservices_
     use-tag: true
 
 test:
@@ -53,4 +54,4 @@ test:
       packages:
         - wolfi-base
   pipeline:
-    - runs: python -c 'import azure.mgmt.core'
+    - runs: python -c 'import azure.mgmt.cognitiveservices'

@@ -1,14 +1,15 @@
-# Generated from https://pypi.org/project/azure-mgmt-core/
 package:
-  name: py3-azure-mgmt-core
-  version: 1.4.0
-  epoch: 1
-  description: Microsoft Azure Management Core Library for Python
+  name: py3-azure-mgmt-cdn
+  version: 13.0.0
+  epoch: 0
+  description: This is the Microsoft Azure CDN Management Client Library.
   copyright:
     - license: MIT
   dependencies:
     runtime:
-      - py3-azure-core
+      - py3-azure-common
+      - py3-azure-mgmt-core
+      - py3-msrest
       - python-3
 
 environment:
@@ -22,13 +23,13 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: fa77a41bf294c9d965ce25f31b46edfdd9398355
+      expected-commit: ef4966935dc2fcbb0ee58fc7155b051b5b5d23ad
       repository: https://github.com/Azure/azure-sdk-for-python
-      tag: azure-mgmt-core_${{package.version}}
+      tag: azure-mgmt-cdn_${{package.version}}
       destination: ./azure-sdk-for-python
 
   - runs: |
-      mv ./azure-sdk-for-python/sdk/core/azure-mgmt-core/* .
+      mv ./azure-sdk-for-python/sdk/cdn/azure-mgmt-cdn/* .
 
   - name: Python Build
     uses: python/build-wheel
@@ -43,8 +44,8 @@ update:
   enabled: true
   github:
     identifier: Azure/azure-sdk-for-python
-    tag-filter-contains: azure-mgmt-core_
-    strip-prefix: azure-mgmt-core_
+    tag-filter-contains: azure-mgmt-cdn_
+    strip-prefix: azure-mgmt-cdn_
     use-tag: true
 
 test:
@@ -53,4 +54,4 @@ test:
       packages:
         - wolfi-base
   pipeline:
-    - runs: python -c 'import azure.mgmt.core'
+    - runs: python -c 'import azure.mgmt.cdn'

@@ -40,3 +40,11 @@ update:
     identifier: Azure/msrestazure-for-python
     strip-prefix: v
     use-tag: true
+
+test:
+  environment:
+    contents:
+      packages:
+        - wolfi-base
+  pipeline:
+    - runs: python -c 'import msrestazure'

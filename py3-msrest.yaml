@@ -3,12 +3,17 @@
 package:
   name: py3-msrest
   version: 0.7.1
-  epoch: 0
+  epoch: 1
   description: AutoRest swagger generator Python client runtime.
   copyright:
     - license: MIT
   dependencies:
     runtime:
+      - py3-azure-core
+      - py3-isodate
+      - py3-oauthlib
+      - py3-requests
+      - py3-requests-oauthlib
       - python-3
 
 environment:
@@ -35,3 +40,11 @@ pipeline:
 # whenever, whatever.
 update:
   enabled: false
+
+test:
+  environment:
+    contents:
+      packages:
+        - wolfi-base
+  pipeline:
+    - runs: python -c "import msrest"
