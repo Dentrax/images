@@ -8,7 +8,7 @@
 package:
   name: grafana-9.3
   version: 9.3.16
-  epoch: 7
+  epoch: 8
   description: The open and composable observability and data visualization platform.
   copyright:
     - license: AGPL-3.0-or-later
@@ -42,7 +42,7 @@ pipeline:
 
   - uses: go/bump
     with:
-      deps: github.com/weaveworks/common@v0.0.0-20230728070032-dd9e68f319d5 google.golang.org/grpc@v1.56.3 golang.org/x/crypto@v0.17.0
+      deps: github.com/weaveworks/common@v0.0.0-20230728070032-dd9e68f319d5 google.golang.org/grpc@v1.56.3 golang.org/x/crypto@v0.17.0 github.com/go-git/go-git/v5@v5.11.0
       replaces: golang.org/x/net=golang.org/x/net@v0.17.0 github.com/sercand/kuberesolver=github.com/sercand/kuberesolver/v5@v5.1.1
 
   - runs: |
