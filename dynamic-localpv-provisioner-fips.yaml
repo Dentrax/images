@@ -37,7 +37,9 @@ pipeline:
       mv ./bin/provisioner-localpv/${GOOS}_${GOARCH}/provisioner-localpv ${{targets.destdir}}/usr/bin/
 
 update:
+  ignore-regex-patterns:
+    - localp* # there are some misspellings in the upstream tags so using a wildcard here
   enabled: true
   github:
     identifier: openebs/dynamic-localpv-provisioner
-    strip-prefix: localpv-provisioner-
+    strip-prefix: v
