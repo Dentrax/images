@@ -1,8 +1,10 @@
+#nolint:bad-version
 package:
-  name: py3-azure-mgmt-kusto
-  version: 3.3.0
-  epoch: 1
-  description: This is the Microsoft Azure Kusto Management Client Library.
+  name: py3-azure-mgmt-sql
+  # Note that this is beta (I think by the naming convention at least).
+  version: 4.0.0_b14
+  epoch: 0
+  description: This is the Microsoft Azure SQL Management Client Library.
   copyright:
     - license: MIT
   dependencies:
@@ -20,16 +22,23 @@ environment:
       - busybox
       - build-base
 
+# transform melange version to remove "_" so we can use a var in the tag.
+var-transforms:
+  - from: ${{package.version}}
+    match: \_b
+    replace: 'b'
+    to: mangled-package-version
+
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 64627c3312292a4dd2815a47bbad3a6bb658ff8d
+      expected-commit: 0ad6362294d4d2b49051589d9b37deba1f38ecd7
       repository: https://github.com/Azure/azure-sdk-for-python
-      tag: azure-mgmt-kusto_${{package.version}}
+      tag: azure-mgmt-sql_${{vars.mangled-package-version}}
       destination: ./azure-sdk-for-python
 
   - runs: |
-      mv ./azure-sdk-for-python/sdk/kusto/azure-mgmt-kusto/* .
+      mv ./azure-sdk-for-python/sdk/sql/azure-mgmt-sql/* .
 
   - name: Python Build
     uses: python/build-wheel
@@ -44,8 +53,8 @@ update:
   enabled: true
   github:
     identifier: Azure/azure-sdk-for-python
-    tag-filter-contains: azure-mgmt-kusto_
-    strip-prefix: azure-mgmt-kusto_
+    tag-filter-contains: azure-mgmt-sql_
+    strip-prefix: azure-mgmt-sql_
     use-tag: true
 
 test:
@@ -54,4 +63,4 @@ test:
       packages:
         - wolfi-base
   pipeline:
-    - runs: python -c 'import azure.mgmt.kusto'
+    - runs: python -c 'import azure.mgmt.sql'

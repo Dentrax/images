@@ -1,8 +1,8 @@
 package:
-  name: py3-azure-mgmt-kusto
-  version: 3.3.0
-  epoch: 1
-  description: This is the Microsoft Azure Kusto Management Client Library.
+  name: py3-azure-mgmt-iothubprovisioningservices
+  version: 1.1.0
+  epoch: 0
+  description: Microsoft Azure App Configuration Management Client Library for Python
   copyright:
     - license: MIT
   dependencies:
@@ -23,13 +23,13 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 64627c3312292a4dd2815a47bbad3a6bb658ff8d
+      expected-commit: ead9b83e349101a682c81d35be81e9df78c5c3ef
       repository: https://github.com/Azure/azure-sdk-for-python
-      tag: azure-mgmt-kusto_${{package.version}}
+      tag: azure-mgmt-iothubprovisioningservices_${{package.version}}
       destination: ./azure-sdk-for-python
 
   - runs: |
-      mv ./azure-sdk-for-python/sdk/kusto/azure-mgmt-kusto/* .
+      mv ./azure-sdk-for-python/sdk/iothub/azure-mgmt-iothubprovisioningservices/* .
 
   - name: Python Build
     uses: python/build-wheel
@@ -44,8 +44,8 @@ update:
   enabled: true
   github:
     identifier: Azure/azure-sdk-for-python
-    tag-filter-contains: azure-mgmt-kusto_
-    strip-prefix: azure-mgmt-kusto_
+    tag-filter-contains: azure-mgmt-iothubprovisioningservices_
+    strip-prefix: azure-mgmt-iothubprovisioningservices_
     use-tag: true
 
 test:
@@ -54,4 +54,4 @@ test:
       packages:
         - wolfi-base
   pipeline:
-    - runs: python -c 'import azure.mgmt.kusto'
+    - runs: python -c 'import azure.mgmt.iothubprovisioningservices'

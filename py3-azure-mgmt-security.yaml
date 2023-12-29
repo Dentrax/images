@@ -1,8 +1,8 @@
 package:
-  name: py3-azure-mgmt-kusto
-  version: 3.3.0
-  epoch: 1
-  description: This is the Microsoft Azure Kusto Management Client Library.
+  name: py3-azure-mgmt-security
+  version: 5.0.0
+  epoch: 0
+  description: This is the Microsoft Azure Security Center Management Client Library.
   copyright:
     - license: MIT
   dependencies:
@@ -23,13 +23,13 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 64627c3312292a4dd2815a47bbad3a6bb658ff8d
+      expected-commit: bbfc079a508f58c3bf7e2ceaf7bb78f687ca2156
       repository: https://github.com/Azure/azure-sdk-for-python
-      tag: azure-mgmt-kusto_${{package.version}}
+      tag: azure-mgmt-security_${{package.version}}
       destination: ./azure-sdk-for-python
 
   - runs: |
-      mv ./azure-sdk-for-python/sdk/kusto/azure-mgmt-kusto/* .
+      mv ./azure-sdk-for-python/sdk/security/azure-mgmt-security/* .
 
   - name: Python Build
     uses: python/build-wheel
@@ -44,8 +44,8 @@ update:
   enabled: true
   github:
     identifier: Azure/azure-sdk-for-python
-    tag-filter-contains: azure-mgmt-kusto_
-    strip-prefix: azure-mgmt-kusto_
+    tag-filter-contains: azure-mgmt-security_
+    strip-prefix: azure-mgmt-security_
     use-tag: true
 
 test:
@@ -54,4 +54,4 @@ test:
       packages:
         - wolfi-base
   pipeline:
-    - runs: python -c 'import azure.mgmt.kusto'
+    - runs: python -c 'import azure.mgmt.security'
