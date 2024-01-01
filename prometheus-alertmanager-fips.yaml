@@ -1,0 +1,44 @@
+package:
+  name: prometheus-alertmanager-fips
+  version: 0.26.0
+  epoch: 0
+  description: Prometheus Alertmanager
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    packages:
+      - bash
+      - build-base
+      - busybox
+      - ca-certificates-bundle
+      - curl
+      - go-fips
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/prometheus/alertmanager
+      tag: v${{package.version}}
+      expected-commit: d7b4f0c7322e7151d6e3b1e31cbc15361e295d8d
+
+  - uses: go/bump
+    with:
+      deps: golang.org/x/net@v0.17.0 golang.org/x/crypto@v0.17.0
+
+  - runs: |
+      make build
+
+  - runs: |
+      install -Dm755 amtool "${{targets.destdir}}"/usr/bin/amtool
+      install -Dm755 alertmanager "${{targets.destdir}}"/usr/bin/alertmanager
+      install -Dm644 examples/ha/alertmanager.yml "${{targets.destdir}}"/etc/alertmanager/alertmanager.yml
+
+  - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: prometheus/alertmanager
+    strip-prefix: v
