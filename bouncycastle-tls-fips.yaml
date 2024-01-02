@@ -1,6 +1,6 @@
 package:
   name: bouncycastle-tls-fips
-  version: 1.0.17
+  version: 1.0.18
   epoch: 0
   description: BouncyCastle FIPS TLS APIs
   copyright:
@@ -15,7 +15,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://downloads.bouncycastle.org/fips-java/bctls-fips-${{package.version}}.jar
-      expected-sha512: f63dee638c4d81d4f6e822eaa7d4c096dc2030071014760b04f4deae1b5e81adef6c79d6e6324c9b2c4cd92bd6cc5db3de3ac669cc26361490e73ac35b6b7e9d
+      expected-sha512: d158256c8bf294aa19ff12a97c5616e540bbb1c8bd14abe96be87c0f5d97441388b23c9e11417f74e53211ad913fc0fefc1839b3f3d2d1297fd300680f7e36c3
       extract: false
 
   - runs: |
