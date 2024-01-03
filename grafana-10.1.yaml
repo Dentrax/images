@@ -1,7 +1,7 @@
 package:
   name: grafana-10.1
-  version: 10.1.5
-  epoch: 1
+  version: 10.1.6
+  epoch: 0
   description: The open and composable observability and data visualization platform.
   copyright:
     - license: AGPL-3.0-or-later
@@ -29,7 +29,7 @@ pipeline:
     with:
       repository: https://github.com/grafana/grafana
       tag: v${{package.version}}
-      expected-commit: 849c612fcb7337cd2583d080070c519c8e54ebab
+      expected-commit: e311b0f7a9f08ab0a63c62b7438816bce2078d7a
 
   - uses: go/bump
     with:
@@ -62,6 +62,10 @@ pipeline:
       mkdir -p ${{targets.destdir}}/etc/grafana/
       cp ${{targets.destdir}}/usr/share/grafana/conf/sample.ini ${{targets.destdir}}/etc/grafana/grafana.ini
 
-# based on a customer request they only wanted to build the Grafana 10.1.5 package.
 update:
-  enabled: false
+  enabled: true
+  github:
+    use-tag: true
+    identifier: grafana/grafana
+    tag-filter-prefix: v10.1.
+    strip-prefix: v
