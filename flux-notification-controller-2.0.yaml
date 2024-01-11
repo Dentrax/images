@@ -9,9 +9,8 @@
 # said upgrade path we agreed to.
 package:
   name: flux-notification-controller-2.0
-  # The version of notification-controller at the time of flux v2.0.1
   version: 1.0.0
-  epoch: 1
+  epoch: 2
   description: The GitOps Toolkit event forwarded and notification dispatcher
   copyright:
     - license: Apache-2.0
@@ -26,13 +25,13 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
+      expected-commit: 092d3d3f20d1dbed55e97fd3d5be353d4701e56d
       repository: https://github.com/fluxcd/notification-controller
       tag: v${{package.version}}
-      expected-commit: 092d3d3f20d1dbed55e97fd3d5be353d4701e56d
 
   - uses: go/bump
     with:
-      deps: github.com/cloudflare/circl@v1.3.3 github.com/cyphar/filepath-securejoin@v0.2.4 google.golang.org/grpc@v1.56.3 golang.org/x/net@v0.17.0 golang.org/x/crypto@v0.17.0
+      deps: github.com/cloudflare/circl@v1.3.7 github.com/cyphar/filepath-securejoin@v0.2.4 google.golang.org/grpc@v1.56.3 golang.org/x/net@v0.17.0 golang.org/x/crypto@v0.17.0
       replaces: github.com/whilp/git-urls=github.com/chainguard-dev/git-urls@v1.0.2
 
   - runs: |
