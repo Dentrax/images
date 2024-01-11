@@ -1,7 +1,7 @@
 package:
   name: keda-2.8
   version: 2.8.2
-  epoch: 5
+  epoch: 6
   description: KEDA is a Kubernetes-based Event Driven Autoscaling component. It provides event driven scale for any container running in Kubernetes
   copyright:
     - license: Apache-2.0
@@ -12,25 +12,25 @@ package:
 environment:
   contents:
     packages:
+      - build-base
+      - busybox
       - ca-certificates-bundle
       - go
-      - busybox
-      - build-base
       - protobuf-dev
       - protoc
 
 pipeline:
   - uses: git-checkout
     with:
+      expected-commit: 4027aa99a16c1653dca15df93d283ce06120f02f
       repository: https://github.com/kedacore/keda
       tag: v${{package.version}}
-      expected-commit: 4027aa99a16c1653dca15df93d283ce06120f02f
 
   - uses: go/bump
     with:
-      deps: golang.org/x/net@v0.17.0 golang.org/x/crypto@v0.17.0
+      deps: golang.org/x/net@v0.17.0 golang.org/x/crypto@v0.17.0 google.golang.org/grpc@v1.56.3
+      go-version: "1.21"
       modroot: .
-      go-version: '1.21'
 
   - runs: |
       export GO111MODULE=on
