@@ -7,11 +7,11 @@
 # This package exists as a commitment to JAMF to support their upgrade path,
 # and should never be updated. It is only kept around long enough to fulfill
 # said upgrade path we agreed to.
+# NOTE: The version of source-controller at the time of flux v0.37
 package:
   name: flux-source-controller-0.37
-  # The version of source-controller at the time of flux v0.37
   version: 0.32.1
-  epoch: 5
+  epoch: 6
   description: The GitOps Toolkit source management component
   copyright:
     - license: Apache-2.0
@@ -24,12 +24,12 @@ environment:
       - go
       - gcc
       - clang-16
-      - llvm-lld-16
       - libgit2-dev-1.5
       - zlib-dev
       - zlib-static
       - openssl-dev
       - libssh2-dev
+      - llvm-lld-16
       - pcre2-dev
       - pkgconf
 
@@ -45,7 +45,7 @@ pipeline:
 
   - uses: go/bump
     with:
-      deps: github.com/cloudflare/circl@v1.3.3 github.com/cyphar/filepath-securejoin@v0.2.4 oras.land/oras-go@v1.2.4 helm.sh/helm/v3@v3.11.1 sigs.k8s.io/controller-runtime@v0.14.7 github.com/fluxcd/pkg/runtime@v0.27.0 github.com/docker/docker@v24.0.7 github.com/containerd/containerd@v1.7.11 github.com/sigstore/cosign@v1.13.2 golang.org/x/net@v0.17.0 golang.org/x/crypto@v0.17.0
+      deps: github.com/cloudflare/circl@v1.3.7 github.com/cyphar/filepath-securejoin@v0.2.4 oras.land/oras-go@v1.2.4 helm.sh/helm/v3@v3.11.1 sigs.k8s.io/controller-runtime@v0.14.7 github.com/fluxcd/pkg/runtime@v0.27.0 github.com/docker/docker@v24.0.7 github.com/containerd/containerd@v1.7.11 github.com/sigstore/cosign@v1.13.2 golang.org/x/net@v0.17.0 golang.org/x/crypto@v0.17.0
 
   - uses: patch
     with:
@@ -53,7 +53,7 @@ pipeline:
 
   - uses: go/build
     environment:
-      CGO_ENABLED: 1
+      CGO_ENABLED: "1"
       # This is the expansion of $(pkg-config --static --libs --cflags libgit2)
       CGO_LDFLAGS: -L /lib -L/usr/lib -L/usr/local/lib -lgit2 -lssh2 -lrt -lssl -ldl -pthread -lpcre2-8 -lz -lcrypto -ldl -pthread -static -fuse-ld=lld
     with:
