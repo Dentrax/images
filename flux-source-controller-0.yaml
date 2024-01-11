@@ -7,11 +7,11 @@
 # This package exists as a commitment to JAMF to support their upgrade path,
 # and should never be updated. It is only kept around long enough to fulfill
 # said upgrade path we agreed to.
+# NOTE: The version of source-controller at the time of the last flux v0 (v0.41.2)
 package:
   name: flux-source-controller-0
-  # The version of source-controller at the time of the last flux v0 (v0.41.2)
   version: 0.36.1
-  epoch: 6
+  epoch: 7
   description: The GitOps Toolkit source management component
   copyright:
     - license: Apache-2.0
@@ -38,11 +38,11 @@ pipeline:
 
   - uses: go/bump
     with:
-      deps: github.com/go-jose/go-jose/v3@v3.0.1 github.com/cloudflare/circl@v1.3.3 github.com/cyphar/filepath-securejoin@v0.2.4 oras.land/oras-go@v1.2.4 github.com/docker/docker@v24.0.7 github.com/containerd/containerd@v1.7.11 github.com/sigstore/cosign@v1.13.2 golang.org/x/net@v0.17.0 golang.org/x/crypto@v0.17.0
+      deps: github.com/go-jose/go-jose/v3@v3.0.1 github.com/cloudflare/circl@v1.3.7 github.com/cyphar/filepath-securejoin@v0.2.4 oras.land/oras-go@v1.2.4 github.com/docker/docker@v24.0.7 github.com/containerd/containerd@v1.7.11 github.com/sigstore/cosign@v1.13.2 golang.org/x/net@v0.17.0 golang.org/x/crypto@v0.17.0
 
   - uses: go/build
     environment:
-      CGO_ENABLED: 1
+      CGO_ENABLED: "1"
       CGO_LDFLAGS: -static -fuse-ld=lld
     with:
       packages: .
