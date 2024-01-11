@@ -9,9 +9,8 @@
 # said upgrade path we agreed to.
 package:
   name: flux-kustomize-controller-2.0
-  # The version of kustomize-controller at the time of flux v2.0.1
   version: 1.0.1
-  epoch: 2
+  epoch: 3
   description: The GitOps Toolkit Kustomize reconciler
   copyright:
     - license: Apache-2.0
@@ -42,19 +41,19 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
+      expected-commit: f8682731bd81b82ccc96968852870920d68124d3
       repository: https://github.com/fluxcd/kustomize-controller
       tag: v${{package.version}}
-      expected-commit: f8682731bd81b82ccc96968852870920d68124d3
 
   - uses: go/bump
     with:
-      deps: golang.org/x/net@v0.17.0 google.golang.org/grpc@v1.56.3 github.com/go-jose/go-jose/v3@v3.0.1 github.com/cyphar/filepath-securejoin@v0.2.4 golang.org/x/crypto@v0.17.0 github.com/go-git/go-git/v5@v5.11.0
+      deps: golang.org/x/net@v0.17.0 google.golang.org/grpc@v1.56.3 github.com/go-jose/go-jose/v3@v3.0.1 github.com/cyphar/filepath-securejoin@v0.2.4 golang.org/x/crypto@v0.17.0 github.com/go-git/go-git/v5@v5.11.0 github.com/cloudflare/circl@v1.3.7
 
   - uses: go/build
     with:
-      packages: .
-      output: kustomize-controller
       ldflags: -s -w
+      output: kustomize-controller
+      packages: .
 
   - uses: strip
 
