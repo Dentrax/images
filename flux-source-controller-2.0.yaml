@@ -9,9 +9,8 @@
 # said upgrade path we agreed to.
 package:
   name: flux-source-controller-2.0
-  # The version of source-controller at the time of flux v2.0.1
   version: 1.0.1
-  epoch: 4
+  epoch: 5
   description: The GitOps Toolkit source management component
   copyright:
     - license: Apache-2.0
@@ -21,30 +20,30 @@ environment:
     packages:
       - busybox
       - ca-certificates-bundle
-      - go
-      - gcc
       - clang-16
-      - llvm-lld-16
+      - gcc
+      - go
       - libgit2-dev-1.5
-      - zlib-dev
-      - zlib-static
-      - openssl-dev
       - libssh2-dev
+      - llvm-lld-16
+      - openssl-dev
       - pcre2-dev
       - pkgconf
+      - zlib-dev
+      - zlib-static
 
 pipeline:
   - uses: git-checkout
     with:
+      expected-commit: 73406ece58c2e015aaf38e24c1056a84814c00da
       repository: https://github.com/fluxcd/source-controller
       tag: v${{package.version}}
-      expected-commit: 73406ece58c2e015aaf38e24c1056a84814c00da
 
   - uses: go/bump
     with:
-      deps: github.com/cyphar/filepath-securejoin@v0.2.4 google.golang.org/grpc@v1.56.3 k8s.io/kubectl@v0.28.4 github.com/sigstore/cosign/v2@v2.2.1 github.com/docker/cli@v24.0.7+incompatible oras.land/oras-go@v1.2.4 github.com/go-jose/go-jose/v3@v3.0.1 golang.org/x/net@v0.17.0 golang.org/x/crypto@v0.17.0 github.com/containerd/containerd@v1.7.11 github.com/go-git/go-git/v5@v5.11.0
+      deps: github.com/cyphar/filepath-securejoin@v0.2.4 google.golang.org/grpc@v1.56.3 k8s.io/kubectl@v0.28.4 github.com/sigstore/cosign/v2@v2.2.1 github.com/docker/cli@v24.0.7+incompatible oras.land/oras-go@v1.2.4 github.com/go-jose/go-jose/v3@v3.0.1 golang.org/x/net@v0.17.0 golang.org/x/crypto@v0.17.0 github.com/containerd/containerd@v1.7.11 github.com/go-git/go-git/v5@v5.11.0 github.com/cloudflare/circl@v1.3.7
+      go-version: "1.21"
       replaces: github.com/docker/docker=github.com/docker/docker@v24.0.7+incompatible
-      go-version: 1.21
 
   - runs: |
       mkdir -p "${{targets.destdir}}"/usr/bin
