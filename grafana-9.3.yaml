@@ -8,42 +8,42 @@
 package:
   name: grafana-9.3
   version: 9.3.16
-  epoch: 8
+  epoch: 9
   description: The open and composable observability and data visualization platform.
   copyright:
     - license: AGPL-3.0-or-later
   dependencies:
-    provides:
-      - grafana=${{package.full-version}}
     runtime:
       - bash
+    provides:
+      - grafana=${{package.full-version}}
 
 environment:
   contents:
     packages:
+      - build-base
       - busybox
       - ca-certificates-bundle
-      - build-base
+      - findutils
       - git
       - go
-      - yarn
-      - posix-libc-utils
       - nodejs-16
-      - findutils
+      - posix-libc-utils
       - py3-setuptools
       - python3
+      - yarn
 
 pipeline:
   - uses: git-checkout
     with:
+      expected-commit: 07b83b72be8497c2060810a6d242d180781459ce
       repository: https://github.com/grafana/grafana
       tag: v${{package.version}}
-      expected-commit: 07b83b72be8497c2060810a6d242d180781459ce
 
   - uses: go/bump
     with:
       deps: github.com/weaveworks/common@v0.0.0-20230728070032-dd9e68f319d5 google.golang.org/grpc@v1.56.3 golang.org/x/crypto@v0.17.0 github.com/go-git/go-git/v5@v5.11.0
-      replaces: golang.org/x/net=golang.org/x/net@v0.17.0 github.com/sercand/kuberesolver=github.com/sercand/kuberesolver/v5@v5.1.1
+      replaces: golang.org/x/net=golang.org/x/net@v0.17.0 github.com/sercand/kuberesolver=github.com/sercand/kuberesolver/v5@v5.1.1 github.com/cloudflare/circl=github.com/cloudflare/circl@v1.3.7
 
   - runs: |
       yarn install
