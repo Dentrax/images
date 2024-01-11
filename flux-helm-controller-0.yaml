@@ -9,9 +9,8 @@
 # said upgrade path we agreed to.
 package:
   name: flux-helm-controller-0
-  # The version of helm-controller at the time of the last flux v0 (v0.41.2)
   version: 0.31.2
-  epoch: 5
+  epoch: 6
   description: The GitOps Toolkit Helm reconciler, for declarative Helming
   copyright:
     - license: Apache-2.0
@@ -28,19 +27,19 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
+      expected-commit: 88a3beabd896be448e9c966b1f9aace6ec02c6c5
       repository: https://github.com/fluxcd/helm-controller
       tag: v${{package.version}}
-      expected-commit: 88a3beabd896be448e9c966b1f9aace6ec02c6c5
 
   - uses: go/bump
     with:
-      deps: github.com/cyphar/filepath-securejoin@v0.2.4 github.com/docker/distribution@v2.8.2-beta.1 oras.land/oras-go@v1.2.4 github.com/docker/docker@v24.0.7 golang.org/x/net@v0.17.0 google.golang.org/grpc@v1.56.3 golang.org/x/crypto@v0.17.0
+      deps: github.com/cyphar/filepath-securejoin@v0.2.4 github.com/docker/distribution@v2.8.2-beta.1 oras.land/oras-go@v1.2.4 github.com/docker/docker@v24.0.7 golang.org/x/net@v0.17.0 google.golang.org/grpc@v1.56.3 golang.org/x/crypto@v0.17.0 github.com/containerd/containerd@v1.7.11
 
   - uses: go/build
     with:
-      packages: .
-      output: helm-controller
       ldflags: -s -w
+      output: helm-controller
+      packages: .
 
   - uses: strip
 
