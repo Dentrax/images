@@ -1,5 +1,5 @@
 package:
-  name: datadog-agent
+  name: datadog-agent-fips
   version: 7.50.3
   epoch: 0
   description: "Collect events and metrics from your hosts that send data to Datadog."
@@ -18,7 +18,7 @@ environment:
       - cmake
       - coreutils
       - gcc-12
-      - go-1.21
+      - go-fips
       - py3-pip
       - python-3
       - python-3-dev
