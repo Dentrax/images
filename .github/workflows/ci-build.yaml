@@ -183,7 +183,7 @@ jobs:
           wolfictl scan \
             --build-log \
             --advisories-repo-dir 'data/enterprise-advisories' \
-            --advisory-filter 'all' \
+            --advisory-filter 'resolved' \
             --require-zero \
             /tmp/artifacts-1 \
             2> /dev/null # The error message renders strangely on GitHub Actions, and the important information is already being sent to stdout.
