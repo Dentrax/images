@@ -39,7 +39,7 @@ jobs:
       packages_were_built: ${{ steps.file_check.outputs.exists }}
 
     steps:
-      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           submodules: "recursive"
@@ -58,7 +58,7 @@ jobs:
           echo "epoch=$(date -u +%s)" >> "$GITHUB_OUTPUT"
         shell: bash
 
-      - uses: google-github-actions/auth@67e9c72af6e0492df856527b474995862b7b6591 # v2.0.0
+      - uses: google-github-actions/auth@f6de81663f7788d05bd15bcce18f0e57f23f0846 # v2.0.1
         with:
           workload_identity_provider: "projects/618116202522/locations/global/workloadIdentityPools/prod-shared-e350/providers/prod-shared-gha"
           service_account: ${{ env.FQ_SERVICE_ACCOUNT }}
@@ -130,7 +130,7 @@ jobs:
           wolfictl check diff
 
       - name: 'Upload built packages to GitHub artifacts'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@1eb3cb2b3e0f29609092a73eb033bb759a334595 # v4.1.0
         with:
           path: |
             ${{ steps.list_built_packages.outputs.files_to_upload }}
@@ -149,13 +149,13 @@ jobs:
 
     steps:
       - name: 'Retrieve x86_64 packages'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@21e5c25de9cf2ee24742cd3e822327f3be6dd2a3 # v4.1.1
         with:
           name: packages-x86_64
           path: /tmp/artifacts-1/
 
       - name: 'Retrieve aarch64 packages'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@21e5c25de9cf2ee24742cd3e822327f3be6dd2a3 # v4.1.1
         with:
           name: packages-aarch64
           path: /tmp/artifacts-2/
@@ -171,7 +171,7 @@ jobs:
           cat /tmp/artifacts-2/packages.log >> ./packages.log
 
       - name: 'Retrieve enterprise advisory data'
-        uses: actions/checkout@v4
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           repository: 'chainguard-dev/enterprise-advisories'
           path: 'data/enterprise-advisories'

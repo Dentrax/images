@@ -16,7 +16,7 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: "Install wolfictl onto PATH"
         run: |
@@ -27,16 +27,16 @@ jobs:
 
       - name: 'Authenticate to Google Cloud'
         id: auth
-        uses: google-github-actions/auth@67e9c72af6e0492df856527b474995862b7b6591 # v2.0.0
+        uses: google-github-actions/auth@f6de81663f7788d05bd15bcce18f0e57f23f0846 # v2.0.1
         with:
           workload_identity_provider: "projects/618116202522/locations/global/workloadIdentityPools/prod-shared-e350/providers/prod-shared-gha"
           service_account: "prod-images-ci@prod-images-c6e5.iam.gserviceaccount.com"
 
-      - uses: google-github-actions/setup-gcloud@825196879a077b7efa50db2e88409f44de4635c2 # v2.0.0
+      - uses: google-github-actions/setup-gcloud@5a5f7b85fca43e76e53463acaa9d408a03c98d3a # v2.0.1
         with:
           project_id: "prod-images-c6e5"
 
-      - uses: 'google-github-actions/get-secretmanager-secrets@v2'
+      - uses: 'google-github-actions/get-secretmanager-secrets@ae0d4054c32840e2ced71207a9df55161ae3debc' # v2.0.0
         id: secrets
         with:
           secrets: |-
@@ -72,7 +72,7 @@ jobs:
                 $arch/APKINDEX.tar.gz gs://chainguard-enterprise-registry-destination/os/$arch/APKINDEX.tar.gz || true
           done
 
-      - uses: rtCamp/action-slack-notify@v2.2.1
+      - uses: rtCamp/action-slack-notify@f05987dc91a66984f1666f486497def2cf85183d # v2.2.1
         if: failure()
         env:
           SLACK_ICON: http://github.com/chainguard-dev.png?size=48
