@@ -188,7 +188,7 @@ jobs:
           apk update --root /tmp/emptyroot
 
           # Find .apk files and add them to the string
-          for f in ${{ steps.list_built_packages.outputs.files_to_upload }}; do
+          for f in $(echo "${{ steps.list_built_packages.outputs.files_to_upload }}"); do
               tar -Oxf $f .PKGINFO
               apk add --root /tmp/emptyroot --repository ./packages --allow-untrusted --simulate $f
           done
