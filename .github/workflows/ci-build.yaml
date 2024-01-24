@@ -221,11 +221,12 @@ jobs:
         run: |
           cd /tmp/artifacts-1
 
-          # Put the packages into one place
-          mv /tmp/artifacts-2/packages/* ./packages/
-
-          # Merge the build log ("packages.log") files
-          cat /tmp/artifacts-2/packages.log >> ./packages.log
+          # Put the packages into one place (if aarch64 logs exist)
+          if test -f "/tmp/artifacts-2/packages"; then
+            mv /tmp/artifacts-2/packages/* ./packages/
+            # Merge the build log ("packages.log") files
+            cat /tmp/artifacts-2/packages.log >> ./packages.log
+          fi
 
       - name: 'Retrieve enterprise advisory data'
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
