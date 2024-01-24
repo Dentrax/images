@@ -10,7 +10,7 @@ package:
   # package to gain that provider.
   dependencies:
     runtime:
-      - openssl-provider-fips~3.0.8
+      - openssl-provider-fips~3.0.9
     replaces:
       - openssl-config
       - openssl-config-fips
