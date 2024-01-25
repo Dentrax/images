@@ -144,6 +144,9 @@ jobs:
           # Make a copy of the APKINDEX.* since we'll need to write to it on package builds
           cp /gcsfuse/enterprise-registry/${{ matrix.arch }}/APKINDEX.* ./packages/${{ matrix.arch }}/
 
+          # Ensure the file exists at all, so we can upload it as an artifact.
+          touch packages.log
+
       - name: 'Build Enterprise Packages'
         run: |
           # Setup the melange cache dir on the host so we can use that in subsequent builds
