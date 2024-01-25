@@ -1,10 +1,10 @@
 package:
   name: mongod-4.4
   version: 4.4.28
-  epoch: 0
+  epoch: 1
   description: "The MongoDB Database"
   copyright:
-    - license: "SSPL"
+    - license: "SSPL-1.0"
   dependencies:
     provides:
       - mongod=${{package.full-version}}
