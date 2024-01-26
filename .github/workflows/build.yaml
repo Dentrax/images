@@ -24,6 +24,7 @@ jobs:
 
     runs-on:
       group: cgi-builder-${{ matrix.arch }}
+      timeout-minutes: 600
 
     # Ensure this is deprivileged, isolated job
     # permissions:
