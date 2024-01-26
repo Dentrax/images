@@ -26,7 +26,8 @@ jobs:
     - uses: chainguard-dev/actions/octo-sts@main
       id: octo-sts
       with:
-        scope: ${{ github.repository }}
+        # Use an org-level trust policy due to the submodule.
+        scope: chainguard-dev
         identity: github-updates
 
     - uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:5dbea828dc60ce368f41ddc1789c14cde866710953f6b12afd0fb90ebeef67f3
