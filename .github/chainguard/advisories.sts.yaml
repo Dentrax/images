@@ -3,7 +3,7 @@ issuer: https://token.actions.githubusercontent.com
 # to allow for presubmit validation.
 subject_pattern: repo:chainguard-dev/enterprise-advisories:.*
 claim_pattern:
-  job_workflow_ref: chainguard-dev/enterprise-advisories/.github/workflows/digestabot.yaml@.*
+  job_workflow_ref: chainguard-dev/enterprise-advisories/.github/workflows/validate.yaml@.*
 
 permissions:
   contents: read
