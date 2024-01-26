@@ -5,6 +5,8 @@ package:
   description: "Open souce version of Google's chrome web browser"
   copyright:
     - license: BSD-3-Clause
+  target-architecture:
+    - x86_64
   dependencies:
     runtime:
       - font-opensans
