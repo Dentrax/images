@@ -99,9 +99,9 @@ endef
 define get-source-dir
 	$(info getting source dir for package $(3) with dir $(2))
 	$(1) := $(shell if [[ "." == "$(2)" ]]; then \
-		echo "--source-dir ./$(3)"; \
+		mdkir -p "./$(3)" && echo "--source-dir ./$(3)"; \
 	else \
-		echo "--source-dir $(2)"; \
+		mkdir -p "$(2)" && echo "--source-dir $(2)"; \
 	fi)
 endef
 

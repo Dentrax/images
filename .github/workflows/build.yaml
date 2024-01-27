@@ -74,6 +74,7 @@ jobs:
           cp /gcsfuse/enterprise-registry/${{ matrix.arch }}/APKINDEX.* ./packages/${{ matrix.arch }}/
 
       - name: 'Build Enterprise Packages'
+        timeout-minutes: 600
         run: |
           make \
             ARCH=${{ matrix.arch }} \
