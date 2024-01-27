@@ -1,10 +1,10 @@
 package:
   name: mongod
   version: 6.2.1
-  epoch: 1
+  epoch: 0
   description: "The MongoDB Database"
   copyright:
-    - license: "SSPL-1.0"
+    - license: "SSPL"
 
 environment:
   contents:
