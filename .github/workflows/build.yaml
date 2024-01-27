@@ -13,6 +13,7 @@ on:
 concurrency: build
 
 jobs:
+  timeout-minutes: 600
   build:
     name: Build packages
     if: github.repository == 'chainguard-dev/enterprise-packages'
@@ -24,7 +25,6 @@ jobs:
 
     runs-on:
       group: cgi-builder-${{ matrix.arch }}
-      timeout-minutes: 600
 
     # Ensure this is deprivileged, isolated job
     # permissions:
