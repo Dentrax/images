@@ -23,14 +23,14 @@ jobs:
 
       - name: Lint
         id: lint
-        uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:5dbea828dc60ce368f41ddc1789c14cde866710953f6b12afd0fb90ebeef67f3
+        uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:ac5009336cf910aae2a373d6a3bb28bfdb2213e7e93e27a22dad51e246744cd4
         with:
           entrypoint: wolfictl
           args: lint  --skip-rule forbidden-repository-used --skip-rule forbidden-keyring-used --skip-rule no-makefile-entry-for-package
 
       - name: Enforce YAML formatting
         id: lint-yaml
-        uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:5dbea828dc60ce368f41ddc1789c14cde866710953f6b12afd0fb90ebeef67f3
+        uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:ac5009336cf910aae2a373d6a3bb28bfdb2213e7e93e27a22dad51e246744cd4
         with:
           entrypoint: wolfictl
           args: lint yam
