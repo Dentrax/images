@@ -35,10 +35,16 @@ jobs:
         --cap-add NET_ADMIN --cap-add SYS_ADMIN --device /dev/fuse --security-opt seccomp=unconfined --security-opt apparmor:unconfined
 
     steps:
+      - uses: chainguard-dev/actions/octo-sts@main
+        id: octo-sts
+        with:
+          scope: chainguard-dev
+          identity: enterprise-build
+
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
-          submodules: 'recursive'
-          token: ${{ secrets.ENTERPRISE_GRAFANA_ADVISORY_ACCESS }}
+          submodules: "recursive"
+          token: ${{ steps.octo-sts.outputs.token }}
 
       - name: 'Trust the github workspace'
         run: |

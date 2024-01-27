@@ -94,11 +94,17 @@ jobs:
       packages_were_built: ${{ steps.file_check.outputs.exists }}
 
     steps:
+      - uses: chainguard-dev/actions/octo-sts@main
+        id: octo-sts
+        with:
+          scope: chainguard-dev
+          identity: enterprise-presubmit-build
+
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           submodules: "recursive"
-          token: ${{ secrets.ENTERPRISE_GRAFANA_ADVISORY_ACCESS }}
+          token: ${{ steps.octo-sts.outputs.token }}
 
       - name: "Trust the github workspace"
         run: |
@@ -226,6 +232,10 @@ jobs:
     needs: build
     if: needs.build.outputs.packages_were_built == 'true'
 
+    permissions:
+      contents: read # Needed to clone the repository
+      id-token: write # Needed to federate with octo-sts 
+
     steps:
       - name: 'Retrieve x86_64 packages'
         uses: actions/download-artifact@21e5c25de9cf2ee24742cd3e822327f3be6dd2a3 # v4.1.1
@@ -250,13 +260,19 @@ jobs:
             cat /tmp/artifacts-2/packages.log >> ./packages.log
           fi
 
+      - uses: chainguard-dev/actions/octo-sts@main
+        id: octo-sts
+        with:
+          scope: chainguard-dev
+          identity: enterprise-presubmit-build
+
       - name: 'Retrieve enterprise advisory data'
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           repository: 'chainguard-dev/enterprise-advisories'
           path: 'data/enterprise-advisories'
           ref: 'main'
-          token: ${{ secrets.ENTERPRISE_GRAFANA_ADVISORY_ACCESS }}
+          token: ${{ steps.octo-sts.outputs.token }}
 
       - name: Scan for CVEs
         run: |
