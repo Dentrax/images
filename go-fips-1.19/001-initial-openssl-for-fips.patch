@@ -2026,7 +2026,7 @@ index 0000000000..97e8515401
 --- /dev/null
 +++ b/src/vendor/github.com/golang-fips/openssl-fips/LICENSE
 @@ -0,0 +1,20 @@
-+The MIT (MIT)
++The MIT License (MIT)
 +
 +Copyright (c) 2022 The Golang FIPS Authors
 +
