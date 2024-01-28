@@ -30,7 +30,7 @@ jobs:
         scope: chainguard-dev
         identity: github-updates
 
-    - uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:ac5009336cf910aae2a373d6a3bb28bfdb2213e7e93e27a22dad51e246744cd4
+    - uses: docker://ghcr.io/wolfi-dev/wolfictl:latest@sha256:717160383be3e68d1dfe5d6b43a394833dd27b32de7e2e92346b0185a1515161
       with:
         entrypoint: wolfictl
         args: update https://github.com/${{github.repository}} --release-monitoring-query=false --use-gitsign --github-labels request-version-update --github-labels "automated pr"
