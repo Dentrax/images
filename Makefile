@@ -10,6 +10,7 @@ MELANGE ?= $(shell which melange)
 WOLFICTL ?= $(shell which wolfictl)
 KEY ?= local-melange-enterprise.rsa
 REPO ?= $(shell pwd)/packages
+GCS_FETCH_BUCKET_NAME ?= gs://chainguard-enterprise-registry-destination/os/
 
 MELANGE_OPTS += --repository-append ${REPO}
 MELANGE_OPTS += --keyring-append ${KEY}.pub
@@ -217,3 +218,40 @@ dev-container-wolfi:
 		ghcr.io/wolfi-dev/sdk:latest@sha256:d4dd58e64afeecc9705a3b4219d25fc17fcd44464674e356a44a04773c3762d9
 	@rm "$(TMP_REPOSITORIES_FILE)"
 	@rmdir "$(TMP_REPOSITORIES_DIR)"
+
+.PHONY: fetch-baselayout
+fetch-baselayout:
+	echo "Fetching baselayout from GCS..." && \
+		mkdir -p ./packages/x86_64/ && \
+		mkdir -p ./packages/aarch64/ && \
+		gsutil cp $(GCS_FETCH_BUCKET_NAME)chainguard-enterprise.rsa.pub ./packages/ && \
+        gsutil cp $(GCS_FETCH_BUCKET_NAME)x86_64/APKINDEX.tar.gz ./packages/x86_64/ && \
+        gsutil -m cp -n $(GCS_FETCH_BUCKET_NAME)x86_64/chainguard-baselayout-* ./packages/x86_64/ && \
+        gsutil cp $(GCS_FETCH_BUCKET_NAME)aarch64/APKINDEX.tar.gz ./packages/aarch64/ && \
+        gsutil -m cp -n $(GCS_FETCH_BUCKET_NAME)aarch64/chainguard-baselayout-* ./packages/aarch64/
+
+SINGLE_PACKAGE ?= unknown
+
+.PHONY: fetch-single-package
+fetch-single-package: fetch-baselayout
+	echo "Fetching single package from GCS..." && \
+		mkdir -p ./packages/x86_64/ && \
+		mkdir -p ./packages/aarch64/ && \
+        gsutil -m cp -n $(GCS_FETCH_BUCKET_NAME)x86_64/$(SINGLE_PACKAGE)-* ./packages/x86_64/ && \
+        gsutil -m cp -n $(GCS_FETCH_BUCKET_NAME)aarch64/$(SINGLE_PACKAGE)-* ./packages/aarch64/
+
+# List of package names to fetch, separated by spaces
+PACKAGES ?= unknown
+
+.PHONY: fetch-multiple-packages
+fetch-multiple-packages: $(addprefix fetch-package-,$(PACKAGES))
+
+fetch-package-%:
+	@echo "Fetching package $* from GCS..."
+	@$(MAKE) fetch-single-package SINGLE_PACKAGE=$*
+
+.PHONY: fetch-all-packages
+fetch-all-packages:
+	echo "Fetching all packages from GCS..." && \
+		mkdir -p ./packages/ && \
+		gsutil -m cp -r -n 'gs://chainguard-enterprise-registry-destination/os/*' packages/

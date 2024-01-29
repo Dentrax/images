@@ -125,17 +125,21 @@ To use a sub package repository when building more apks or images via apko you c
 
 #### Example:
 
-Create a clean folder
+To fetch a single package:
 
 ```sh
-mkdir ent-test
-cd ent-test
+make SINGLE_PACKAGE=<PACKAGE> fetch-single-package
 ```
 
-Fetch the enterprise bucket locally
+To fetch multiple packages:
+
 ```sh
-mkdir ent
-gsutil -m rsync -r gs://chainguard-enterprise-registry-destination/os/ "./ent/"
+make PACKAGES=<PACKAGE1>,<PACKAGE2>,...,<PACKAGEN> fetch-multiple-packages
+```
+
+To fetch the entire enterprise bucket locally:
+```sh
+make fetch-all-packages
 ```
 
 Create a melange config file called, e.g. `foo.melange.yaml`  and copy this into it
@@ -157,11 +161,10 @@ environment:
  contents:
    repositories:
      - https://packages.wolfi.dev/os
-     - /work/ent
-     - /work/ent/sub-os-openssl1
+     - ./packages
    keyring:
      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
-     - /work/ent/chainguard-enterprise.rsa.pub
+     - chainguard-enterprise.rsa.pub
    packages:
      - busybox
      - grafana
