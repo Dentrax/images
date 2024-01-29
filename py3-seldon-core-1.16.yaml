@@ -2,7 +2,7 @@
 package:
   name: py3-seldon-core-1.16
   version: 1.16.0
-  epoch: 6
+  epoch: 7
   description: Seldon Core client and microservice wrapper
   copyright:
     - license: Apache 2.0
@@ -67,11 +67,13 @@ subpackages:
   - name: seldon-core-operator-fips
     description: ""
     pipeline:
-      - uses: go/bump
-        with:
-          deps: golang.org/x/net@v0.17.0 golang.org/x/crypto@v0.17.0 github.com/emicklei/go-restful@v2.16.0
-          modroot: ./operator
-          tidy: false
+      - working-directory: /home/build/operator
+        runs: |
+          go mod tidy -compat=1.17
+          go get golang.org/x/net@v0.17.0
+          go get golang.org/x/crypto@v0.17.0
+          go get github.com/emicklei/go-restful@v2.16.0
+          go mod tidy -compat=1.17
       - working-directory: /home/build/operator
         runs: |
           mkdir -p ${{targets.subpkgdir}}/usr/bin/

@@ -25,20 +25,27 @@ jobs:
     runs-on:
       group: cgi-builder-${{ matrix.arch }}
 
-    # Ensure this is deprivileged, isolated job
-    # permissions:
+    permissions:
+      contents: read # To clone the repo
+      id-token: write # To federate with Octo STS
 
     container:
-      image: ghcr.io/wolfi-dev/sdk:latest@sha256:2ca01ed845a3e48d842a1d1f6987a2380245bacf2ab24947bfc471b9957cfc19
+      image: ghcr.io/wolfi-dev/sdk:latest@sha256:376e4465d3cc22c081e7e4b960d47413f5e958fd41031a8076340e4b18c94f7c
       # TODO: Deprivilege
       options: |
         --cap-add NET_ADMIN --cap-add SYS_ADMIN --device /dev/fuse --security-opt seccomp=unconfined --security-opt apparmor:unconfined
 
     steps:
+      - uses: chainguard-dev/actions/octo-sts@main
+        id: octo-sts
+        with:
+          scope: chainguard-dev
+          identity: enterprise-build
+
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
-          submodules: 'recursive'
-          token: ${{ secrets.ENTERPRISE_GRAFANA_ADVISORY_ACCESS }}
+          submodules: "recursive"
+          token: ${{ steps.octo-sts.outputs.token }}
 
       - name: 'Trust the github workspace'
         run: |
@@ -141,7 +148,7 @@ jobs:
 
     container:
       # NOTE: This step only signs and uploads, so it doesn't need any privileges
-      image: ghcr.io/wolfi-dev/sdk:latest@sha256:2ca01ed845a3e48d842a1d1f6987a2380245bacf2ab24947bfc471b9957cfc19
+      image: ghcr.io/wolfi-dev/sdk:latest@sha256:376e4465d3cc22c081e7e4b960d47413f5e958fd41031a8076340e4b18c94f7c
 
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -233,7 +240,7 @@ jobs:
 
     container:
       # NOTE: This step only signs and uploads, so it doesn't need any privileges
-      image: ghcr.io/wolfi-dev/sdk:latest@sha256:2ca01ed845a3e48d842a1d1f6987a2380245bacf2ab24947bfc471b9957cfc19
+      image: ghcr.io/wolfi-dev/sdk:latest@sha256:376e4465d3cc22c081e7e4b960d47413f5e958fd41031a8076340e4b18c94f7c
 
     steps:
       - uses: actions/download-artifact@21e5c25de9cf2ee24742cd3e822327f3be6dd2a3 # v4.1.1
