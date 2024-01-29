@@ -1,7 +1,7 @@
 package:
   name: firefox-esr
   version: 115.8.0
-  epoch: 1
+  epoch: 2
   description: Firefox web browser - Extended Support Release
   copyright:
     - license: GPL-3.0-only AND LGPL-2.1-only AND LGPL-3.0-only AND MPL-2.0
@@ -42,6 +42,7 @@ environment:
       - libxrandr-dev
       - libxrender-dev
       - libxtst-dev
+      - llvm17
       - llvm-lld-17
       - m4
       - mercurial=6.4.5-r0
@@ -56,9 +57,6 @@ environment:
       - wasi-sdk-libclang-rt-builtins
       - wasi-sdk-sysroot
       - wget
-      # TODO: We need to create the llvm17-tools, but we don't have them
-      # yet. So there's a hack below to get 'configure' step to pass.
-      #- llvm17-tools
 
 pipeline:
   - runs: |
@@ -99,11 +97,6 @@ pipeline:
       # there.
       mkdir -p /usr/lib/clang/17/lib/wasi/
       cp /usr/lib/clang/lib/wasi/libclang_rt.builtins-wasm32.a /usr/lib/clang/17/lib/wasi/
-
-      # TODO: Package llvm 17 tools, and then remove this hack.
-      # This does not even seem to be used to create a working build, but
-      # it's a hack to get around the fact that configure requires it
-      ln -s /usr/lib/llvm17/lib/libLLVM-17.so /usr/bin/llvm-objdump
 
       # Explicitly point to wasi-sysroot, so it picks up the wasi stuff.
       # For some reason it does not pick it up by default? :shrug:
