@@ -1,12 +1,13 @@
 package:
   name: firefox-esr
   version: 115.8.0
-  epoch: 0
+  epoch: 1
   description: Firefox web browser - Extended Support Release
   copyright:
     - license: GPL-3.0-only AND LGPL-2.1-only AND LGPL-3.0-only AND MPL-2.0
   dependencies:
     runtime:
+      - mesa-gl
       - pciutils-libs
 
 environment:
@@ -61,7 +62,7 @@ environment:
 
 pipeline:
   - runs: |
-      # Just craft the name of the final distfile, and exit.
+      # Craft the name of the final distfile.
       distfile="obj-${{cross.triplet.gnu.glibc}}/dist/firefox-${{package.version}}.en-US.linux-${{build.arch}}.tar.bz2"
 
       # This gets the bootstrapper for the build system. It fails, but gets
@@ -137,8 +138,6 @@ test:
         - wolfi-base
   pipeline:
     - runs: |
-        ls -lR /usr/bin/
-        ls -lR /usr/lib/firefox
         /usr/bin/firefox-bin --version | grep esr
         /usr/bin/firefox-esr-bin --version | grep esr
         /usr/bin/firefox-esr --version | grep esr
