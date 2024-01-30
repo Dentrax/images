@@ -16,6 +16,7 @@ package:
     runtime:
       - openjdk-11-bcfips
       - libfontconfig1
+      - mcookie
       - freetype
       - font-misc-cyrillic
       - font-liberation
@@ -27,7 +28,10 @@ package:
       - fluxbox
       - pulseaudio
       - x11vnc
+      - xauth
+      - xmessage
       - Xvfb
+      - xvfb-run
       - websockify
       - tzdata
       - sudo-rs
