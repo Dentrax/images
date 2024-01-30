@@ -1,7 +1,7 @@
 package:
   name: firefox-esr
-  version: 115.8.0
-  epoch: 1
+  version: 115.7.0
+  epoch: 0
   description: Firefox web browser - Extended Support Release
   copyright:
     - license: GPL-3.0-only AND LGPL-2.1-only AND LGPL-3.0-only AND MPL-2.0
@@ -42,6 +42,7 @@ environment:
       - libxrandr-dev
       - libxrender-dev
       - libxtst-dev
+      - llvm17
       - llvm-lld-17
       - m4
       - mercurial=6.4.5-r0
@@ -56,14 +57,20 @@ environment:
       - wasi-sdk-libclang-rt-builtins
       - wasi-sdk-sysroot
       - wget
-      # TODO: We need to create the llvm17-tools, but we don't have them
-      # yet. So there's a hack below to get 'configure' step to pass.
-      #- llvm17-tools
+
+var-transforms:
+  - from: ${{package.version}}
+    match: \.
+    replace: '_'
+    to: mangled-package-version
 
 pipeline:
   - runs: |
       # Craft the name of the final distfile.
       distfile="obj-${{cross.triplet.gnu.glibc}}/dist/firefox-${{package.version}}.en-US.linux-${{build.arch}}.tar.bz2"
+
+      RELEASE_TAG=FIREFOX_${{vars.mangled-package-version}}esr_RELEASE
+      echo "RELEASE_TAG=${RELEASE_TAG}"
 
       # This gets the bootstrapper for the build system. It fails, but gets
       # far enough along with the build time dependencies that we can
@@ -81,8 +88,8 @@ pipeline:
       set -e
       cd mozilla-unified
 
-      # Choose the esr115 bookmark (branch?)
-      hg up -C esr115
+      # Choose the proper release tag.
+      hg up -C ${RELEASE_TAG}
 
       # TODO: Install this as cargo, prebuilt one does not work without nigtly
       # rust, so something is amiss.
@@ -99,11 +106,6 @@ pipeline:
       # there.
       mkdir -p /usr/lib/clang/17/lib/wasi/
       cp /usr/lib/clang/lib/wasi/libclang_rt.builtins-wasm32.a /usr/lib/clang/17/lib/wasi/
-
-      # TODO: Package llvm 17 tools, and then remove this hack.
-      # This does not even seem to be used to create a working build, but
-      # it's a hack to get around the fact that configure requires it
-      ln -s /usr/lib/llvm17/lib/libLLVM-17.so /usr/bin/llvm-objdump
 
       # Explicitly point to wasi-sysroot, so it picks up the wasi stuff.
       # For some reason it does not pick it up by default? :shrug:
@@ -126,10 +128,10 @@ pipeline:
       ln -s /usr/bin/firefox ${{targets.destdir}}/usr/bin/firefox-esr
       ln -s /usr/bin/firefox ${{targets.destdir}}/usr/bin/firefox-bin
 
-# This is all in mercurial, so no idea how to figure out if things have been
-# changed or not.
 update:
-  enabled: false
+  enabled: true
+  release-monitor:
+    identifier: 16838
 
 test:
   environment:
