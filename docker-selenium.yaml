@@ -17,6 +17,7 @@ package:
       - openjdk-11-bcfips
       - libfontconfig1
       - mcookie
+      - glibc-locale-en
       - freetype
       - font-misc-cyrillic
       - font-liberation
