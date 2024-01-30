@@ -26,32 +26,6 @@ index c3cb4ef..075e62d 100755
      else
        echo "noVNC won't start because SE_START_NO_VNC is false."
      fi
-diff --git a/NodeBase/start-vnc.sh b/NodeBase/start-vnc.sh
-index c4419b0..421e2ae 100755
---- a/NodeBase/start-vnc.sh
-+++ b/NodeBase/start-vnc.sh
-@@ -9,7 +9,7 @@ if [ "${START_XVFB:-$SE_START_XVFB}" = true ] ; then
-     do
-       sleep 0.5
-       echo "Centering wallpaper"
--      /usr/bin/fbsetbg -c /usr/share/images/fluxbox/ubuntu-light.png
-+      /usr/local/bin/fbsetbg -c /usr/share/images/fluxbox/ubuntu-light.png
-       if [ $? -eq 0 ]; then
-         break
-       fi    
-diff --git a/NodeBase/start-xvfb.sh b/NodeBase/start-xvfb.sh
-index b4959a3..657156f 100755
---- a/NodeBase/start-xvfb.sh
-+++ b/NodeBase/start-xvfb.sh
-@@ -17,7 +17,7 @@ if [ "${START_XVFB:-$SE_START_XVFB}" = true ] ; then
-   /usr/bin/xvfb-run --server-num=${DISPLAY_NUM} \
-     --listen-tcp \
-     --server-args="-screen 0 ${GEOMETRY} -fbdir /var/tmp -dpi ${SCREEN_DPI} -listen tcp -noreset -ac +extension RANDR" \
--    /usr/bin/fluxbox -display ${DISPLAY}
-+    /usr/local/bin/fluxbox -display ${DISPLAY}
- else
-   echo "Xvfb and Fluxbox won't start. Chrome/Firefox/Edge can only run in headless mode. Remember to set the 'headless' flag in your test."
- fi
 -- 
 2.39.3 (Apple Git-145)
 
