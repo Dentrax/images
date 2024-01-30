@@ -70,6 +70,7 @@ environment:
       - openjdk-11
       - openjdk-11-default-jvm
       - openjdk-11-jre
+      - x11vnc
   environment:
     JAVA_HOME: /usr/lib/jvm/java-11-openjdk
     SELENIUM_SERVER_VERSION: 4.16.0
@@ -143,7 +144,7 @@ pipeline:
           mkdir -p ${{targets.destdir}}/home/$SEL_USER/.fluxbox
           mkdir -p ${{targets.destdir}}/tmp/.X11-unix
           mkdir -p ${{targets.destdir}}/home/$SEL_USER/.vnc
-          x11vnc -storepasswd $(cat /opt/selenium/initialPasswd) /home/$SEL_USER/.vnc/passwd
+          x11vnc -storepasswd $(cat ${{targets.destdir}}/opt/selenium/initialPasswd) ${{targets.destdir}}/home/$SEL_USER/.vnc/passwd
 
   # https://github.com/SeleniumHQ/docker-selenium/blob/trunk/NodeChrome/Dockerfile
   - working-directory: NodeChrome
