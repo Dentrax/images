@@ -51,3 +51,7 @@ openjdk-17-doc-bcfips-17.0.9-r2.apk
 openjdk-17-jmods-bcfips-17.0.9-r2.apk
 openjdk-17-jre-base-bcfips-17.0.9-r2.apk
 openjdk-17-jre-bcfips-17.0.9-r2.apk
+
+firefox-esr-115.8.0-r0.apk
+firefox-esr-115.8.0-r1.apk
+firefox-esr-115.8.0-r2.apk
