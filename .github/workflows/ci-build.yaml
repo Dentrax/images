@@ -34,7 +34,7 @@ jobs:
         run: |
           # Copy wolfictl out of the wolfictl image and onto PATH
           TMP=$(mktemp -d)
-          docker run --rm -i -v $TMP:/out --entrypoint /bin/sh ghcr.io/wolfi-dev/sdk:latest@sha256:5e5f5db761209c250b5fd5670ed9820efcca39d87889c93fe3eeae4873f43c14 -c "cp /usr/bin/wolfictl /out"
+          docker run --rm -i -v $TMP:/out --entrypoint /bin/sh ghcr.io/wolfi-dev/sdk:latest@sha256:376e4465d3cc22c081e7e4b960d47413f5e958fd41031a8076340e4b18c94f7c -c "cp /usr/bin/wolfictl /out"
           echo "$TMP" >> $GITHUB_PATH
 
       # Assuming that we have a list of changed files such as `foo.yaml` and `bar.yaml`, this
@@ -75,7 +75,7 @@ jobs:
     needs: changes
 
     container:
-      image: ghcr.io/wolfi-dev/sdk:latest@sha256:2ca01ed845a3e48d842a1d1f6987a2380245bacf2ab24947bfc471b9957cfc19
+      image: ghcr.io/wolfi-dev/sdk:latest@sha256:376e4465d3cc22c081e7e4b960d47413f5e958fd41031a8076340e4b18c94f7c
       # TODO: Deprivilege
       options: |
         --cap-add NET_ADMIN --cap-add SYS_ADMIN --device /dev/fuse --security-opt seccomp=unconfined --security-opt apparmor:unconfined
@@ -94,11 +94,17 @@ jobs:
       packages_were_built: ${{ steps.file_check.outputs.exists }}
 
     steps:
+      - uses: chainguard-dev/octo-sts-action@6177b4481c00308b3839969c3eca88c96a91775f # v1.0.0
+        id: octo-sts
+        with:
+          scope: chainguard-dev
+          identity: enterprise-presubmit-build
+
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           submodules: "recursive"
-          token: ${{ secrets.ENTERPRISE_GRAFANA_ADVISORY_ACCESS }}
+          token: ${{ steps.octo-sts.outputs.token }}
 
       - name: "Trust the github workspace"
         run: |
@@ -222,9 +228,13 @@ jobs:
     name: "Scan packages for CVEs"
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/wolfi-dev/sdk:latest@sha256:2ca01ed845a3e48d842a1d1f6987a2380245bacf2ab24947bfc471b9957cfc19
+      image: ghcr.io/wolfi-dev/sdk:latest@sha256:376e4465d3cc22c081e7e4b960d47413f5e958fd41031a8076340e4b18c94f7c
     needs: build
     if: needs.build.outputs.packages_were_built == 'true'
+
+    permissions:
+      contents: read # Needed to clone the repository
+      id-token: write # Needed to federate with octo-sts
 
     steps:
       - name: 'Retrieve x86_64 packages'
@@ -250,13 +260,19 @@ jobs:
             cat /tmp/artifacts-2/packages.log >> ./packages.log
           fi
 
+      - uses: chainguard-dev/octo-sts-action@6177b4481c00308b3839969c3eca88c96a91775f # v1.0.0
+        id: octo-sts
+        with:
+          scope: chainguard-dev
+          identity: enterprise-presubmit-build
+
       - name: 'Retrieve enterprise advisory data'
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           repository: 'chainguard-dev/enterprise-advisories'
           path: 'data/enterprise-advisories'
           ref: 'main'
-          token: ${{ secrets.ENTERPRISE_GRAFANA_ADVISORY_ACCESS }}
+          token: ${{ steps.octo-sts.outputs.token }}
 
       - name: Scan for CVEs
         run: |
