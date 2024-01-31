@@ -174,3 +174,18 @@ subpackages:
       - runs: |
           mkdir -p ${{targets.subpkgdir}}/usr/lib/${{package.name}}
           mv ${{targets.destdir}}/usr/lib/${{package.name}}/locales ${{targets.subpkgdir}}/usr/lib/${{package.name}}
+
+update:
+  enabled: true
+  release-monitor:
+    identifier: 13344
+  
+test:
+  environment:
+    contents:
+      packages:
+        - wolfi-base
+        - chromium
+  pipeline:
+    - runs: |
+        chromium --no-sandbox --headless --disable-gpu --dump-dom https://www.chromestatus.com
