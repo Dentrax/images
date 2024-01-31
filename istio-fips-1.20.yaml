@@ -1,7 +1,7 @@
 package:
   name: istio-fips-1.20
   version: 1.20.2
-  epoch: 0
+  epoch: 1
   description: Istio is an open source service mesh that layers transparently onto existing distributed applications.
   copyright:
     - license: Apache-2.0
@@ -112,7 +112,7 @@ subpackages:
       provides:
         - istio-pilot-agent-fips-compat=${{package.full-version}}
 
-  - name: istio-pilot-agent-fips-1.20
+  - name: istio-pilot-discovery-fips-1.20
     pipeline:
       - uses: go/build
         with:
@@ -127,17 +127,6 @@ subpackages:
           cp ./tools/packaging/common/gcp_envoy_bootstrap.json \
             ${{targets.destdir}}/var/lib/istio/envoy/gcp_envoy_bootstrap_tmpl.json
       - uses: strip
-
-  - name: istio-pilot-agent-fips-1.20-compat
-    pipeline:
-      - runs: |
-          # link /usr/local/bin/pilot-discovery -> /usr/bin/pilot-discovery to match
-          # what the Istio Helm charts may expect.
-          mkdir -p ${{targets.subpkgdir}}/usr/local/bin
-          ln -sf /usr/bin/pilot-discovery ${{targets.subpkgdir}}/usr/local/bin/pilot-discovery
-    dependencies:
-      provides:
-        - istio-discovery-fips-compat=${{package.full-version}}
 
 update:
   enabled: true
