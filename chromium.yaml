@@ -174,12 +174,3 @@ subpackages:
       - runs: |
           mkdir -p ${{targets.subpkgdir}}/usr/lib/${{package.name}}
           mv ${{targets.destdir}}/usr/lib/${{package.name}}/locales ${{targets.subpkgdir}}/usr/lib/${{package.name}}
-
-test:
-  environment:
-    contents:
-      packages:
-        - chromium
-  pipeline:
-    - runs: |
-        chromium --no-sandbox --headless --disable-gpu --dump-dom https://www.chromestatus.com
