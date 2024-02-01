@@ -1,0 +1,9 @@
+diff --git a/pkg/reconciliation/reconcile_datacenter.go b/pkg/reconciliation/reconcile_datacenter.go
+index d9ff927..de5a435 100644
+--- a/pkg/reconciliation/reconcile_datacenter.go
++++ b/pkg/reconciliation/reconcile_datacenter.go
+-       if err := rc.deletePVCs(); err != nil {
+-               rc.ReqLogger.Error(err, "Failed to delete PVCs for CassandraDatacenter")
+-               return result.Error(err)
+-       }
+-
