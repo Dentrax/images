@@ -99,18 +99,8 @@ pipeline:
       destination: /home/src
 
   - runs: |
-      # I never can remember where I am, at the beginning of the build step...
-      set -x
-      cd /home
-      ls -halF /home/src
-      du -sh /home/src
-      df -h .
-      # Mostly following: https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md
-      # === INFO === Fetch tools: takes about 2 seconds, 63 MB of disk
-      # depot_tools must be at a directory above chromium's src
       cd /home
       time git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
-      du -sh /home/depot_tools
       export PATH="$PATH:/home/depot_tools"
       # .gclient must be in one directory above chromium's src
       cat <<EOF >/home/.gclient
@@ -129,11 +119,9 @@ pipeline:
       # go back into our chromium src directory
       cd /home/src
       time gclient sync --no-history
-      du -sh /home/src
       # === INFO === Generate config: takes about 30 minutes /
       cd /home/src
       time gn gen /home/src/out/Default --args="is_debug=false"
-      du -sh .
       # === INFO === Compile: takes about 3 hours, 60 GB of disk (on a 32xXeon, 128GBxRAM, 2TBxNVME system)
       cd /home/src
       time autoninja -C /home/src/out/Default chrome chromedriver chrome_sandbox
@@ -177,8 +165,8 @@ subpackages:
 
 update:
   enabled: true
-  release-monitor:
-    identifier: 13344
+  github:
+    identifier: chromium/chromium
   
 test:
   environment:
