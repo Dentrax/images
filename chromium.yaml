@@ -1,7 +1,3 @@
-# source is chromium.git so we can't use github updates to get expected commit
-# let's still auto create the PR, it will fail as expected commit will be wrong
-# however it will be easy to fix
-#nolint:git-checkout-must-use-github-updates
 package:
   name: chromium
   version: 122.0.6250.1
@@ -168,9 +164,7 @@ subpackages:
           mv ${{targets.destdir}}/usr/lib/${{package.name}}/locales ${{targets.subpkgdir}}/usr/lib/${{package.name}}
 
 update:
-  enabled: true
-  github:
-    identifier: chromium/chromium
+  enabled: false
 
 test:
   environment:
