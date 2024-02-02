@@ -5,9 +5,6 @@ package:
   version: 0.20240131.202033
   epoch: 0
   description: Multi-Cloud Object Storage
-  target-architecture:
-    - aarch64
-    - x86_64
   copyright:
     - license: AGPL-3.0-or-later
 
