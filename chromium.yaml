@@ -163,11 +163,9 @@ subpackages:
           mkdir -p ${{targets.subpkgdir}}/usr/lib/${{package.name}}
           mv ${{targets.destdir}}/usr/lib/${{package.name}}/locales ${{targets.subpkgdir}}/usr/lib/${{package.name}}
 
-# ignoring release-monitor until upstream version check URL is fixed (image-requests/issues/642)
-# update:
-#   enabled: true
-#   release-monitor:
-#     identifier: 13344
+update:
+  enabled: false
+
 test:
   environment:
     contents:
