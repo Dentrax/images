@@ -30,7 +30,7 @@ jobs:
       id-token: write # To federate with Octo STS
 
     container:
-      image: ghcr.io/wolfi-dev/sdk:latest@sha256:376e4465d3cc22c081e7e4b960d47413f5e958fd41031a8076340e4b18c94f7c
+      image: ghcr.io/wolfi-dev/sdk:latest@sha256:3193d624e236cdbf8b6cf91998a586dc5a71869ac6776f4a8863c656f664e230
       # TODO: Deprivilege
       options: |
         --cap-add NET_ADMIN --cap-add SYS_ADMIN --device /dev/fuse --security-opt seccomp=unconfined --security-opt apparmor:unconfined
@@ -148,7 +148,7 @@ jobs:
 
     container:
       # NOTE: This step only signs and uploads, so it doesn't need any privileges
-      image: ghcr.io/wolfi-dev/sdk:latest@sha256:376e4465d3cc22c081e7e4b960d47413f5e958fd41031a8076340e4b18c94f7c
+      image: ghcr.io/wolfi-dev/sdk:latest@sha256:3193d624e236cdbf8b6cf91998a586dc5a71869ac6776f4a8863c656f664e230
 
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -240,7 +240,7 @@ jobs:
 
     container:
       # NOTE: This step only signs and uploads, so it doesn't need any privileges
-      image: ghcr.io/wolfi-dev/sdk:latest@sha256:376e4465d3cc22c081e7e4b960d47413f5e958fd41031a8076340e4b18c94f7c
+      image: ghcr.io/wolfi-dev/sdk:latest@sha256:3193d624e236cdbf8b6cf91998a586dc5a71869ac6776f4a8863c656f664e230
 
     steps:
       - uses: actions/download-artifact@21e5c25de9cf2ee24742cd3e822327f3be6dd2a3 # v4.1.1
