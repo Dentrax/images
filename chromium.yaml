@@ -163,8 +163,10 @@ subpackages:
           mkdir -p ${{targets.subpkgdir}}/usr/lib/${{package.name}}
           mv ${{targets.destdir}}/usr/lib/${{package.name}}/locales ${{targets.subpkgdir}}/usr/lib/${{package.name}}
 
-update:
-  enabled: false
+# update:
+#   enabled: true
+#   release-monitor:
+#     identifier: 13344
 
 test:
   environment:
