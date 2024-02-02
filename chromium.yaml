@@ -169,7 +169,7 @@ subpackages:
 #   release-monitor:
 #     identifier: 13344
 test:
-  environment:
+  environment:gi
     contents:
       packages:
         - wolfi-base
