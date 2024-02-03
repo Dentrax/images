@@ -168,7 +168,7 @@ subpackages:
           mv ${{targets.destdir}}/usr/lib/${{package.name}}/locales ${{targets.subpkgdir}}/usr/lib/${{package.name}}
 
 update:
-  enabled: true
+  enabled: false
   release-monitor:
     identifier: 13344
 
