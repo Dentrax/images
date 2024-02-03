@@ -24,6 +24,7 @@ jobs:
 
     runs-on:
       group: cgi-builder-${{ matrix.arch }}
+    timeout-minutes: 600 # default is 360
 
     permissions:
       contents: read # To clone the repo
