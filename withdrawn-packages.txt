@@ -55,3 +55,5 @@ openjdk-17-jre-bcfips-17.0.9-r2.apk
 firefox-esr-115.8.0-r0.apk
 firefox-esr-115.8.0-r1.apk
 firefox-esr-115.8.0-r2.apk
+
+datadog-agent-7.50.3-r0.apk
