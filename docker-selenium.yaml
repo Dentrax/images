@@ -180,5 +180,21 @@ pipeline:
 
   - uses: strip
 
+subpackages:
+  - name: docker-selenium-supervisor-config
+    description: Docker Selenium supervisor configuration
+    dependencies:
+      runtime:
+        - docker-selenium
+      replaces:
+        - supervisor-config
+      provides:  
+        - supervisor-config
+    pipeline:
+      - runs: |
+          mkdir -p ${{targets.subpkgdir}}/etc
+          mv ${{targets.destdir}}/etc/supervisord.conf ${{targets.subpkgdir}}/etc
+          mv ${{targets.destdir}}/etc/supervisor ${{targets.subpkgdir}}/etc
+
 update:
   enabled: false # Disable just for now
