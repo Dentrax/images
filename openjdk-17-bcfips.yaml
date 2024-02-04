@@ -251,6 +251,23 @@ subpackages:
       provides:
         - default-jdk-fips=1.17
 
+  # Creates an alternative java.secuity file with additional SUN providers
+  # enabled. These are not FIPS complaint providers, but some Java applications
+  # will not function without them. This is the exception, and any applications
+  # leveraging this must not be advertised as fully FIPS compliant.
+  - name: "openjdk-11-relaxed-sun-bcfips"
+    description: "Enable additional SUN providers in java.security."
+    dependencies:
+      replaces:
+        - openjdk-17-bcfips
+        - openjdk-17-jre-bcfips
+    pipeline:
+      - runs: |
+          _java_home="usr/lib/jvm/java-${{vars.major-version}}-openjdk"
+
+          mkdir -p "${{targets.subpkgdir}}"/$_java_home/conf/security
+          cp -f relaxed-sun-java.security "${{targets.subpkgdir}}/$_java_home/conf/security/java.security"
+
 # OpenJDK versions use an interesting versioning approach.  You can read the Timeline section https://wiki.openjdk.org/display/JDKUpdates/JDK17u
 # The OpenJDK repo uses tags for prereleases and GA releases https://github.com/openjdk/jdk17u/tags
 # 1. Pre-releases are tagged with a tag like jdk-17.0.10+1

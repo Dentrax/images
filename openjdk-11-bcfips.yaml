@@ -255,12 +255,13 @@ subpackages:
     dependencies:
       replaces:
         - openjdk-11-bcfips
+        - openjdk-11-jre-bcfips
     pipeline:
       - runs: |
           _java_home="usr/lib/jvm/java-${{vars.major-version}}-openjdk"
 
-          mkdir -p "${{targets.destdir}}"/$_java_home/conf/security
-          cp -f relaxed-sun-java.security "${{targets.destdir}}/$_java_home/conf/security/java.security"
+          mkdir -p "${{targets.subpkgdir}}"/$_java_home/conf/security
+          cp -f relaxed-sun-java.security "${{targets.subpkgdir}}/$_java_home/conf/security/java.security"
 
 # OpenJDK versions use an interesting versioning approach.  You can read the Timeline section https://wiki.openjdk.org/display/JDKUpdates/JDK11u
 # The OpenJDK repo uses tags for prereleases and GA releases https://github.com/openjdk/jdk11u/tags
