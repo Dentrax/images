@@ -266,7 +266,7 @@ subpackages:
           _java_home="usr/lib/jvm/java-${{vars.major-version}}-openjdk"
 
           mkdir -p "${{targets.subpkgdir}}"/$_java_home/conf/security
-          cp -f relaxed-sun-java.security "${{targets.subpkgdir}}/$_java_home/conf/security/java.security"
+          cp -f additional-sun-providers-java.security "${{targets.subpkgdir}}/$_java_home/conf/security/java.security"
 
 # OpenJDK versions use an interesting versioning approach.  You can read the Timeline section https://wiki.openjdk.org/display/JDKUpdates/JDK17u
 # The OpenJDK repo uses tags for prereleases and GA releases https://github.com/openjdk/jdk17u/tags
