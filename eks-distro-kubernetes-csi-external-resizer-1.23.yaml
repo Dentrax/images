@@ -32,7 +32,7 @@ pipeline:
 
   - uses: eks-distro/build
     with:
-      deps: golang.org/x/net@v0.17.0
+      deps: golang.org/x/net@v0.17.0 google.golang.org/grpc@v1.56.3
       eks-package-version: ${{vars.eks-package-version}}
       eks-project: ${{vars.eks-project}}
 
