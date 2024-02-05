@@ -25,6 +25,7 @@ package:
       - font-wqy-zenhei
       - font-ubuntu
       - font-noto-emoji
+      - ttf-dejavu
       - novnc
       - fluxbox
       - pulseaudio
