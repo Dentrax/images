@@ -94,7 +94,7 @@ pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/SeleniumHQ/docker-selenium
-      tag: ${{mangled-package-version}}
+      tag: ${{vars.mangled-package-version}}
       expected-commit: 48759d2015ac00be5ad41caabdec365bb04861f3
 
   - uses: patch
@@ -189,7 +189,7 @@ subpackages:
         - docker-selenium
       replaces:
         - supervisor-config
-      provides:  
+      provides:
         - supervisor-config
     pipeline:
       - runs: |
