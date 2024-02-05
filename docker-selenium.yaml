@@ -48,12 +48,11 @@ package:
       - coreutils
       - xauth
       - mcookie
-      # vnc
       - xmessage
-      # keyboard
       - xkeyboard-config
       - xkbcomp
       - fontconfig
+      - chromium
 
 environment:
   contents:
@@ -142,7 +141,6 @@ pipeline:
           install -Dm755 selenium_grid_logo.png ${{targets.destdir}}/usr/share/images/fluxbox/ubuntu-light.png
           install -Dm755 generate_config ${{targets.destdir}}/opt/bin/generate_config
       - runs: |
-          # --auto-servernum -e /dev/stdout #fix: xvfb-run: error: Xvfb failed to start
           mkdir -p ${{targets.destdir}}/home/$SEL_USER/.fluxbox
           mkdir -p ${{targets.destdir}}/tmp/.X11-unix
           mkdir -p ${{targets.destdir}}/home/$SEL_USER/.vnc
@@ -151,12 +149,6 @@ pipeline:
   # https://github.com/SeleniumHQ/docker-selenium/blob/trunk/NodeChrome/Dockerfile
   - working-directory: NodeChrome
     pipeline:
-      - runs: |
-          # TODO: Add aarch64 support
-          mkdir -p ${{targets.destdir}}/opt/google/chrome
-          curl -sSLfo chromium.zip https://download-chromium.appspot.com/dl/Linux_x64?type=snapshots
-          unzip chromium.zip -d ${{targets.destdir}}/opt/google/chrome
-          ln -sf ${{targets.destdir}}/opt/google/chrome/chrome-linux/chrome ${{targets.destdir}}/usr/bin/google-chrome
       - runs: install -Dm755 wrap_chrome_binary ${{targets.destdir}}/opt/bin/wrap_chrome_binary
       - runs: |
           export CHROMEDRIVER_VERSION=$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE)
@@ -169,7 +161,7 @@ pipeline:
       - runs: |
           echo "chrome" > ${{targets.destdir}}/opt/selenium/browser_name
           echo $CHROMIUM_VERSION > ${{targets.destdir}}/opt/selenium/browser_version
-          echo "\"goog:chromeOptions\": {\"binary\": \"/usr/bin/google-chrome\"}" > ${{targets.destdir}}/opt/selenium/browser_binary_location
+          echo "\"goog:chromeOptions\": {\"binary\": \"/usr/bin/chromium\"}" > ${{targets.destdir}}/opt/selenium/browser_binary_location
 
   # https://github.com/SeleniumHQ/docker-selenium/blob/trunk/Standalone/Dockerfile
   - working-directory: Standalone
