@@ -253,8 +253,23 @@ subpackages:
   - name: "openjdk-11-bcfips-additional-sun-providers"
     description: "Enable additional SUN providers in java.security."
     dependencies:
+      runtime:
+        - openjdk-11-bcfips
       replaces:
         - openjdk-11-bcfips
+    pipeline:
+      - runs: |
+          _java_home="usr/lib/jvm/java-${{vars.major-version}}-openjdk"
+
+          mkdir -p "${{targets.subpkgdir}}"/$_java_home/conf/security
+          cp -f additional-sun-providers-java.security "${{targets.subpkgdir}}/$_java_home/conf/security/java.security"
+
+  - name: "openjdk-11-jre-bcfips-additional-sun-providers"
+    description: "Enable additional SUN providers in java.security."
+    dependencies:
+      runtime:
+        - openjdk-11-jre-bcfips
+      replaces:
         - openjdk-11-jre-bcfips
     pipeline:
       - runs: |
