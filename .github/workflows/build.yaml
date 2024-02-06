@@ -181,10 +181,26 @@ jobs:
           path: /tmp/artifacts/
           name: packages-aarch64
 
-      - run: echo "${{ secrets.MELANGE_RSA }}" > ./chainguard-enterprise.rsa
+      - name: 'Authenticate to Google Cloud'
+        id: auth
+        uses: google-github-actions/auth@f6de81663f7788d05bd15bcce18f0e57f23f0846 # v2.0.1
+        with:
+          workload_identity_provider: "projects/618116202522/locations/global/workloadIdentityPools/prod-shared-e350/providers/prod-shared-gha"
+          service_account: "prod-images-ci@prod-images-c6e5.iam.gserviceaccount.com"
+
+      - uses: google-github-actions/setup-gcloud@5a5f7b85fca43e76e53463acaa9d408a03c98d3a # v2.0.1
+        with:
+          project_id: "prod-images-c6e5"
+
+      - uses: 'google-github-actions/get-secretmanager-secrets@ae0d4054c32840e2ced71207a9df55161ae3debc' # v2.0.0
+        id: secrets
+        with:
+          secrets: |-
+            token:prod-images-c6e5/melange-signing-key-enterprise
+      - run: echo "${{ steps.secrets.outputs.token }}" > ./chainguard-enterprise.rsa
       - run: |
-          mkdir -p /etc/apk/keys
-          cp ./chainguard-enterprise.rsa.pub /etc/apk/keys/chainguard-enterprise.rsa.pub
+          sudo mkdir -p /etc/apk/keys
+          sudo cp ./chainguard-enterprise.rsa.pub /etc/apk/keys/chainguard-enterprise.rsa.pub
 
       - name: 'Update the APKINDEX'
         run: |
