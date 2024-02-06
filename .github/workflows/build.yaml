@@ -129,7 +129,7 @@ jobs:
       # Always run this step for https://github.com/wolfi-dev/os/issues/8698
       - if: ${{ always() }}
         name: 'Upload built packages archive to GitHub Artifacts'
-        uses: actions/upload-artifact@1eb3cb2b3e0f29609092a73eb033bb759a334595 # v4.1.0
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
         with:
           name: packages-${{ matrix.arch }}
           path: /tmp/packages-${{ matrix.arch }}.tar.gz
@@ -224,7 +224,7 @@ jobs:
           tar -cvzf /tmp/indexes.tar.gz --files-from to-include
 
       - name: 'Upload APKINDEX archive to GitHub Artifacts'
-        uses: actions/upload-artifact@1eb3cb2b3e0f29609092a73eb033bb759a334595 # v4.1.0
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
         with:
           name: indexes
           path: /tmp/indexes.tar.gz
