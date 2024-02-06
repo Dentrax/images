@@ -1,7 +1,7 @@
 # EOL v1 for https://github.com/chainguard-dev/enterprise-packages/pull/1723
 package:
   name: stargate
-  version: 1.0.77
+  version: 1.0.78
   epoch: 0
   description: An open source data gateway
   copyright:
@@ -26,7 +26,7 @@ pipeline:
     with:
       repository: https://github.com/stargate/stargate
       tag: v${{package.version}}
-      expected-commit: 7c92ad25781dc485fecc10754fe9805b9cef807d
+      expected-commit: 7ed964ff6cefd8f44c21a3fb4c16d8e6b482a237
 
   - runs: |
       cd coordinator/
