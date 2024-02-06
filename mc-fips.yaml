@@ -2,7 +2,7 @@ package:
   name: mc-fips
   version: 0.20231220.010002
   epoch: 0
-  description: Simple | Fast tool to manage MinIO clusters 
+  description: Simple Fast tool to manage MinIO clusters
   copyright:
     - license: AGPL-3.0-or-later
 
