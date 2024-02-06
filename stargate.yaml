@@ -9,7 +9,6 @@ package:
     runtime:
       - bash # starctl is a bash script
       - busybox
-      - openjdk-8-jre
 
 environment:
   contents:
@@ -47,8 +46,9 @@ test:
       packages:
         - wolfi-base
         - bash
+        - openjdk-8-jre
   pipeline:
-    - runs: /usr/bin/starctl
+    - runs: /usr/bin/starctl --help
 
 update:
   enabled: true
