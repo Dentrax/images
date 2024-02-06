@@ -19,7 +19,7 @@ environment:
       - git
       - go-fips
       - wolfi-baselayout
-    
+
 pipeline:
   # We can't use go/install because this requires a specific go version
   - uses: git-checkout
