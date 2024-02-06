@@ -1,0 +1,60 @@
+# EOL v1 for https://github.com/chainguard-dev/enterprise-packages/pull/1723
+package:
+  name: stargate
+  version: 1.0.78
+  epoch: 0
+  description: An open source data gateway
+  copyright:
+    - license: Apache-2.0
+  dependencies:
+    runtime:
+      - bash # starctl is a bash script
+      - busybox
+
+environment:
+  contents:
+    packages:
+      - maven
+      - openjdk-8
+      - openjdk-8-default-jvm
+      - wolfi-base
+  environment:
+    JAVA_HOME: /usr/lib/jvm/java-1.8-openjdk
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/stargate/stargate
+      tag: v${{package.version}}
+      expected-commit: 7ed964ff6cefd8f44c21a3fb4c16d8e6b482a237
+
+  - runs: |
+      cd coordinator/
+      ./mvnw -B -ntp versions:set -DremoveSnapshot versions:commit
+      ./mvnw -B -ntp -q -ff clean package -DskipTests
+
+      mkdir -p ${{targets.destdir}}/stargate/stargate-lib/
+      install -m755 ./stargate-lib/*.jar ${{targets.destdir}}/stargate/stargate-lib/
+
+      mkdir -p ${{targets.destdir}}/usr/bin/
+      install -m 755 ./starctl ${{targets.destdir}}/usr/bin/
+
+test:
+  environment:
+    environment:
+      STARGATE_HOME: /stargate
+    contents:
+      packages:
+        - wolfi-base
+        - bash
+        - openjdk-8-jre
+  pipeline:
+    - runs: /usr/bin/starctl --help
+
+update:
+  enabled: true
+  github:
+    identifier: stargate/stargate
+    strip-prefix: v
+  ignore-regex-patterns:
+    - 2.*
