@@ -9,15 +9,27 @@ package:
 environment:
   contents:
     packages:
-      - ca-certificates-bundle
-      - busybox
       - bash
-      - nodejs-16
-      - python3
+      - brotli-dev
       - build-base
+      - busybox
+      - c-ares-dev
+      - ca-certificates-bundle
       - curl
       - gnutar
+      - icu-dev
       - krb5-dev
+      - linux-headers
+      - nghttp2-dev
+      - nodejs-20
+      - openssl-dev
+      - py3-jinja2
+      - py3-setuptools
+      - python3
+      - samurai
+      - zlib-dev
+  environment:
+    SEGMENT_API_KEY: "dummy"
 
 pipeline:
   - uses: git-checkout
@@ -27,13 +39,17 @@ pipeline:
       expected-commit: 9ebc147d83037e9217dcd788f8092ae73010c9d6
 
   - runs: |
-      export SEGMENT_API_KEY="dummy"
-      export NODE_JS_VERSION=$(node --version)
-      npm install -G lerna
+      npm install -g lerna
       npm install -g typescript
       npm run bootstrap
-      npm run compile-ts
-      npm run compile-exec
+
+  - runs: npm run compile-cli
+
+  # mongosh rebuilds NodeJS 16.x from source as part of its build process.
+  - runs: |
+      npm install -G os-dns-native
+      export BOXEDNODE_CONFIGURE_ARGS="--shared-brotli,--shared-zlib,--shared-openssl,--shared-cares,--shared-nghttp2,--ninja,--openssl-use-def-ca-store,--with-icu-default-data-dir=$(icu-config,--icudatadir),--with-intl=system-icu,--openssl-conf-name=openssl_conf,--without-corepack"
+      NODE_JS_VERSION=20.11.0 npm run evergreen-release compile
       mkdir -p ${{targets.destdir}}/usr/bin/
       mv dist/mongosh ${{targets.destdir}}/usr/bin/
 
@@ -44,3 +60,15 @@ update:
   github:
     identifier: mongodb-js/mongosh
     strip-prefix: v
+
+
+test:
+  environment:
+    contents:
+      packages:
+        - mongod
+  pipeline:
+    - runs: |
+        mongod --fork
+        mongosh "mongodb://localhost:27017" --eval ''
+
