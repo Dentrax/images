@@ -42,6 +42,9 @@ pipeline:
   - runs: |
       gradle clean releaseTarGz
 
+      # Kill gradle daemon if still running
+      gradle --stop
+
       tar -xf core/build/distributions/kafka_2.13-${{package.version}}.tgz
 
       mkdir -p ${{targets.destdir}}/usr/lib/kafka/logs
