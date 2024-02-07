@@ -34,7 +34,7 @@ jobs:
         run: |
           # Copy wolfictl out of the wolfictl image and onto PATH
           TMP=$(mktemp -d)
-          docker run --rm -i -v $TMP:/out --entrypoint /bin/sh ghcr.io/wolfi-dev/sdk:latest@sha256:f9f9eb73273e4836007d82faad6f5ee4be1bb3fcc1b16d26538860124dd2a509 -c "cp /usr/bin/wolfictl /out"
+          docker run --rm -i -v $TMP:/out --entrypoint /bin/sh ghcr.io/wolfi-dev/sdk:latest@sha256:37b3037952b001a848d38e0406958f5e94eb6e6de0b66e4b6b9cd31e20663f3a -c "cp /usr/bin/wolfictl /out"
           echo "$TMP" >> $GITHUB_PATH
 
       # Assuming that we have a list of changed files such as `foo.yaml` and `bar.yaml`, this
@@ -76,7 +76,7 @@ jobs:
     needs: changes
 
     container:
-      image: ghcr.io/wolfi-dev/sdk:latest@sha256:f9f9eb73273e4836007d82faad6f5ee4be1bb3fcc1b16d26538860124dd2a509
+      image: ghcr.io/wolfi-dev/sdk:latest@sha256:37b3037952b001a848d38e0406958f5e94eb6e6de0b66e4b6b9cd31e20663f3a
       # TODO: Deprivilege
       options: |
         --cap-add NET_ADMIN --cap-add SYS_ADMIN --device /dev/fuse --security-opt seccomp=unconfined --security-opt apparmor:unconfined
@@ -216,7 +216,7 @@ jobs:
           wolfictl check diff
 
       - name: 'Upload built packages to GitHub artifacts'
-        uses: actions/upload-artifact@1eb3cb2b3e0f29609092a73eb033bb759a334595 # v4.1.0
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
         with:
           path: |
             ${{ steps.list_built_packages.outputs.files_to_upload }}
@@ -229,7 +229,7 @@ jobs:
     name: "Scan packages for CVEs"
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/wolfi-dev/sdk:latest@sha256:f9f9eb73273e4836007d82faad6f5ee4be1bb3fcc1b16d26538860124dd2a509
+      image: ghcr.io/wolfi-dev/sdk:latest@sha256:37b3037952b001a848d38e0406958f5e94eb6e6de0b66e4b6b9cd31e20663f3a
     needs: build
     if: needs.build.outputs.packages_were_built == 'true'
 
