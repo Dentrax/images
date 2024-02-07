@@ -45,7 +45,8 @@ pipeline:
 
   - runs: npm run compile-cli
 
-  # mongosh rebuilds NodeJS 16.x from source as part of its build process.
+  # mongosh rebuilds NodeJS 20.x from source as part of its build process. It's using a project called
+  # boxednode to do this. We provide the same flags we give to our own NodeJS 20.x build.
   - runs: |
       npm install -G os-dns-native
       export BOXEDNODE_CONFIGURE_ARGS="--shared-brotli,--shared-zlib,--shared-openssl,--shared-cares,--shared-nghttp2,--ninja,--openssl-use-def-ca-store,--with-icu-default-data-dir=$(icu-config,--icudatadir),--with-intl=system-icu,--openssl-conf-name=openssl_conf,--without-corepack"
@@ -60,7 +61,6 @@ update:
   github:
     identifier: mongodb-js/mongosh
     strip-prefix: v
-
 
 test:
   environment:
@@ -77,4 +77,3 @@ test:
         echo "Started MongoDB"
         mongosh "mongodb://localhost:27017" --eval "printjson(db.serverStatus())"
         killall mongod
-
