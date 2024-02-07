@@ -8,10 +8,6 @@ package:
 
 environment:
   contents:
-    repositories:
-      - https://packages.wolfi.dev/os
-    keyring:
-      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
     packages:
       - build-base
       - busybox
@@ -27,16 +23,12 @@ pipeline:
       repository: https://github.com/dexidp/dex
       tag: v${{package.version}}
       expected-commit: 9451d87ca0c940463d043e9def0c967711e55ddf
-      destination: dex
 
   - uses: go/bump
     with:
       deps: github.com/go-jose/go-jose/v3@v3.0.1
-      modroot: dex
 
   - runs: |
-      cd dex
-
       # These build commands are adapted from the upstream `make release-binary` target.
       export GOBIN="$GOPATH/bin"
       LD_FLAGS="-w -X main.version=v${{package.version}} -extldflags \"-static\""
