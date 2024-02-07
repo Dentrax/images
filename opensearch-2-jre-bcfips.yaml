@@ -1,14 +1,19 @@
+# NOTE: This is a Java application which does not support FIPS mode, or provide
+# a mechanism to replace / guarantee that only FIPS approved crypto libraries
+# are used (Java applications can bundle their own crypto libraries). Therefore,
+# THIS IS NOT A FIPS COMPLIANT JAVA PACKAGE. It does however include the bcfips
+# JDK as a runtime dependency, only because customer(s) have requested this.
 package:
   name: opensearch-2-jre-bcfips
   version: 2.11.1
   epoch: 0 # Remove CVE-2022-45146 patch when bumping to 2.12 or later
   description:
   copyright:
-      license: Apache-2.0
+    - license: Apache-2.0
   dependencies:
     runtime:
       - bash # some helper scripts use bash
-      - openjdk-11-jre-bcfips
+      #- openjdk-11-jre-bcfips
       - openjdk-11-default-jvm-bcfips
 
 environment:
@@ -19,6 +24,9 @@ environment:
       - curl
       - gradle
       - openjdk-11
+  environment:
+    JAVA_HOME: /usr/lib/jvm/java-11-openjdk
+    LANG: "en_US.UTF-8"
 
 pipeline:
   - uses: git-checkout
@@ -33,11 +41,9 @@ pipeline:
       patches: CVE-2022-45146.patch
 
   - runs: |
-      export LANG=en_US.UTF-8
-      export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
-
+      # this a patch to not use the gradle daemons
+      echo "org.gradle.daemon=false" >> gradle.properties
       gradle localDistro --parallel -Dbuild.snapshot="false" -Dbuild.version_qualifier=""
-
       mkdir -p ${{targets.destdir}}/usr/share/opensearch/logs
 
       install -dm777 ${{targets.destdir}}/usr/share/opensearch/
@@ -68,3 +74,15 @@ update:
   enabled: true
   github:
     identifier: opensearch-project/OpenSearch
+
+test:
+  environment:
+    contents:
+      packages:
+        - wolfi-base
+        - openjdk-11-default-jvm-bcfips
+        - bash
+  pipeline:
+    - runs: |
+        export JAVA_HOME=/usr/lib/jvm/default-jvm
+        opensearch --version
