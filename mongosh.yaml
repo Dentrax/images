@@ -1,6 +1,6 @@
 package:
   name: mongosh
-  version: 2.1.3
+  version: 2.1.4
   epoch: 0
   description: The MongoDB Shell
   copyright:
@@ -36,7 +36,7 @@ pipeline:
     with:
       repository: https://github.com/mongodb-js/mongosh
       tag: v${{package.version}}
-      expected-commit: 9ebc147d83037e9217dcd788f8092ae73010c9d6
+      expected-commit: aa68f995797d6ca42337c932408d1923924ca714
 
   - runs: |
       npm install -g lerna
