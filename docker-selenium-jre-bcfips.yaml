@@ -1,5 +1,10 @@
+# NOTE: This is a Java application which does not support FIPS mode, or provide
+# a mechanism to replace / guarantee that only FIPS approved crypto libraries
+# are used (Java applications can bundle their own crypto libraries). Therefore,
+# THIS IS NOT A FIPS COMPLIANT JAVA PACKAGE. It does however include the bcfips
+# JDK as a runtime dependency, only because customer(s) have requested this.
 package:
-  name: docker-selenium-fips
+  name: docker-selenium-jre-bcfips
   # Officially they distribute the version with the following format: 4.16.1-20231219
   # But the '-' is not a valid character according to APK versioning spec; and resulting
   # 'package format error' when trying to install the package. The workaround is
