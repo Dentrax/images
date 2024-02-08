@@ -181,11 +181,11 @@ pipeline:
   - uses: strip
 
 subpackages:
-  - name: docker-selenium-supervisor-config
+  - name: docker-selenium-jre-bcfips-supervisor-config
     description: Docker Selenium supervisor configuration
     dependencies:
       runtime:
-        - docker-selenium
+        - docker-selenium-jre-bcfips
       replaces:
         - supervisor-config
       provides:
