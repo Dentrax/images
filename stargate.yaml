@@ -59,7 +59,6 @@ test:
         - bash
         - openjdk-8-jre
         - openjdk-8-default-jvm
-
   pipeline:
     - runs: |
         /stargate/starctl --help
