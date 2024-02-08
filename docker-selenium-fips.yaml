@@ -1,5 +1,5 @@
 package:
-  name: docker-selenium
+  name: docker-selenium-fips
   # Officially they distribute the version with the following format: 4.16.1-20231219
   # But the '-' is not a valid character according to APK versioning spec; and resulting
   # 'package format error' when trying to install the package. The workaround is
@@ -192,4 +192,4 @@ subpackages:
           mv ${{targets.destdir}}/etc/supervisor ${{targets.subpkgdir}}/etc
 
 update:
-  enabled: false # Disable just for now
+  enabled: false # Manual update is required. Please refer to the on top of the file for the description about versioning workaround.
