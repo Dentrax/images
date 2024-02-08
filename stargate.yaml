@@ -1,8 +1,8 @@
-# EOL v1 for https://github.com/chainguard-dev/enterprise-packages/pull/1723
+# EOL v1 for https://github.com/chainguard-dev/image-requests/issues/521
 package:
   name: stargate
   version: 1.0.78
-  epoch: 0
+  epoch: 1
   description: An open source data gateway
   copyright:
     - license: Apache-2.0
@@ -10,6 +10,7 @@ package:
     runtime:
       - bash # starctl is a bash script
       - busybox
+      - iproute2 # starctl runs ip
 
 environment:
   contents:
@@ -28,16 +29,25 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: 7ed964ff6cefd8f44c21a3fb4c16d8e6b482a237
 
-  - runs: |
-      cd coordinator/
+  - working-directory: coordinator
+    runs: |
+      mv ../MavenWrapperDownloader.java .mvn/wrapper/MavenWrapperDownloader.java
+      mv ../maven-wrapper.jar .mvn/wrapper/maven-wrapper.jar
+
       ./mvnw -B -ntp versions:set -DremoveSnapshot versions:commit
       ./mvnw -B -ntp -q -ff clean package -DskipTests
 
       mkdir -p ${{targets.destdir}}/stargate/stargate-lib/
       install -m755 ./stargate-lib/*.jar ${{targets.destdir}}/stargate/stargate-lib/
 
-      mkdir -p ${{targets.destdir}}/usr/bin/
-      install -m 755 ./starctl ${{targets.destdir}}/usr/bin/
+      mkdir -p ${{targets.destdir}}/stargate
+      install -m 755 ./starctl ${{targets.destdir}}/stargate
+
+      cp stargate-lib/*.xml ${{targets.destdir}}/stargate/stargate-lib/
+
+      sed -i -e 's/set -e/set -ex/g' ${{targets.destdir}}/stargate/starctl
+      mkdir -p ${{targets.destdir}}/etc/ld.so.conf.d
+      ln -s /etc/ld.so.conf ${{targets.destdir}}/etc/ld.so.conf.d/ld.so.conf
 
 test:
   environment:
@@ -48,8 +58,11 @@ test:
         - wolfi-base
         - bash
         - openjdk-8-jre
+        - openjdk-8-default-jvm
+
   pipeline:
-    - runs: /usr/bin/starctl --help
+    - runs: |
+        /stargate/starctl --help
 
 update:
   enabled: true
