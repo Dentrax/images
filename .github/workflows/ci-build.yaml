@@ -120,7 +120,7 @@ jobs:
           echo "epoch=$(date -u +%s)" >> "$GITHUB_OUTPUT"
         shell: bash
 
-      - uses: google-github-actions/auth@f6de81663f7788d05bd15bcce18f0e57f23f0846 # v2.0.1
+      - uses: google-github-actions/auth@a6e2e39c0a0331da29f7fd2c2a20a427e8d3ad1f # v2.1.1
         with:
           workload_identity_provider: "projects/618116202522/locations/global/workloadIdentityPools/prod-shared-e350/providers/prod-shared-gha"
           service_account: ${{ env.FQ_SERVICE_ACCOUNT }}
