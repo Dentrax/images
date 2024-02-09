@@ -10,7 +10,7 @@ package:
   # 'package format error' when trying to install the package. The workaround is
   # to replace '-' with '.', then mangling the version to replace back.
   version: 4.17.0.20240123
-  epoch: 0
+  epoch: 1
   description: Provides a simple way to run Selenium Grid with Chrome, Firefox, and Edge using Docker, making it easier to perform browser automation
   copyright:
     - license: Apache-2.0
@@ -20,6 +20,7 @@ package:
     - x86_64
   dependencies:
     runtime:
+      - busybox
       - openjdk-11-bcfips
       - libfontconfig1
       - mcookie
