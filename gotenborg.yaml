@@ -12,7 +12,7 @@ package:
     runtime:
       - busybox
       - chromium
-      # - libreoffice: https://github.com/wolfi-dev/os/pull/11516
+      - libreoffice
       - pdftk
       - qpdf
       - tini
@@ -32,7 +32,10 @@ environment:
       - busybox
       - ca-certificates-bundle
       - go
+<<<<<<< HEAD
+=======
       - curl
+>>>>>>> 4737e9b9 (gotenborg)
 
 pipeline:
   - uses: git-checkout
@@ -49,6 +52,16 @@ pipeline:
       mkdir -p ${{targets.destdir}}/usr/bin
       # Original build command referenced from here:
       # https://github.com/gotenberg/gotenberg/blob/main/build/Dockerfile#L27C5-L27C129
+<<<<<<< HEAD
+      CGO_ENABLED=0 go build -o gotenberg -ldflags "-X 'github.com/gotenberg/gotenberg/v8/cmd.Version=$GOTENBERG_VERSION'" -o /usr/bin/gotenborg cmd/gotenberg/main.go
+      
+      # downloads and installs unoconv
+      curl -Ls https://raw.githubusercontent.com/gotenberg/unoconverter/v0.0.1/unoconv -o ${{targets.destdir}}/usr/bin/unoconverter &&\
+      chmod +x ${{targets.destdir}}/usr/bin/unoconverter
+      
+      mkdir -p ${{targets.destdir}}/etc/fonts/conf.d
+      cp build/fonts.conf /etc/fonts/conf.d/100-gotenberg.conf
+=======
       CGO_ENABLED=0 go build -o gotenberg -ldflags "-X 'github.com/gotenberg/gotenberg/v8/cmd.Version=${{package.version}}'" -o /usr/bin/gotenborg cmd/gotenberg/main.go
 
       # downloads and installs unoconv
@@ -58,6 +71,7 @@ pipeline:
       mkdir -p ${{targets.destdir}}/etc/fonts/conf.d
       cp build/fonts.conf ${{targets.destdir}}/etc/fonts/conf.d/100-gotenberg.conf
 
+>>>>>>> 4737e9b9 (gotenborg)
   - uses: strip
 
 update:
